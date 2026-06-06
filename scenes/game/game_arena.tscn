@@ -8,22 +8,36 @@
 [ext_resource type="Script" uid="uid://dwygl3vekd54d" path="res://scenes/game/piece_queue.gd" id="4_queue"]
 [ext_resource type="Script" uid="uid://dv5anmcbn0iun" path="res://scenes/game/hud.gd" id="5_hud"]
 
-[node name="GameArena" type="Node2D" unique_id=1778691637]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_782ta"]
+albedo_color = Color(0.2, 0.6, 1, 1)
+metallic = 0.1
+roughness = 0.4
+
+[sub_resource type="BoxMesh" id="BoxMesh_782ta"]
+
+[sub_resource type="Environment" id="Environment_782ta"]
+
+[node name="GameArena" type="Node3D" unique_id=148713631]
 script = ExtResource("0_arena")
 
 [node name="GameLogic" type="Node" parent="." unique_id=644282273]
 script = ExtResource("1_188km")
 
-[node name="Board" type="Node2D" parent="." unique_id=1698337301]
+[node name="Board" type="Node3D" parent="." unique_id=1187160648]
 script = ExtResource("2_r0j2f")
+
+[node name="TestBlock" type="MeshInstance3D" parent="Board" unique_id=1941108898]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3735026, 0)
+material_override = SubResource("StandardMaterial3D_782ta")
+mesh = SubResource("BoxMesh_782ta")
 
 [node name="PlayerInput" type="Node" parent="." unique_id=1234567890]
 script = ExtResource("3_input")
 
-[node name="HoldBox" type="Node2D" parent="." unique_id=1053880050]
+[node name="HoldBox" type="Node3D" parent="." unique_id=1537091340]
 script = ExtResource("4_6du5l")
 
-[node name="PieceQueue" type="Node2D" parent="." unique_id=633676534]
+[node name="PieceQueue" type="Node3D" parent="." unique_id=1522574596]
 script = ExtResource("4_queue")
 
 [node name="UILayer" type="CanvasLayer" parent="." unique_id=999000001]
@@ -69,3 +83,13 @@ text = "LEVEL
 [node name="ComboLabel" type="Label" parent="UILayer/HUD/VBoxContainer" unique_id=1111111114]
 visible = false
 layout_mode = 2
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1443597800]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7)
+current = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1140938529]
+environment = SubResource("Environment_782ta")
+
+[node name="SunLight" type="DirectionalLight3D" parent="." unique_id=1315500264]
+transform = Transform3D(0.87758255, -0.27070403, 0.39568698, 0, 0.8253356, 0.5646425, -0.47942555, -0.49552038, 0.72430015, 0, 0, 0)

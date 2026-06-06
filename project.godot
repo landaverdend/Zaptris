@@ -20,12 +20,17 @@ config/icon="res://assets/icon.svg"
 Nostr="*res://autoloads/Nostr.gd"
 Pieces="*uid://bkm1pinsje5db"
 Rules="*res://autoloads/Rules.gd"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
 
 [input]
 
