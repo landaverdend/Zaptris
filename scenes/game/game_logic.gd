@@ -235,11 +235,23 @@ func _push_garbage(lines: int, gap_col: int) -> void:
 		grid.pop_front()  # top row scrolls off
 		var new_row: Array = []
 		for c in range(COLS):
-			new_row.append(null if c == gap_col else Color(0.45, 0.45, 0.45))
+			if c == gap_col:
+				new_row.append(null)
+			else:
+				new_row.append(Color(0.45, 0.45, 0.45))
 		grid.append(new_row)
-	# Shift active piece up to match the rising board
+	# Shift active piece up to match the rising board.
 	if active_piece != null:
 		active_piece.row -= lines
+		# Clamp so no cell goes above row 0 — garbage can push a piece into the
+		# buffer zone but can't eject it from the grid entirely.
+		# min_dr is the smallest row offset in the piece's current shape;
+		# the piece can sit as high as row = -min_dr before any cell leaves the grid.
+		var min_dr := 0
+		for offset in Pieces.cells(active_piece.kind, active_piece.rotation):
+			min_dr = min(min_dr, offset[0])
+		active_piece.row = max(active_piece.row, -min_dr)
+		# Game over only if the clamped position overlaps locked cells.
 		if not _is_valid(active_piece.row, active_piece.col, active_piece.rotation):
 			active_piece = null
 			game_over.emit()

@@ -60,6 +60,7 @@ func _on_countdown_finished() -> void:
 func _start_game() -> void:
 	state = State.PLAYING
 	$GameArena/PlayerInput.configure(PlayerInputScript.InputSource.KEYBOARD)
+	$GameArena/PlayerInput.clear_held()
 	logic.start()
 	await get_tree().create_timer(0.6).timeout
 	countdown_node.hide()

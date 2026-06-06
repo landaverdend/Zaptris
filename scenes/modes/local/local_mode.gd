@@ -260,18 +260,38 @@ func _update_camera() -> void:
 		add_child(_camera)
 		_camera.current = true
 
+	var aspect := get_viewport().get_visible_rect().size.x \
+				/ get_viewport().get_visible_rect().size.y
+
 	# Each arena footprint: hold box at x=-3, queue right edge at x=16.5.
 	var content_left  := -3.0
 	var content_right := (arena_count - 1) * ARENA_SPACING + 16.5
 	var content_cx    := (content_left + content_right) * 0.5
-	var half_span     := (content_right - content_left) * 0.5 + 4.0  # 4 units padding
+	var content_w     := content_right - content_left
 
-	# Godot's default 75° vFOV on a 16:9 viewport → ~53.7° half-hFOV → tan ≈ 1.364.
-	# Pull back no closer than Z=22 (the solo camera distance) so the board height
-	# always fits comfortably on screen.
-	var cam_z := maxf(22.0, half_span / 1.364)
+	# Minimum visible height is 28 units (board=20 + comfortable breathing room).
+	# For 1–2 players this dominates; for 3–4 the horizontal spread takes over.
+	const MIN_VIEW_H := 28.0
+	var cam_size := maxf(content_w / aspect, MIN_VIEW_H) * 1.08
 
-	_camera.position = Vector3(content_cx, 10.0, cam_z)
+	_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+	_camera.size       = cam_size
+
+	# 5° downward pitch for a subtle 3D feel.
+	# With orthographic, Z only affects depth clipping — 60 is safely in front.
+	# The tilt shifts the gaze centre by tan(5°)*Z ≈ 5.25 units downward at Z=0,
+	# so raise cam_y by that amount so the view centres on board mid-height (Y=10).
+	const CAM_Z := 60.0
+	var tilt  := deg_to_rad(5.0)
+	var cam_y := 10.0 + tan(tilt) * CAM_Z   # ≈ 15.25
+	_camera.transform = Transform3D(
+		Basis(
+			Vector3(1.0,      0.0,       0.0),
+			Vector3(0.0, cos(tilt), -sin(tilt)),
+			Vector3(0.0, sin(tilt),  cos(tilt))
+		),
+		Vector3(content_cx, cam_y, CAM_Z)
+	)
 
 # ── Countdown ─────────────────────────────────────────────────────────────────
 
@@ -298,6 +318,7 @@ func _begin_play() -> void:
 		var input: Node = slot.arena.get_node("PlayerInput")
 		input.das_frames = slot.card.das_value
 		input.arr_frames = slot.card.arr_value
+		input.clear_held()
 		slot.arena.get_node("GameLogic").reset(round_seed)
 		slot.arena.get_node("GameLogic").start()
 	local_rules.start_round(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))

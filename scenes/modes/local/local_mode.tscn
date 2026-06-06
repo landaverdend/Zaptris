@@ -35,33 +35,34 @@ layout_mode = 2
 focus_mode = 0
 text = "+"
 
-[node name="PotLabel" type="Label" parent="UILayer" unique_id=7000000010]
-layout_mode = 3
+[node name="PotLabel" type="Label" parent="UILayer" unique_id=-1589934582]
+anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-anchor_top = 0.0
-anchor_bottom = 0.0
 offset_left = -120.0
 offset_top = 52.0
 offset_right = 120.0
 offset_bottom = 80.0
 grow_horizontal = 2
+theme_override_font_sizes/font_size = 20
 text = "⚡ 100 sats"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 20
 
-[node name="LobbyLayer" type="Control" parent="UILayer" unique_id=7000000001]
-layout_mode = 1
+[node name="LobbyLayer" type="Control" parent="UILayer" unique_id=-1589934591]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
-[node name="StartButton" type="Button" parent="UILayer" unique_id=7000000002]
-layout_mode = 3
+[node name="StartButton" type="Button" parent="UILayer" unique_id=-1589934590]
+visible = false
+anchors_preset = 7
 anchor_left = 0.5
-anchor_right = 0.5
 anchor_top = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -80.0
 offset_top = -52.0
@@ -70,11 +71,11 @@ offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 0
 focus_mode = 0
-visible = false
 text = "Start Game"
 
-[node name="DebugGarbage" type="Control" parent="UILayer" unique_id=8500000001]
+[node name="DebugGarbage" type="Control" parent="UILayer" unique_id=-89934591]
 layout_mode = 3
+anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -84,50 +85,51 @@ offset_top = -148.0
 offset_right = -8.0
 offset_bottom = -8.0
 
-[node name="VBox" type="VBoxContainer" parent="UILayer/DebugGarbage" unique_id=8500000002]
+[node name="VBox" type="VBoxContainer" parent="UILayer/DebugGarbage" unique_id=-89934590]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_constants/separation = 6
 
-[node name="TitleLabel" type="Label" parent="UILayer/DebugGarbage/VBox" unique_id=8500000003]
+[node name="TitleLabel" type="Label" parent="UILayer/DebugGarbage/VBox" unique_id=-89934589]
 layout_mode = 2
 text = "GARBAGE DEBUG"
 horizontal_alignment = 1
 
-[node name="AmountRow" type="HBoxContainer" parent="UILayer/DebugGarbage/VBox" unique_id=8500000004]
+[node name="AmountRow" type="HBoxContainer" parent="UILayer/DebugGarbage/VBox" unique_id=-89934588]
 layout_mode = 2
 alignment = 1
 
-[node name="DecButton" type="Button" parent="UILayer/DebugGarbage/VBox/AmountRow" unique_id=8500000005]
+[node name="DecButton" type="Button" parent="UILayer/DebugGarbage/VBox/AmountRow" unique_id=-89934587]
 layout_mode = 2
 focus_mode = 0
 text = "▼"
 
-[node name="LinesLabel" type="Label" parent="UILayer/DebugGarbage/VBox/AmountRow" unique_id=8500000006]
-layout_mode = 2
+[node name="LinesLabel" type="Label" parent="UILayer/DebugGarbage/VBox/AmountRow" unique_id=-89934586]
 custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
 text = "4"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="IncButton" type="Button" parent="UILayer/DebugGarbage/VBox/AmountRow" unique_id=8500000007]
+[node name="IncButton" type="Button" parent="UILayer/DebugGarbage/VBox/AmountRow" unique_id=-89934585]
 layout_mode = 2
 focus_mode = 0
 text = "▲"
 
-[node name="SendButton" type="Button" parent="UILayer/DebugGarbage/VBox" unique_id=8500000008]
+[node name="SendButton" type="Button" parent="UILayer/DebugGarbage/VBox" unique_id=-89934584]
 layout_mode = 2
 focus_mode = 0
 text = "→ Send to P1"
 
-[node name="ZapQR" type="TextureRect" parent="UILayer" unique_id=8600000001]
-layout_mode = 3
+[node name="ZapQR" type="TextureRect" parent="UILayer" unique_id=10065409]
+visible = false
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-anchor_top = 0.0
-anchor_bottom = 0.0
 offset_left = -160.0
 offset_top = 8.0
 offset_right = -8.0
@@ -135,17 +137,18 @@ offset_bottom = 160.0
 grow_horizontal = 0
 grow_vertical = 2
 stretch_mode = 5
-visible = false
 
-[node name="CountdownOverlay" type="Control" parent="UILayer" unique_id=9000000001]
-layout_mode = 1
+[node name="CountdownOverlay" type="Control" parent="UILayer" unique_id=410065409]
+visible = false
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-visible = false
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
-[node name="Label" type="Label" parent="UILayer/CountdownOverlay" unique_id=9000000002]
+[node name="Label" type="Label" parent="UILayer/CountdownOverlay" unique_id=410065410]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -158,7 +161,7 @@ offset_right = 100.0
 offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_font_sizes/font_size = 72
 text = "3"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 72

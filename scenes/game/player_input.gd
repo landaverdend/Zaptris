@@ -21,6 +21,12 @@ func configure(source: InputSource, dev_id: int = -1) -> void:
 	input_source = source
 	device_id    = dev_id
 
+# Flush any held inputs. Call this before starting a new round so keys
+# physically held at round-end don't carry over to the next spawn.
+func clear_held() -> void:
+	_held.clear()
+	_last_horizontal = ""
+
 # ── Per-frame DAS/ARR tick ────────────────────────────────────────────────────
 
 func _physics_process(_delta: float) -> void:
