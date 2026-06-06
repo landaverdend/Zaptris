@@ -1,4 +1,4 @@
-extends Node2D
+extends Node3D
 
 const PlayerInputScript  := preload("res://scenes/game/player_input.gd")
 const CountdownScript    := preload("res://scenes/game/countdown_timer.gd")
@@ -31,7 +31,6 @@ func _ready() -> void:
 	pause_screen.hide()
 	countdown_node.show()
 
-	_center_arena()
 	logic.game_over.connect(_on_game_over)
 
 	# Game over screen buttons
@@ -54,14 +53,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 # ── Transitions ───────────────────────────────────────────────────────────────
 
-func _center_arena() -> void:
-	var board_width:  int = logic.COLS * logic.cell_size
-	var board_height: int = (logic.ROWS - logic.BUFFER_ROWS) * logic.cell_size
-	var vp := get_viewport_rect().size
-	$GameArena.position = Vector2(
-		(vp.x - board_width)  / 2.0,
-		(vp.y - board_height) / 2.0
-	)
 
 func _on_countdown_finished() -> void:
 	_start_game()

@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://bv3ho1p5a6m2o" path="res://scenes/modes/solo/solo_mode.gd" id="1_xs6rg"]
 [ext_resource type="Script" uid="uid://d2yhohqqmrwex" path="res://scenes/modes/solo/solo_rules.gd" id="3_buwap"]
 
-[node name="SoloMode" type="Node2D" unique_id=1777930997]
+[node name="SoloMode" type="Node3D" unique_id=1777930997]
 process_mode = 3
 script = ExtResource("1_xs6rg")
 

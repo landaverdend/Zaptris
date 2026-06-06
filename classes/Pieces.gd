@@ -1,4 +1,4 @@
-extends Node
+class_name Pieces
 
 # Direct port of pieces.ts
 # Shapes: [piece][rotation] = array of [dr, dc] offsets relative to anchor
