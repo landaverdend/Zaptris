@@ -1,0 +1,325 @@
+use godot::prelude::*;
+use std::sync::{mpsc, Arc, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
+
+mod lnurl;
+mod payments;
+mod qr;
+
+struct StacktrisExtension;
+
+#[gdextension]
+unsafe impl ExtensionLibrary for StacktrisExtension {}
+
+// ── Event bus ──────────────────────────────────────────────────────────────────
+//
+// All background work (NWC calls, HTTP, QR encoding) runs on the shared tokio
+// runtime. Results are sent here; poll() drains the channel on the main thread
+// and emits the corresponding Godot signals.
+
+pub(crate) enum BridgeEvent {
+    InvoiceReady(i64, Vec<u8>),        // player_index, PNG bytes
+    InvoicePaid(i64),                  // player_index
+    AddressChecked(i64, bool, String), // player_index, valid, message
+    PaymentSettled(i64, bool),         // amount_sats, success
+    ZapCommand(i64, i64, String),      // player_index, amount_sats, command
+    ZapQrReady(Vec<u8>),               // PNG bytes for the zap QR
+    Log(String),                       // diagnostic message → godot_print
+}
+
+// ── Bridge node ────────────────────────────────────────────────────────────────
+
+#[derive(GodotClass)]
+#[class(base=Node)]
+pub struct RustBridge {
+    base:           Base<Node>,
+    /// Shared tokio runtime — one thread pool for the whole extension.
+    rt:             Arc<tokio::runtime::Runtime>,
+    payment_client: Option<Arc<payments::PaymentClient>>,
+    tx:             mpsc::SyncSender<BridgeEvent>,
+    rx:             Mutex<mpsc::Receiver<BridgeEvent>>,
+    /// True while a pay_winner call is in flight — prevents overlapping payouts.
+    paying:         Arc<AtomicBool>,
+}
+
+#[godot_api]
+impl INode for RustBridge {
+    fn init(base: Base<Node>) -> Self {
+        let rt = Arc::new(
+            tokio::runtime::Runtime::new().expect("tokio runtime"),
+        );
+        let (tx, rx) = mpsc::sync_channel(64);
+        Self {
+            base,
+            rt,
+            payment_client: None,
+            tx,
+            rx:     Mutex::new(rx),
+            paying: Arc::new(AtomicBool::new(false)),
+        }
+    }
+
+    fn ready(&mut self) {
+        match payments::PaymentClient::from_env(Arc::clone(&self.rt)) {
+            Ok(client) => {
+                client.start_watching(self.tx.clone());
+                client.start_watching_commands(self.tx.clone());
+                self.payment_client = Some(Arc::new(client));
+                godot_print!("[payments] NWC client ready");
+            }
+            Err(e) => godot_print!("[payments] no NWC client: {e}"),
+        }
+    }
+}
+
+#[godot_api]
+impl RustBridge {
+
+    // ── Queue drain (called by GDScript Timer every 1s) ───────────────────────
+
+    #[func]
+    fn poll(&mut self) {
+        // Collect all pending events under the lock, then release it before
+        // calling emit_signal (which needs &mut self).
+        let events: Vec<BridgeEvent> = {
+            let rx = self.rx.lock().unwrap();
+            std::iter::from_fn(|| rx.try_recv().ok()).collect()
+        };
+
+        for event in events {
+            match event {
+                BridgeEvent::InvoiceReady(idx, bytes) => {
+                    let ba = PackedByteArray::from(bytes.as_slice());
+                    self.base_mut().emit_signal("invoice_ready", &[
+                        idx.to_variant(), ba.to_variant(),
+                    ]);
+                }
+                BridgeEvent::InvoicePaid(idx) => {
+                    godot_print!("[payments] invoice_paid — player {idx}");
+                    self.base_mut().emit_signal("invoice_paid", &[idx.to_variant()]);
+                }
+                BridgeEvent::AddressChecked(idx, valid, msg) => {
+                    self.base_mut().emit_signal("address_checked", &[
+                        idx.to_variant(),
+                        valid.to_variant(),
+                        GString::from(msg).to_variant(),
+                    ]);
+                }
+                BridgeEvent::PaymentSettled(amount, success) => {
+                    self.base_mut().emit_signal("payment_settled", &[
+                        amount.to_variant(), success.to_variant(),
+                    ]);
+                }
+                BridgeEvent::ZapCommand(player_idx, amount_sats, command) => {
+                    godot_print!("[nostr] zap → player={player_idx} {amount_sats} sats cmd={command}");
+                    self.base_mut().emit_signal("zap_received", &[
+                        player_idx.to_variant(),
+                        amount_sats.to_variant(),
+                        GString::from(command).to_variant(),
+                    ]);
+                }
+                BridgeEvent::ZapQrReady(bytes) => {
+                    let ba = PackedByteArray::from(bytes.as_slice());
+                    self.base_mut().emit_signal("zap_qr_ready", &[ba.to_variant()]);
+                }
+                BridgeEvent::Log(msg) => {
+                    godot_print!("{msg}");
+                }
+            }
+        }
+    }
+
+    // ── Payments ──────────────────────────────────────────────────────────────
+
+    /// Request a buy-in invoice for a player. Emits `invoice_ready` when the
+    /// QR is available (via the next poll()).
+    #[func]
+    fn create_player_invoice(&self, player_index: i64, amount_sats: i64) {
+        let client = match &self.payment_client {
+            Some(c) => Arc::clone(c),
+            None => {
+                godot_print!("[payments] NWC not configured — check HOST_NWC in .env");
+                return;
+            }
+        };
+        let tx   = self.tx.clone();
+        let memo = format!("Zapstris buy-in P{}", player_index + 1);
+
+        self.rt.spawn(async move {
+            match client.create_invoice(player_index, amount_sats as u64, &memo).await {
+                Ok(invoice) => {
+                    // QR encoding is CPU-bound sync work — off-load to blocking pool.
+                    let png = tokio::task::spawn_blocking(move || qr::generate_png(&invoice))
+                        .await
+                        .unwrap_or_else(|e| { eprintln!("[qr] panic: {e}"); Vec::new() });
+                    tx.send(BridgeEvent::InvoiceReady(player_index, png)).ok();
+                }
+                Err(e) => eprintln!("[payments] invoice error for player {player_index}: {e}"),
+            }
+        });
+    }
+
+    #[func]
+    fn clear_pending_invoices(&self) {
+        if let Some(client) = &self.payment_client {
+            client.clear_pending();
+        }
+    }
+
+    // ── Lightning address validation ──────────────────────────────────────────
+
+    /// Validate a Lightning address in the background.
+    /// Emits `address_checked(player_index, is_valid, message)` on the next poll().
+    #[func]
+    fn check_lightning_address(&self, player_index: i64, address: GString) {
+        let tx      = self.tx.clone();
+        let address = address.to_string();
+
+        // ureq is sync — run on the blocking thread pool so it doesn't
+        // occupy an async worker while waiting on the socket.
+        self.rt.spawn(async move {
+            let result = tokio::task::spawn_blocking(move || lnurl::check_address(&address))
+                .await
+                .unwrap_or_else(|e| Err(e.to_string()));
+            let (valid, msg) = match result {
+                Ok(())   => (true,  "Reachable ✓".to_string()),
+                Err(msg) => (false, msg),
+            };
+            tx.send(BridgeEvent::AddressChecked(player_index, valid, msg)).ok();
+        });
+    }
+
+    // ── Payout ────────────────────────────────────────────────────────────────
+
+    /// Pay `amount_sats` to a Lightning address.
+    /// At most one payment runs at a time — skips if one is already in flight.
+    /// Emits `payment_settled(amount, success)` on the next poll().
+    #[func]
+    fn pay_winner(&self, lightning_address: GString, amount_sats: i64) {
+        if self.paying.compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst).is_err() {
+            godot_print!("[payments] payment already in flight — skipping tick");
+            return;
+        }
+        let client = match &self.payment_client {
+            Some(c) => Arc::clone(c),
+            None => {
+                self.paying.store(false, Ordering::SeqCst);
+                godot_print!("[payments] NWC not configured — cannot pay winner");
+                return;
+            }
+        };
+        let address = lightning_address.to_string();
+        let paying  = Arc::clone(&self.paying);
+        let tx      = self.tx.clone();
+
+        self.rt.spawn(async move {
+            // LNURL-pay fetch is sync HTTP — blocking pool.
+            let fetch_addr  = address.clone();
+            let bolt11_result = tokio::task::spawn_blocking(move || {
+                lnurl::fetch_invoice(&fetch_addr, amount_sats as u64)
+            })
+            .await
+            .unwrap_or_else(|e| Err(e.to_string()));
+
+            let success = match bolt11_result {
+                Ok(bolt11) => match client.pay_invoice(&bolt11).await {
+                    Ok(())  => { eprintln!("[payments] paid {amount_sats} sats → {address}"); true }
+                    Err(e)  => { eprintln!("[payments] pay_invoice failed: {e}"); false }
+                },
+                Err(e) => { eprintln!("[payments] fetch_invoice failed for {address}: {e}"); false }
+            };
+
+            paying.store(false, Ordering::SeqCst);
+            tx.send(BridgeEvent::PaymentSettled(amount_sats, success)).ok();
+        });
+    }
+
+    /// Pay the remaining pot to the match winner. Unlike pay_winner, this does
+    /// not check the paying flag — the final payout should always go through
+    /// even if a tick payment is still in flight.
+    #[func]
+    fn pay_pot_remainder(&self, lightning_address: GString, amount_sats: i64) {
+        let client = match &self.payment_client {
+            Some(c) => Arc::clone(c),
+            None => {
+                godot_print!("[payments] NWC not configured — cannot pay pot remainder");
+                return;
+            }
+        };
+        let address = lightning_address.to_string();
+        let tx      = self.tx.clone();
+
+        self.rt.spawn(async move {
+            let fetch_addr    = address.clone();
+            let bolt11_result = tokio::task::spawn_blocking(move || {
+                lnurl::fetch_invoice(&fetch_addr, amount_sats as u64)
+            })
+            .await
+            .unwrap_or_else(|e| Err(e.to_string()));
+
+            let success = match bolt11_result {
+                Ok(bolt11) => match client.pay_invoice(&bolt11).await {
+                    Ok(())  => { eprintln!("[payments] pot remainder: {amount_sats} sats → {address}"); true }
+                    Err(e)  => { eprintln!("[payments] pot remainder pay_invoice failed: {e}"); false }
+                },
+                Err(e) => { eprintln!("[payments] pot remainder fetch failed for {address}: {e}"); false }
+            };
+            tx.send(BridgeEvent::PaymentSettled(amount_sats, success)).ok();
+        });
+    }
+
+    // ── QR ────────────────────────────────────────────────────────────────────
+
+    #[func]
+    fn generate_qr(&self, data: GString) -> PackedByteArray {
+        qr::generate_qr(&data.to_string())
+    }
+
+    // ── Zap QR ────────────────────────────────────────────────────────────────
+
+    /// Generate a QR from HOST_LIGHTNING_ADDRESS and emit zap_qr_ready.
+    /// Bystanders scan this with any Lightning wallet, enter an amount + memo
+    /// ("0 GARBAGE"), and pay. The command watcher picks it up via list_transactions.
+    #[func]
+    fn setup_zap_qr(&self) {
+        dotenvy::dotenv().ok();
+        let address = match std::env::var("HOST_LIGHTNING_ADDRESS") {
+            Ok(a)  => a.trim().to_string(),
+            Err(_) => {
+                godot_print!("[zap] HOST_LIGHTNING_ADDRESS not set — skipping zap QR");
+                return;
+            }
+        };
+        let tx = self.tx.clone();
+        self.rt.spawn(async move {
+            tx.send(BridgeEvent::Log(format!("[zap] QR → {address}"))).ok();
+            let png = tokio::task::spawn_blocking(move || qr::generate_png(&address))
+                .await
+                .unwrap_or_else(|e| { eprintln!("[zap] QR panic: {e}"); Vec::new() });
+            tx.send(BridgeEvent::ZapQrReady(png)).ok();
+        });
+    }
+
+    // ── Signals ───────────────────────────────────────────────────────────────
+
+    #[signal]
+    fn invoice_ready(player_index: i64, qr_bytes: PackedByteArray);
+
+    #[signal]
+    fn invoice_paid(player_index: i64);
+
+    #[signal]
+    fn address_checked(player_index: i64, is_valid: bool, message: GString);
+
+    #[signal]
+    fn payment_settled(amount_sats: i64, success: bool);
+
+    /// Fired when a bystander zaps the game with a command note.
+    /// command is uppercase, e.g. "GARBAGE".
+    #[signal]
+    fn zap_received(player_index: i64, amount_sats: i64, command: GString);
+
+    /// Fired once setup_zap_qr() completes — PNG bytes for the nostr:npub1… QR.
+    #[signal]
+    fn zap_qr_ready(qr_bytes: PackedByteArray);
+}

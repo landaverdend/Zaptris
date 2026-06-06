@@ -1,0 +1,104 @@
+class_name PlayerInput extends Node
+
+enum InputSource { UNCLAIMED, KEYBOARD, CONTROLLER }
+
+# Set via configure() — not exported since InputRouter owns assignment.
+var input_source: InputSource = InputSource.UNCLAIMED
+var device_id: int = -1
+
+@export var das_frames: float = 12.0  # frames before repeat starts
+@export var arr_frames: float = 2.0   # frames per repeat step
+
+@onready var logic: Node = $"../GameLogic"
+
+var _held: Dictionary = {}
+var _last_horizontal: String = ""
+
+const REPEATABLE = ["move_left", "move_right", "soft_drop"]
+
+# Called by InputRouter (local) or SoloMode (solo) to bind a device.
+func configure(source: InputSource, dev_id: int = -1) -> void:
+	input_source = source
+	device_id    = dev_id
+
+# ── Per-frame DAS/ARR tick ────────────────────────────────────────────────────
+
+func _physics_process(_delta: float) -> void:
+	if input_source == InputSource.UNCLAIMED:
+		return
+	if logic.active_piece == null:
+		return
+	for action in _held.keys():
+		var held = _held[action]
+		held["frames"] += 1
+		if held["frames"] < das_frames:
+			continue
+		held["arr_counter"] += 1
+		if arr_frames == 0 or held["arr_counter"] >= arr_frames:
+			held["arr_counter"] = 0
+			_dispatch(action)
+
+# ── Input events ──────────────────────────────────────────────────────────────
+
+func _unhandled_input(event: InputEvent) -> void:
+	if input_source == InputSource.UNCLAIMED:
+		return
+	if logic.active_piece == null:
+		return
+
+	# Filter by source — keyboard and controller 0 both have device=0,
+	# so we separate them by event type rather than device ID alone.
+	match input_source:
+		InputSource.KEYBOARD:
+			if not event is InputEventKey:
+				return
+		InputSource.CONTROLLER:
+			if not (event is InputEventJoypadButton or event is InputEventJoypadMotion):
+				return
+			if event.device != device_id:
+				return
+
+	# One-shot actions
+	if event.is_action_pressed("hard_drop"):
+		logic.hard_drop()
+		return
+	if event.is_action_pressed("rotate_cw"):
+		logic.try_rotate(1)
+		return
+	if event.is_action_pressed("rotate_ccw"):
+		logic.try_rotate(-1)
+		return
+	if event.is_action_pressed("hold"):
+		logic.hold()
+		return
+
+	# Repeatable actions
+	for action in REPEATABLE:
+		if event.is_action_pressed(action):
+			if action == "move_left" or action == "move_right":
+				_last_horizontal = action
+			_dispatch(action)
+			_held[action] = {"frames": 0.0, "arr_counter": 0.0}
+		elif event.is_action_released(action):
+			_held.erase(action)
+			if action == _last_horizontal:
+				if action == "move_left" and "move_right" in _held:
+					_last_horizontal = "move_right"
+				elif action == "move_right" and "move_left" in _held:
+					_last_horizontal = "move_left"
+				else:
+					_last_horizontal = ""
+
+# ── Action dispatch ───────────────────────────────────────────────────────────
+
+func _dispatch(action: String) -> void:
+	if action == "move_left" or action == "move_right":
+		if action != _last_horizontal:
+			return
+	match action:
+		"move_left":
+			logic.try_move(0, -1)
+		"move_right":
+			logic.try_move(0, 1)
+		"soft_drop":
+			logic.soft_drop()

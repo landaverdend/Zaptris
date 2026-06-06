@@ -1,0 +1,164 @@
+[gd_scene format=3 uid="uid://codj6tfotpq3r"]
+
+[ext_resource type="Script" uid="uid://bq24101nmxb7g" path="res://scenes/modes/local/local_mode.gd" id="1_local"]
+
+[node name="LocalMode" type="Node2D" unique_id=-294967295]
+process_mode = 3
+script = ExtResource("1_local")
+
+[node name="UILayer" type="CanvasLayer" parent="." unique_id=705032705]
+layer = 10
+
+[node name="PlayerControls" type="HBoxContainer" parent="UILayer" unique_id=705032706]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -130.0
+offset_top = 8.0
+offset_right = 130.0
+offset_bottom = 48.0
+grow_horizontal = 2
+
+[node name="RemoveButton" type="Button" parent="UILayer/PlayerControls" unique_id=705032707]
+layout_mode = 2
+focus_mode = 0
+text = "-"
+
+[node name="CountLabel" type="Label" parent="UILayer/PlayerControls" unique_id=705032708]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "2 Players"
+horizontal_alignment = 1
+
+[node name="AddButton" type="Button" parent="UILayer/PlayerControls" unique_id=705032709]
+layout_mode = 2
+focus_mode = 0
+text = "+"
+
+[node name="PotLabel" type="Label" parent="UILayer" unique_id=7000000010]
+layout_mode = 3
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_left = -120.0
+offset_top = 52.0
+offset_right = 120.0
+offset_bottom = 80.0
+grow_horizontal = 2
+text = "⚡ 100 sats"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 20
+
+[node name="LobbyLayer" type="Control" parent="UILayer" unique_id=7000000001]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="StartButton" type="Button" parent="UILayer" unique_id=7000000002]
+layout_mode = 3
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -52.0
+offset_right = 80.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 0
+focus_mode = 0
+visible = false
+text = "Start Game"
+
+[node name="DebugGarbage" type="Control" parent="UILayer" unique_id=8500000001]
+layout_mode = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -148.0
+offset_right = -8.0
+offset_bottom = -8.0
+
+[node name="VBox" type="VBoxContainer" parent="UILayer/DebugGarbage" unique_id=8500000002]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 6
+
+[node name="TitleLabel" type="Label" parent="UILayer/DebugGarbage/VBox" unique_id=8500000003]
+layout_mode = 2
+text = "GARBAGE DEBUG"
+horizontal_alignment = 1
+
+[node name="AmountRow" type="HBoxContainer" parent="UILayer/DebugGarbage/VBox" unique_id=8500000004]
+layout_mode = 2
+alignment = 1
+
+[node name="DecButton" type="Button" parent="UILayer/DebugGarbage/VBox/AmountRow" unique_id=8500000005]
+layout_mode = 2
+focus_mode = 0
+text = "▼"
+
+[node name="LinesLabel" type="Label" parent="UILayer/DebugGarbage/VBox/AmountRow" unique_id=8500000006]
+layout_mode = 2
+custom_minimum_size = Vector2(40, 0)
+text = "4"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="IncButton" type="Button" parent="UILayer/DebugGarbage/VBox/AmountRow" unique_id=8500000007]
+layout_mode = 2
+focus_mode = 0
+text = "▲"
+
+[node name="SendButton" type="Button" parent="UILayer/DebugGarbage/VBox" unique_id=8500000008]
+layout_mode = 2
+focus_mode = 0
+text = "→ Send to P1"
+
+[node name="ZapQR" type="TextureRect" parent="UILayer" unique_id=8600000001]
+layout_mode = 3
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_left = -160.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 160.0
+grow_horizontal = 0
+grow_vertical = 2
+stretch_mode = 5
+visible = false
+
+[node name="CountdownOverlay" type="Control" parent="UILayer" unique_id=9000000001]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="UILayer/CountdownOverlay" unique_id=9000000002]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 72

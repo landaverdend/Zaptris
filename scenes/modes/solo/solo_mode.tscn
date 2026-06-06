@@ -1,0 +1,142 @@
+[gd_scene format=3 uid="uid://dl1l5w3a7q6y3"]
+
+[ext_resource type="PackedScene" uid="uid://chh3bmua26pb1" path="res://scenes/game/game_arena.tscn" id="1_2igfx"]
+[ext_resource type="Script" uid="uid://bv3ho1p5a6m2o" path="res://scenes/modes/solo/solo_mode.gd" id="1_xs6rg"]
+[ext_resource type="Script" uid="uid://d2yhohqqmrwex" path="res://scenes/modes/solo/solo_rules.gd" id="3_buwap"]
+
+[node name="SoloMode" type="Node2D" unique_id=1777930997]
+process_mode = 3
+script = ExtResource("1_xs6rg")
+
+[node name="GameArena" parent="." unique_id=1778691637 instance=ExtResource("1_2igfx")]
+process_mode = 1
+
+[node name="SoloRules" type="Node" parent="." unique_id=1190572253]
+script = ExtResource("3_buwap")
+
+[node name="UILayer" type="CanvasLayer" parent="." unique_id=615846007]
+
+[node name="GameOverScreen" type="Control" parent="UILayer" unique_id=548429253]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+visible = false
+
+[node name="BG" type="ColorRect" parent="UILayer/GameOverScreen" unique_id=2000000001]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.75)
+
+[node name="CenterContainer" type="CenterContainer" parent="UILayer/GameOverScreen" unique_id=2000000002]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="UILayer/GameOverScreen/CenterContainer" unique_id=2000000003]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="UILayer/GameOverScreen/CenterContainer/VBox" unique_id=2000000004]
+layout_mode = 2
+text = "GAME OVER"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 48
+
+[node name="FinalScore" type="Label" parent="UILayer/GameOverScreen/CenterContainer/VBox" unique_id=2000000005]
+layout_mode = 2
+text = "SCORE\n0"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
+
+[node name="RestartButton" type="Button" parent="UILayer/GameOverScreen/CenterContainer/VBox" unique_id=2000000006]
+layout_mode = 2
+text = "PLAY AGAIN"
+
+[node name="MenuButton" type="Button" parent="UILayer/GameOverScreen/CenterContainer/VBox" unique_id=2000000007]
+layout_mode = 2
+text = "MAIN MENU"
+
+[node name="PauseScreen" type="Control" parent="UILayer" unique_id=3000000001]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+visible = false
+
+[node name="BG" type="ColorRect" parent="UILayer/PauseScreen" unique_id=3000000002]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="CenterContainer" type="CenterContainer" parent="UILayer/PauseScreen" unique_id=3000000003]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="UILayer/PauseScreen/CenterContainer" unique_id=3000000004]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="UILayer/PauseScreen/CenterContainer/VBox" unique_id=3000000005]
+layout_mode = 2
+text = "PAUSED"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 48
+
+[node name="ResumeButton" type="Button" parent="UILayer/PauseScreen/CenterContainer/VBox" unique_id=3000000006]
+layout_mode = 2
+text = "RESUME"
+
+[node name="RestartButton" type="Button" parent="UILayer/PauseScreen/CenterContainer/VBox" unique_id=3000000007]
+layout_mode = 2
+text = "RESTART"
+
+[node name="MenuButton" type="Button" parent="UILayer/PauseScreen/CenterContainer/VBox" unique_id=3000000008]
+layout_mode = 2
+text = "MAIN MENU"
+
+[node name="Countdown" type="Control" parent="UILayer" unique_id=1356403402]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="UILayer/Countdown" unique_id=1921996209]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 72
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1

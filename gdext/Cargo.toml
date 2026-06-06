@@ -1,0 +1,17 @@
+[package]
+name = "stacktris"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+godot = "0.2"
+nostr-sdk = "0.36"
+tokio = { version = "1", features = ["rt-multi-thread", "time"] }
+qrcode  = "0.14"
+image   = "0.24"   # pinned to match qrcode 0.14's transitive dep
+dotenvy    = "0.15"   # reads HOST_NWC from .env in project root
+ureq       = { version = "2", features = ["json"] }
+serde_json = "1"

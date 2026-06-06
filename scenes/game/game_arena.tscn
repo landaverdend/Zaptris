@@ -1,0 +1,71 @@
+[gd_scene format=3 uid="uid://chh3bmua26pb1"]
+
+[ext_resource type="Script" uid="uid://ugym3c3q4mxl" path="res://scenes/game/game_arena.gd" id="0_arena"]
+[ext_resource type="Script" uid="uid://ort0vtt6epfh" path="res://scenes/game/game_logic.gd" id="1_188km"]
+[ext_resource type="Script" uid="uid://b8b6aku7ubeew" path="res://scenes/game/board.gd" id="2_r0j2f"]
+[ext_resource type="Script" uid="uid://dn4dr2jcba6lg" path="res://scenes/game/player_input.gd" id="3_input"]
+[ext_resource type="Script" uid="uid://dx86e4aatjbu6" path="res://scenes/game/hold_box.gd" id="4_6du5l"]
+[ext_resource type="Script" uid="uid://dwygl3vekd54d" path="res://scenes/game/piece_queue.gd" id="4_queue"]
+[ext_resource type="Script" uid="uid://dv5anmcbn0iun" path="res://scenes/game/hud.gd" id="5_hud"]
+
+[node name="GameArena" type="Node2D" unique_id=1778691637]
+script = ExtResource("0_arena")
+
+[node name="GameLogic" type="Node" parent="." unique_id=644282273]
+script = ExtResource("1_188km")
+
+[node name="Board" type="Node2D" parent="." unique_id=1698337301]
+script = ExtResource("2_r0j2f")
+
+[node name="PlayerInput" type="Node" parent="." unique_id=1234567890]
+script = ExtResource("3_input")
+
+[node name="HoldBox" type="Node2D" parent="." unique_id=1053880050]
+script = ExtResource("4_6du5l")
+
+[node name="PieceQueue" type="Node2D" parent="." unique_id=633676534]
+script = ExtResource("4_queue")
+
+[node name="UILayer" type="CanvasLayer" parent="." unique_id=999000001]
+
+[node name="HUD" type="Control" parent="UILayer" unique_id=774369786]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("5_hud")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/HUD" unique_id=2134529876]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -172.0
+offset_bottom = 183.0
+grow_horizontal = 0
+
+[node name="ScoreLabel" type="Label" parent="UILayer/HUD/VBoxContainer" unique_id=1111111111]
+layout_mode = 2
+text = "SCORE
+0"
+
+[node name="LinesLabel" type="Label" parent="UILayer/HUD/VBoxContainer" unique_id=1111111112]
+layout_mode = 2
+text = "LINES
+0"
+
+[node name="LevelLabel" type="Label" parent="UILayer/HUD/VBoxContainer" unique_id=1111111113]
+layout_mode = 2
+text = "LEVEL
+1"
+
+[node name="ComboLabel" type="Label" parent="UILayer/HUD/VBoxContainer" unique_id=1111111114]
+visible = false
+layout_mode = 2

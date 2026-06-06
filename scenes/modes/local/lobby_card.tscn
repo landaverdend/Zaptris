@@ -1,0 +1,121 @@
+[gd_scene format=3 uid="uid://lobby_card_001"]
+
+[ext_resource type="Script" uid="uid://37tla8bk54ph" path="res://scenes/modes/local/lobby_card.gd" id="1_card"]
+
+[node name="LobbyCard" type="Control" unique_id=6000000001]
+script = ExtResource("1_card")
+
+[node name="BG" type="ColorRect" parent="." unique_id=6000000002]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.7)
+mouse_filter = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=6000000003]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer" unique_id=6000000004]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PlayerLabel" type="Label" parent="CenterContainer/VBox" unique_id=6000000005]
+layout_mode = 2
+text = "Player 1"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 32
+
+[node name="DeviceLabel" type="Label" parent="CenterContainer/VBox" unique_id=6000000006]
+layout_mode = 2
+text = "Keyboard"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
+
+[node name="QRRect" type="TextureRect" parent="CenterContainer/VBox" unique_id=6000000019]
+layout_mode = 2
+size_flags_horizontal = 4
+stretch_mode = 2
+visible = false
+
+[node name="LightningRow" type="HBoxContainer" parent="CenterContainer/VBox" unique_id=6000000020]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="LightningEdit" type="LineEdit" parent="CenterContainer/VBox/LightningRow" unique_id=6000000007]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Lightning address"
+
+[node name="CheckButton" type="Button" parent="CenterContainer/VBox/LightningRow" unique_id=6000000021]
+layout_mode = 2
+focus_mode = 0
+text = "Check"
+
+[node name="AddressStatus" type="Label" parent="CenterContainer/VBox" unique_id=6000000022]
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+visible = false
+
+[node name="ReadyButton" type="Button" parent="CenterContainer/VBox" unique_id=6000000018]
+layout_mode = 2
+focus_mode = 0
+text = "Ready?"
+
+[node name="DASRow" type="HBoxContainer" parent="CenterContainer/VBox" unique_id=6000000008]
+layout_mode = 2
+visible = false
+theme_override_constants/separation = 8
+
+[node name="DASLabel" type="Label" parent="CenterContainer/VBox/DASRow" unique_id=6000000009]
+layout_mode = 2
+text = "DAS"
+vertical_alignment = 1
+
+[node name="DASSlider" type="HSlider" parent="CenterContainer/VBox/DASRow" unique_id=6000000010]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+min_value = 0.0
+max_value = 30.0
+step = 0.1
+value = 12.0
+
+[node name="DASValue" type="Label" parent="CenterContainer/VBox/DASRow" unique_id=6000000011]
+layout_mode = 2
+custom_minimum_size = Vector2(52, 0)
+text = "12.0f"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="ARRRow" type="HBoxContainer" parent="CenterContainer/VBox" unique_id=6000000013]
+layout_mode = 2
+visible = false
+theme_override_constants/separation = 8
+
+[node name="ARRLabel" type="Label" parent="CenterContainer/VBox/ARRRow" unique_id=6000000014]
+layout_mode = 2
+text = "ARR"
+vertical_alignment = 1
+
+[node name="ARRSlider" type="HSlider" parent="CenterContainer/VBox/ARRRow" unique_id=6000000015]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+min_value = 0.0
+max_value = 10.0
+step = 0.1
+value = 2.0
+
+[node name="ARRValue" type="Label" parent="CenterContainer/VBox/ARRRow" unique_id=6000000016]
+layout_mode = 2
+custom_minimum_size = Vector2(52, 0)
+text = "2.0f"
+horizontal_alignment = 2
+vertical_alignment = 1
