@@ -66,7 +66,7 @@ func _render_locked_cells() -> void:
 		node.queue_free()
 	_locked_nodes.clear()
 
-	for row in range(BUFFER_ROWS, TOTAL_ROWS):
+	for row in range(0, TOTAL_ROWS):
 		for col in range(COLS):
 			var color = logic.grid[row][col]
 			if color != null:
@@ -106,9 +106,9 @@ func _render_active_piece() -> void:
 		var c: int = cells[i][1]
 		var gr: int = r + row_offset
 
-		# Active block: hide while still in the hidden buffer zone.
+		# Active block — always visible, including buffer/kill zone rows above the board.
 		_active_blocks[i].position = grid_to_world(r, c)
-		_active_blocks[i].visible  = r >= BUFFER_ROWS
+		_active_blocks[i].visible  = true
 
 		# Ghost block: hide when it perfectly overlaps the active piece
 		# (piece is already resting on the stack).

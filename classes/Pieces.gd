@@ -113,3 +113,18 @@ static func board_cells(piece: ActivePiece) -> Array:
 # Spawn column — O piece spawns one col to the right
 static func spawn_col(kind: String) -> int:
 	return 4 if kind == "O" else 3
+
+# Returns the (col_center, row_center) bounding-box midpoint of a cells array.
+# Use this to center a piece in a display area:
+#   block.position = Vector3(cell[1] - center.x, -(cell[0] - center.y), 0.0)
+static func cells_center(cells: Array) -> Vector2:
+	var min_col: int = cells[0][1]
+	var max_col: int = cells[0][1]
+	var min_row: int = cells[0][0]
+	var max_row: int = cells[0][0]
+	for cell in cells:
+		min_col = mini(min_col, cell[1])
+		max_col = maxi(max_col, cell[1])
+		min_row = mini(min_row, cell[0])
+		max_row = maxi(max_row, cell[0])
+	return Vector2((min_col + max_col) / 2.0, (min_row + max_row) / 2.0)

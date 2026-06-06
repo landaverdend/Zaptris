@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://b8b6aku7ubeew" path="res://scenes/game/board.gd" id="2_r0j2f"]
 [ext_resource type="Script" uid="uid://dn4dr2jcba6lg" path="res://scenes/game/player_input.gd" id="3_input"]
 [ext_resource type="PackedScene" path="res://scenes/game/hold_box.tscn" id="4_6du5l"]
-[ext_resource type="Script" uid="uid://dwygl3vekd54d" path="res://scenes/game/piece_queue.gd" id="4_queue"]
+[ext_resource type="PackedScene" path="res://scenes/game/piece_queue.tscn" id="4_queue"]
 [ext_resource type="Script" uid="uid://dv5anmcbn0iun" path="res://scenes/game/hud.gd" id="5_hud"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_782ta"]
@@ -37,8 +37,8 @@ script = ExtResource("3_input")
 [node name="HoldBox" parent="." unique_id=1537091340 instance=ExtResource("4_6du5l")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 17.5, 0)
 
-[node name="PieceQueue" type="Node3D" parent="." unique_id=1522574596]
-script = ExtResource("4_queue")
+[node name="PieceQueue" parent="." unique_id=1522574596 instance=ExtResource("4_queue")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 18, 0)
 
 [node name="UILayer" type="CanvasLayer" parent="." unique_id=999000001]
 
@@ -85,7 +85,7 @@ visible = false
 layout_mode = 2
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1443597800]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 10, 25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 10, 22)
 current = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1140938529]
