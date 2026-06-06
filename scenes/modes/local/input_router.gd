@@ -76,7 +76,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	_registry[device_key] = arena_index
 
 	# Apply controller-specific bindings and defaults now that we know the device.
-	var arena := _arenas[arena_index] as Node2D
+	var arena := _arenas[arena_index] as Node3D
 	var input_node := arena.get_node("PlayerInput")
 	if source == PlayerInputScript.InputSource.CONTROLLER:
 		_apply_bindings(dev_id)

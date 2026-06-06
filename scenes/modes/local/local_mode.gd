@@ -1,4 +1,4 @@
-extends Node2D
+extends Node3D
 
 const ARENA_SCENE        := preload("res://scenes/game/game_arena.tscn")
 const LOBBY_CARD_SCENE   := preload("res://scenes/modes/local/lobby_card.tscn")
@@ -7,7 +7,12 @@ const LOCAL_RULES_SCRIPT := preload("res://scenes/modes/local/local_rules.gd")
 const COUNTDOWN_SCRIPT   := preload("res://scenes/game/countdown_timer.gd")
 
 const MIN_PLAYERS := 1
-const MAX_PLAYERS := 5
+const MAX_PLAYERS := 4
+
+# 3D layout — world-space units between arena origins.
+# Each arena occupies roughly x=[-3, 16.5] (hold box to queue edge),
+# so 22 units of spacing leaves a ~2.5-unit gap between panels.
+const ARENA_SPACING := 22.0
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
@@ -23,7 +28,7 @@ var config := MatchConfig.new()
 # ── Per-player slot ────────────────────────────────────────────────────────────
 
 class PlayerSlot:
-	var arena:             Node2D
+	var arena:             Node3D
 	var card:              Node
 	var paid:              bool            = false
 	var qr_bytes:          PackedByteArray = PackedByteArray()
@@ -44,6 +49,8 @@ var starting_pot: int = 0
 var sats_per_tick: int = 0
 
 # ── Logic nodes ────────────────────────────────────────────────────────────────
+
+var _camera: Camera3D     = null
 
 var router: Node          = null
 var local_rules: Node     = null
@@ -180,30 +187,27 @@ func _clear_arenas() -> void:
 	players.clear()
 
 func _spawn_arenas() -> void:
-	var vp    := get_viewport_rect().size
-	var cell  := _cell_size_for(arena_count)
-	var board_w: int   = 10 * cell
-	var board_h: int   = 20 * cell
-	var slot_w: float  = vp.x / arena_count
-
 	local_rules.setup(arena_count)
+
+	# Distribute lobby cards evenly across the lower portion of the screen.
+	# Proper 3D→screen projection for the cards is deferred (step 4).
+	var vp_size := get_viewport().get_visible_rect().size
+	var card_w  := vp_size.x / arena_count
+	var card_h  := 280.0
 
 	for i in range(arena_count):
 		var slot := PlayerSlot.new()
 
 		slot.arena = ARENA_SCENE.instantiate()
-		slot.arena.cell_size       = cell
 		slot.arena.garbage_enabled = true
 		slot.arena.process_mode    = Node.PROCESS_MODE_PAUSABLE
-		slot.arena.position = Vector2(
-			slot_w * i + (slot_w - board_w) / 2.0,
-			(vp.y - board_h) / 2.0
-		)
+		# Place each arena side-by-side in world space.
+		slot.arena.position = Vector3(i * ARENA_SPACING, 0.0, 0.0)
 		add_child(slot.arena)
 
 		slot.card = LOBBY_CARD_SCENE.instantiate()
 		lobby_layer.add_child(slot.card)
-		slot.card.setup(i + 1, slot.arena.position, Vector2(board_w, board_h))
+		slot.card.setup(i + 1, Vector2(card_w * i, vp_size.y - card_h), Vector2(card_w, card_h))
 
 		# Restore payment state carried over from the previous spawn.
 		if i < players.size():
@@ -232,7 +236,8 @@ func _spawn_arenas() -> void:
 	while players.size() > arena_count:
 		players.pop_back()
 
-	router.start_listening(players.map(func(s: PlayerSlot) -> Node2D: return s.arena))
+	router.start_listening(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
+	_update_camera()
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -248,9 +253,25 @@ func _set_pot(value: int) -> void:
 	pot_sats       = value
 	pot_label.text = "⚡ %d sats" % pot_sats
 
-func _cell_size_for(count: int) -> int:
-	var slot_w: float = get_viewport_rect().size.x / count
-	return clampi(int((slot_w - 112.0) / 15.333), 12, 36)
+func _update_camera() -> void:
+	if _camera == null:
+		_camera = Camera3D.new()
+		_camera.name = "Camera3D"
+		add_child(_camera)
+		_camera.current = true
+
+	# Each arena footprint: hold box at x=-3, queue right edge at x=16.5.
+	var content_left  := -3.0
+	var content_right := (arena_count - 1) * ARENA_SPACING + 16.5
+	var content_cx    := (content_left + content_right) * 0.5
+	var half_span     := (content_right - content_left) * 0.5 + 4.0  # 4 units padding
+
+	# Godot's default 75° vFOV on a 16:9 viewport → ~53.7° half-hFOV → tan ≈ 1.364.
+	# Pull back no closer than Z=22 (the solo camera distance) so the board height
+	# always fits comfortably on screen.
+	var cam_z := maxf(22.0, half_span / 1.364)
+
+	_camera.position = Vector3(content_cx, 10.0, cam_z)
 
 # ── Countdown ─────────────────────────────────────────────────────────────────
 
@@ -279,7 +300,7 @@ func _begin_play() -> void:
 		input.arr_frames = slot.card.arr_value
 		slot.arena.get_node("GameLogic").reset(round_seed)
 		slot.arena.get_node("GameLogic").start()
-	local_rules.start_round(players.map(func(s: PlayerSlot) -> Node2D: return s.arena))
+	local_rules.start_round(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
 
 	# Lock in the starting pot and derive the per-tick payout once.
 	starting_pot  = pot_sats
@@ -333,7 +354,7 @@ func _reset_match() -> void:
 	countdown_overlay.hide()
 	lobby_layer.show()
 	$UILayer/PlayerControls.show()
-	router.start_listening(players.map(func(s: PlayerSlot) -> Node2D: return s.arena))
+	router.start_listening(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
 	state = State.LOBBY
 
 func _reset_payments() -> void:

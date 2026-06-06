@@ -11,6 +11,10 @@ script = ExtResource("1_xs6rg")
 [node name="GameArena" parent="." unique_id=1778691637 instance=ExtResource("1_2igfx")]
 process_mode = 1
 
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1443597800]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 10, 22)
+current = true
+
 [node name="SoloRules" type="Node" parent="." unique_id=1190572253]
 script = ExtResource("3_buwap")
 

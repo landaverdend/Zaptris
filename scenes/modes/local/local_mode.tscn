@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bq24101nmxb7g" path="res://scenes/modes/local/local_mode.gd" id="1_local"]
 
-[node name="LocalMode" type="Node2D" unique_id=-294967295]
+[node name="LocalMode" type="Node3D" unique_id=-294967295]
 process_mode = 3
 script = ExtResource("1_local")
 
