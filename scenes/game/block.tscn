@@ -1,12 +1,9 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c04igd8bksjlf"]
 
-[ext_resource type="Script" path="res://scenes/game/block.gd" id="1"]
+[ext_resource type="Script" uid="uid://2j4uk21hpsld" path="res://scenes/game/block.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://57f06g8jexuy" path="res://assets/block.glb" id="2_block"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_1"]
-size = Vector3(1, 1, 1)
-
-[node name="Block" type="Node3D"]
+[node name="Block" type="Node3D" unique_id=226599647]
 script = ExtResource("1")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_1")
+[node name="BlockMesh" parent="." unique_id=2043371614 instance=ExtResource("2_block")]

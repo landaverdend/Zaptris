@@ -1,12 +1,16 @@
 extends Node3D
 
-@onready var mesh_instance: MeshInstance3D = $MeshInstance3D
+# MeshInstance3D lives inside the instanced GLB at a known path.
+# If you rename the mesh object in Blender, update this line.
+@onready var mesh_instance: MeshInstance3D = $BlockMesh/Cube
 
 # Called once after instantiation to set this block's piece color.
 # Creates a unique material per block so each can have its own color
 # without affecting others.
 # Pass ghost = true for the drop-preview: same color, semi-transparent.
 func set_color(color: Color, ghost: bool = false) -> void:
+	if mesh_instance == null:
+		return
 	var mat := StandardMaterial3D.new()
 	mat.roughness = 0.4
 	mat.metallic = 0.1

@@ -269,21 +269,21 @@ func _update_camera() -> void:
 	var content_cx    := (content_left + content_right) * 0.5
 	var content_w     := content_right - content_left
 
-	# Minimum visible height is 28 units (board=20 + comfortable breathing room).
-	# For 1–2 players this dominates; for 3–4 the horizontal spread takes over.
+	# Minimum visible height = 28 units gives breathing room for 1–2 players.
+	# For 3–4 players the horizontal spread takes over as the constraint.
 	const MIN_VIEW_H := 28.0
 	var cam_size := maxf(content_w / aspect, MIN_VIEW_H) * 1.08
 
 	_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
 	_camera.size       = cam_size
 
-	# 5° downward pitch for a subtle 3D feel.
-	# With orthographic, Z only affects depth clipping — 60 is safely in front.
-	# The tilt shifts the gaze centre by tan(5°)*Z ≈ 5.25 units downward at Z=0,
-	# so raise cam_y by that amount so the view centres on board mid-height (Y=10).
+	# 12° downward pitch — shows block top faces for clear 3D depth.
+	# Z is arbitrary in orthographic; just keep it well in front of geometry.
+	# The tilt shifts the gaze centre by tan(12°)*60 ≈ 12.8 units, so raise
+	# cam_y so the view actually centres on board mid-height (Y=10) at Z=0.
 	const CAM_Z := 60.0
-	var tilt  := deg_to_rad(5.0)
-	var cam_y := 10.0 + tan(tilt) * CAM_Z   # ≈ 15.25
+	var tilt  := deg_to_rad(12.0)
+	var cam_y := 10.0 + tan(tilt) * CAM_Z   # ≈ 22.8
 	_camera.transform = Transform3D(
 		Basis(
 			Vector3(1.0,      0.0,       0.0),
@@ -292,7 +292,7 @@ func _update_camera() -> void:
 		),
 		Vector3(content_cx, cam_y, CAM_Z)
 	)
-
+ 
 # ── Countdown ─────────────────────────────────────────────────────────────────
 
 func _on_countdown_finished() -> void:
