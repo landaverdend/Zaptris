@@ -8,17 +8,36 @@
 [ext_resource type="PackedScene" path="res://scenes/game/garbage_meter.tscn" id="4_gmeter"]
 [ext_resource type="PackedScene" path="res://scenes/game/piece_queue.tscn" id="4_queue"]
 [ext_resource type="Script" uid="uid://dv5anmcbn0iun" path="res://scenes/game/hud.gd" id="5_hud"]
-[ext_resource type="Shader" path="res://scenes/game/board_grid.gdshader" id="6_grid"]
+[ext_resource type="Shader" path="res://scenes/game/sky.gdshader" id="6_sky"]
+[ext_resource type="Shader" path="res://scenes/game/board_grid.gdshader" id="7_grid"]
 
 [sub_resource type="ShaderMaterial" id="StandardMaterial3D_782ta"]
-shader = ExtResource("6_grid")
+shader = ExtResource("7_grid")
 
 [sub_resource type="BoxMesh" id="BoxMesh_8qre4"]
 size = Vector3(10, 20, 0.2)
 
+[sub_resource type="ShaderMaterial" id="SkyMaterial_1"]
+shader = ExtResource("6_sky")
+
+[sub_resource type="Sky" id="Sky_1"]
+sky_material = SubResource("SkyMaterial_1")
+
 [sub_resource type="Environment" id="Environment_782ta"]
+background_mode = 2
+background_color = Color(0.04, 0.04, 0.06, 1)
+sky = SubResource("Sky_1")
+sky_custom_fov = 87.7
 ambient_light_color = Color(0.2, 0.2, 0.3, 1)
 ambient_light_energy = 0.15
+glow_levels/2 = 0.0
+glow_levels/3 = 1.0
+glow_levels/4 = 0.8
+glow_levels/5 = 0.4
+glow_intensity = 0.8
+glow_strength = 1.2
+glow_bloom = 0.15
+glow_blend_mode = 2
 
 [node name="GameArena" type="Node3D" unique_id=148713631]
 script = ExtResource("0_arena")
@@ -94,5 +113,5 @@ layout_mode = 2
 environment = SubResource("Environment_782ta")
 
 [node name="SunLight" type="DirectionalLight3D" parent="." unique_id=1315500264]
-transform = Transform3D(0.97590363, 0.19518821, 0.09753811, 0, 0.44700828, -0.8945298, -0.21820202, 0.8729749, 0.436237, 3.5286164, 11.915926, 13.853862)
+transform = Transform3D(0.97590363, 0.19518821, 0.09753811, 0, 0.44700828, -0.8945298, -0.21820202, 0.8729749, 0.436237, 3.5286164, 15.095409, 23.272758)
 light_energy = 1.2
