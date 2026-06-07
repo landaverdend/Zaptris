@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://rpccclpijd2n"]
+
+[ext_resource type="PackedScene" uid="uid://cbxl04mlkgu77" path="res://assets/lacrypta_wall.glb" id="1_wall"]
+[ext_resource type="PackedScene" uid="uid://w31tnroer0ku" path="res://assets/LogoBall.glb" id="2_ball"]
+
+[node name="Background" type="Node3D" unique_id=1086334821]
+
+[node name="Wall" parent="." unique_id=162779199 instance=ExtResource("1_wall")]
+transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 5, -3, -11)
+
+[node name="Ball" parent="." unique_id=1131608384 instance=ExtResource("2_ball")]
+transform = Transform3D(3.7610476, -0.20336387, -1.3465377, 0.38449678, 3.9528046, 0.4769663, 1.3064007, -0.5779081, 3.73622, -12.646498, 4.0209956, 1.1044745)
