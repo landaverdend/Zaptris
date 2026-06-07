@@ -8,9 +8,10 @@
 [ext_resource type="PackedScene" path="res://scenes/game/garbage_meter.tscn" id="4_gmeter"]
 [ext_resource type="PackedScene" path="res://scenes/game/piece_queue.tscn" id="4_queue"]
 [ext_resource type="Script" uid="uid://dv5anmcbn0iun" path="res://scenes/game/hud.gd" id="5_hud"]
+[ext_resource type="Shader" path="res://scenes/game/board_grid.gdshader" id="6_grid"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_782ta"]
-albedo_color = Color(0.05, 0.05, 0.08, 1)
+[sub_resource type="ShaderMaterial" id="StandardMaterial3D_782ta"]
+shader = ExtResource("6_grid")
 
 [sub_resource type="BoxMesh" id="BoxMesh_8qre4"]
 size = Vector3(10, 20, 0.2)
