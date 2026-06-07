@@ -5,8 +5,8 @@
 [ext_resource type="Script" uid="uid://b8b6aku7ubeew" path="res://scenes/game/board.gd" id="2_r0j2f"]
 [ext_resource type="Script" uid="uid://dn4dr2jcba6lg" path="res://scenes/game/player_input.gd" id="3_input"]
 [ext_resource type="PackedScene" path="res://scenes/game/hold_box.tscn" id="4_6du5l"]
-[ext_resource type="PackedScene" path="res://scenes/game/piece_queue.tscn" id="4_queue"]
 [ext_resource type="PackedScene" path="res://scenes/game/garbage_meter.tscn" id="4_gmeter"]
+[ext_resource type="PackedScene" path="res://scenes/game/piece_queue.tscn" id="4_queue"]
 [ext_resource type="Script" uid="uid://dv5anmcbn0iun" path="res://scenes/game/hud.gd" id="5_hud"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_782ta"]
@@ -93,5 +93,5 @@ layout_mode = 2
 environment = SubResource("Environment_782ta")
 
 [node name="SunLight" type="DirectionalLight3D" parent="." unique_id=1315500264]
-transform = Transform3D(0.975, 0.195, 0.097, 0, 0.447, -0.894, -0.218, 0.873, 0.436, 0, 0, 0)
+transform = Transform3D(0.97590363, 0.19518821, 0.09753811, 0, 0.44700828, -0.8945298, -0.21820202, 0.8729749, 0.436237, 3.5286164, 11.915926, 13.853862)
 light_energy = 1.2

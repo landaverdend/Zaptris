@@ -19,3 +19,4 @@ material_override = SubResource("StandardMaterial3D_1")
 [node name="Frame" type="Node3D" parent="."]
 
 [node name="PieceDisplay" type="Node3D" parent="."]
+scale = Vector3(0.5, 0.5, 0.5)
