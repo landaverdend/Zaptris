@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://cbt4xp8ydnd63" path="res://assets/background/grass.glb" id="4_grass"]
 [ext_resource type="PackedScene" uid="uid://3g6w522qdkvv" path="res://assets/background/building_1.glb" id="5_jjv1t"]
 [ext_resource type="PackedScene" uid="uid://6yb6yq66gnl2" path="res://assets/background/building_2.glb" id="6_03sym"]
+[ext_resource type="PackedScene" uid="uid://ddu3r5hcd7e4n" path="res://assets/background/building_3.glb" id="7_tp5tj"]
 
 [node name="Background" type="Node3D" unique_id=1086334821]
 
@@ -41,3 +42,6 @@ transform = Transform3D(0.090489104, 0.0011592834, -1.1965827, 0.01537232, -1.19
 
 [node name="building_2" parent="." unique_id=1644090917 instance=ExtResource("6_03sym")]
 transform = Transform3D(0.4676311, 0, 1.159233, 0, 1.25, 0, -1.159233, 0, 0.4676311, -35.52504, -3.2723885, -114.64237)
+
+[node name="building_3" parent="." unique_id=1513282955 instance=ExtResource("7_tp5tj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.391003, 5.5812225, -110.545876)
