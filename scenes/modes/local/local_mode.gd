@@ -292,7 +292,17 @@ func _update_camera() -> void:
 		),
 		Vector3(content_cx, cam_y, CAM_Z)
 	)
- 
+
+	# Slide the background so its floor (120 units wide) is always centred on the
+	# viewport, regardless of how many arenas are spread across the scene.
+	var bg := get_node_or_null("Background") as Node3D
+	if bg:
+		bg.position.x = content_cx
+		# The decorative rolling ball would appear between boards in multi-player.
+		var ball_body := bg.get_node_or_null("BallBody") as Node3D
+		if ball_body:
+			ball_body.visible = (arena_count == 1)
+
 # ── Countdown ─────────────────────────────────────────────────────────────────
 
 func _on_countdown_finished() -> void:

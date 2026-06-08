@@ -2,11 +2,44 @@
 
 [ext_resource type="PackedScene" uid="uid://cbxl04mlkgu77" path="res://assets/background/lacrypta_wall.glb" id="1_wall"]
 [ext_resource type="PackedScene" uid="uid://w31tnroer0ku" path="res://assets/background/LogoBall.glb" id="2_ball"]
+[ext_resource type="Script" uid="uid://desg8u53djsxl" path="res://scenes/background/ball_roll.gd" id="3_roll"]
+[ext_resource type="Texture2D" uid="uid://dpe64g6kp7nrd" path="res://assets/background/grass.png" id="4_grass"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
+size = Vector2(120, 60)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.05, 0.04, 0.06, 1)
+albedo_texture = ExtResource("4_grass")
+roughness = 0.85
+uv1_scale = Vector3(20, 10, 1)
 
 [node name="Background" type="Node3D" unique_id=1086334821]
 
-[node name="Wall" parent="." unique_id=162779199 instance=ExtResource("1_wall")]
-transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 5, -3, -11)
+[node name="Floor" type="MeshInstance3D" parent="." unique_id=982517080]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0009880066, -5.8355703, -4.994686)
+mesh = SubResource("PlaneMesh_floor")
+surface_material_override/0 = SubResource("StandardMaterial3D_floor")
 
-[node name="Ball" parent="." unique_id=1131608384 instance=ExtResource("2_ball")]
-transform = Transform3D(3.7610476, -0.20336387, -1.3465377, 0.38449678, 3.9528046, 0.4769663, 1.3064007, -0.5779081, 3.73622, -12.646498, 4.0209956, 1.1044745)
+[node name="Wall" parent="." unique_id=162779199 instance=ExtResource("1_wall")]
+transform = Transform3D(1.4, 0, 0, 0, 1, 0, 0, 0, 1, 5, -5.9206905, -11)
+
+[node name="BallBody" type="Node3D" parent="." unique_id=1415511182]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.1)
+script = ExtResource("3_roll")
+x_min = -15.0
+x_max = -10.0
+y_min = 0.0
+y_max = 1.0
+
+[node name="Ball" parent="BallBody" unique_id=1204954275 instance=ExtResource("2_ball")]
+transform = Transform3D(3.9674428, -0.42058212, 0.28725302, 0.34916916, 3.8884463, 0.87066996, -0.37078905, -0.8385081, 3.893511, 0, -1.1082268, 0)
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1642484390]
+transform = Transform3D(1, 0, 0, 0, 0.98763996, -0.15642682, 0, 0.15642682, 0.98763996, 6.75, 0, 60)
+projection = 1
+size = 52.0
+
+[node name="SunLight" type="DirectionalLight3D" parent="." unique_id=448171369]
+transform = Transform3D(0.97590363, 0.19518821, 0.09753811, 0, 0.44700828, -0.8945298, -0.21820202, 0.8729749, 0.436237, 3.5286164, 15.095409, 23.272758)
+light_energy = 1.2

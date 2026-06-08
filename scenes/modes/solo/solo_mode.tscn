@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://chh3bmua26pb1" path="res://scenes/game/game_arena.tscn" id="1_2igfx"]
 [ext_resource type="Script" uid="uid://bv3ho1p5a6m2o" path="res://scenes/modes/solo/solo_mode.gd" id="1_xs6rg"]
 [ext_resource type="Script" uid="uid://d2yhohqqmrwex" path="res://scenes/modes/solo/solo_rules.gd" id="3_buwap"]
-[ext_resource type="PackedScene" path="res://scenes/background/background.tscn" id="5_background"]
+[ext_resource type="PackedScene" uid="uid://rpccclpijd2n" path="res://scenes/background/background.tscn" id="5_background"]
 
 [node name="SoloMode" type="Node3D" unique_id=1777930997]
 process_mode = 3
@@ -11,12 +11,13 @@ script = ExtResource("1_xs6rg")
 
 [node name="GameArena" parent="." unique_id=1778691637 instance=ExtResource("1_2igfx")]
 process_mode = 1
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -3.8614311, -17.956993, 44.505527)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1443597800]
 transform = Transform3D(1, 0, 0, 0, 0.98763996, -0.15642682, 0, 0.15642682, 0.98763996, 6.75, 0, 60)
 projection = 1
 current = true
-size = 30.2
+size = 52.0
 
 [node name="Background" parent="." unique_id=1190572250 instance=ExtResource("5_background")]
 
