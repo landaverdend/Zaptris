@@ -50,8 +50,6 @@ var sats_per_tick: int = 0
 
 # ── Logic nodes ────────────────────────────────────────────────────────────────
 
-var _camera: Camera3D     = null
-
 var router: Node          = null
 var local_rules: Node     = null
 var countdown_timer: Node = null
@@ -195,14 +193,18 @@ func _spawn_arenas() -> void:
 	var card_w  := vp_size.x / arena_count
 	var card_h  := 280.0
 
+	# Centre all arenas on the fixed camera X (6.75).
+	# p0 = ARENA_SPACING * (1 - N) / 2 puts arena 0 so the whole spread
+	# is symmetric around X=6.75 regardless of player count.
+	var p0 := ARENA_SPACING * (1.0 - arena_count) / 2.0
+
 	for i in range(arena_count):
 		var slot := PlayerSlot.new()
 
 		slot.arena = ARENA_SCENE.instantiate()
 		slot.arena.garbage_enabled = true
 		slot.arena.process_mode    = Node.PROCESS_MODE_PAUSABLE
-		# Place each arena side-by-side in world space.
-		slot.arena.position = Vector3(i * ARENA_SPACING, 0.0, 0.0)
+		slot.arena.position = Vector3(p0 + i * ARENA_SPACING, 0.0, 0.0)
 		add_child(slot.arena)
 
 		slot.card = LOBBY_CARD_SCENE.instantiate()
@@ -254,54 +256,13 @@ func _set_pot(value: int) -> void:
 	pot_label.text = "⚡ %d sats" % pot_sats
 
 func _update_camera() -> void:
-	if _camera == null:
-		_camera = Camera3D.new()
-		_camera.name = "Camera3D"
-		add_child(_camera)
-		_camera.current = true
-
-	var aspect := get_viewport().get_visible_rect().size.x \
-				/ get_viewport().get_visible_rect().size.y
-
-	# Each arena footprint: hold box at x=-3, queue right edge at x=16.5.
-	var content_left  := -3.0
-	var content_right := (arena_count - 1) * ARENA_SPACING + 16.5
-	var content_cx    := (content_left + content_right) * 0.5
-	var content_w     := content_right - content_left
-
-	# Minimum visible height = 28 units gives breathing room for 1–2 players.
-	# For 3–4 players the horizontal spread takes over as the constraint.
-	const MIN_VIEW_H := 28.0
-	var cam_size := maxf(content_w / aspect, MIN_VIEW_H) * 1.08
-
-	_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-	_camera.size       = cam_size
-
-	# 12° downward pitch — shows block top faces for clear 3D depth.
-	# Z is arbitrary in orthographic; just keep it well in front of geometry.
-	# The tilt shifts the gaze centre by tan(12°)*60 ≈ 12.8 units, so raise
-	# cam_y so the view actually centres on board mid-height (Y=10) at Z=0.
-	const CAM_Z := 60.0
-	var tilt  := deg_to_rad(12.0)
-	var cam_y := 10.0 + tan(tilt) * CAM_Z   # ≈ 22.8
-	_camera.transform = Transform3D(
-		Basis(
-			Vector3(1.0,      0.0,       0.0),
-			Vector3(0.0, cos(tilt), -sin(tilt)),
-			Vector3(0.0, sin(tilt),  cos(tilt))
-		),
-		Vector3(content_cx, cam_y, CAM_Z)
-	)
-
-	# Slide the background so its floor (120 units wide) is always centred on the
-	# viewport, regardless of how many arenas are spread across the scene.
+	# Camera is fixed — never move it. Only toggle the ball.
 	var bg := get_node_or_null("Background") as Node3D
-	if bg:
-		bg.position.x = content_cx
-		# The decorative rolling ball would appear between boards in multi-player.
-		var ball_body := bg.get_node_or_null("BallBody") as Node3D
-		if ball_body:
-			ball_body.visible = (arena_count == 1)
+	if bg == null:
+		return
+	var ball_body := bg.get_node_or_null("BallBody") as Node3D
+	if ball_body:
+		ball_body.visible = (arena_count == 1)
 
 # ── Countdown ─────────────────────────────────────────────────────────────────
 
