@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://w31tnroer0ku"
-path="res://.godot/imported/LogoBall.glb-1f565c23d9c3357d35259dc2c5c9fe94.scn"
+uid="uid://cbxl04mlkgu77"
+path="res://.godot/imported/lacrypta_wall.glb-2d0ae891660adb0fafa395482c3b37eb.scn"
 
 [deps]
 
-source_file="res://assets/LogoBall.glb"
-dest_files=["res://.godot/imported/LogoBall.glb-1f565c23d9c3357d35259dc2c5c9fe94.scn"]
+source_file="res://assets/background/lacrypta_wall.glb"
+dest_files=["res://.godot/imported/lacrypta_wall.glb-2d0ae891660adb0fafa395482c3b37eb.scn"]
 
 [params]
 

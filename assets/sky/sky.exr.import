@@ -2,20 +2,17 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cdb02tf7ijp8r"
-path.s3tc="res://.godot/imported/lacrypta_ball_LogoBall_Baked.png-fcc13b21bce3d6180839a937ad4bf55f.s3tc.ctex"
+uid="uid://0fei63n7kflk"
+path.bptc="res://.godot/imported/sky.exr-71f01ba438b36c836a8146da57133549.bptc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
-generator_parameters={
-"md5": "abdbdb49620ca0e29ff4a6665bc8f737"
-}
 
 [deps]
 
-source_file="res://assets/lacrypta_ball_LogoBall_Baked.png"
-dest_files=["res://.godot/imported/lacrypta_ball_LogoBall_Baked.png-fcc13b21bce3d6180839a937ad4bf55f.s3tc.ctex"]
+source_file="res://assets/sky/sky.exr"
+dest_files=["res://.godot/imported/sky.exr-71f01ba438b36c836a8146da57133549.bptc.ctex"]
 
 [params]
 

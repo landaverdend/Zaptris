@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://rpccclpijd2n"]
 
-[ext_resource type="PackedScene" uid="uid://cbxl04mlkgu77" path="res://assets/lacrypta_wall.glb" id="1_wall"]
-[ext_resource type="PackedScene" uid="uid://w31tnroer0ku" path="res://assets/LogoBall.glb" id="2_ball"]
+[ext_resource type="PackedScene" uid="uid://cbxl04mlkgu77" path="res://assets/background/lacrypta_wall.glb" id="1_wall"]
+[ext_resource type="PackedScene" uid="uid://w31tnroer0ku" path="res://assets/background/LogoBall.glb" id="2_ball"]
 
 [node name="Background" type="Node3D" unique_id=1086334821]
 

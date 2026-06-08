@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dokujkijyxjup"
-path.s3tc="res://.godot/imported/LogoBall_LogoBall_Baked.png-31ac823409c0431fab52e39f3e8829c0.s3tc.ctex"
+path.s3tc="res://.godot/imported/LogoBall_LogoBall_Baked.png-f33b51f9981218def23a800c1448b5c2.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -14,8 +14,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/LogoBall_LogoBall_Baked.png"
-dest_files=["res://.godot/imported/LogoBall_LogoBall_Baked.png-31ac823409c0431fab52e39f3e8829c0.s3tc.ctex"]
+source_file="res://assets/background/LogoBall_LogoBall_Baked.png"
+dest_files=["res://.godot/imported/LogoBall_LogoBall_Baked.png-f33b51f9981218def23a800c1448b5c2.s3tc.ctex"]
 
 [params]
 

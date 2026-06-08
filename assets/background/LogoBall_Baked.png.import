@@ -2,24 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://iri2drwce2re"
-path.s3tc="res://.godot/imported/lacrypta_wall_lacrypta_wall_texture.png-483a19249b6c9a06ad1fec57609d0bd1.s3tc.ctex"
+uid="uid://c0t77wt5a8djd"
+path="res://.godot/imported/LogoBall_Baked.png-80ca0beb4e82b9d4e42dac0922c95289.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
-}
-generator_parameters={
-"md5": "77e1408bd6f9280efd2a8109c8eea53b"
+"vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/lacrypta_wall_lacrypta_wall_texture.png"
-dest_files=["res://.godot/imported/lacrypta_wall_lacrypta_wall_texture.png-483a19249b6c9a06ad1fec57609d0bd1.s3tc.ctex"]
+source_file="res://assets/background/LogoBall_Baked.png"
+dest_files=["res://.godot/imported/LogoBall_Baked.png-80ca0beb4e82b9d4e42dac0922c95289.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -27,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -41,4 +37,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1
