@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://desg8u53djsxl" path="res://scenes/background/ball_roll.gd" id="3_roll"]
 [ext_resource type="PackedScene" uid="uid://cbt4xp8ydnd63" path="res://assets/background/grass.glb" id="4_grass"]
 [ext_resource type="PackedScene" uid="uid://3g6w522qdkvv" path="res://assets/background/building_1.glb" id="5_jjv1t"]
+[ext_resource type="PackedScene" uid="uid://6yb6yq66gnl2" path="res://assets/background/building_2.glb" id="6_03sym"]
 
 [node name="Background" type="Node3D" unique_id=1086334821]
 
@@ -36,4 +37,7 @@ transform = Transform3D(0.97590363, 0.19518821, 0.09753811, 0, 0.44700828, -0.89
 light_energy = 1.2
 
 [node name="building_1" parent="." unique_id=1719161536 instance=ExtResource("5_jjv1t")]
-transform = Transform3D(-0.9999179, -0.012810269, 0, 0.012810269, -0.9999179, 0, 0, 0, 1, 6.4541197, 30.532452, -347.6728)
+transform = Transform3D(0.090489104, 0.0011592834, -1.1965827, 0.01537232, -1.1999015, -4.6318915e-10, -1.1964842, -0.015328545, -0.090496495, 47.82982, 10.087814, -176.73553)
+
+[node name="building_2" parent="." unique_id=1644090917 instance=ExtResource("6_03sym")]
+transform = Transform3D(0.4676311, 0, 1.159233, 0, 1.25, 0, -1.159233, 0, 0.4676311, -35.52504, -3.2723885, -114.64237)
