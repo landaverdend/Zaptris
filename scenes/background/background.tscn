@@ -4,9 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://w31tnroer0ku" path="res://assets/background/LogoBall.glb" id="2_ball"]
 [ext_resource type="Script" uid="uid://desg8u53djsxl" path="res://scenes/background/ball_roll.gd" id="3_roll"]
 [ext_resource type="PackedScene" uid="uid://cbt4xp8ydnd63" path="res://assets/background/grass.glb" id="4_grass"]
-[ext_resource type="PackedScene" uid="uid://3g6w522qdkvv" path="res://assets/background/building_1.glb" id="5_jjv1t"]
+[ext_resource type="PackedScene" uid="uid://d025ujdhjqjtj" path="res://assets/background/building_1.glb" id="5_jjv1t"]
 [ext_resource type="PackedScene" uid="uid://6yb6yq66gnl2" path="res://assets/background/building_2.glb" id="6_03sym"]
-[ext_resource type="PackedScene" uid="uid://ddu3r5hcd7e4n" path="res://assets/background/building_3.glb" id="7_tp5tj"]
 
 [node name="Background" type="Node3D" unique_id=1086334821]
 
@@ -25,7 +24,7 @@ y_min = 0.0
 y_max = 1.0
 
 [node name="Ball" parent="BallBody" unique_id=1204954275 instance=ExtResource("2_ball")]
-transform = Transform3D(3.9674428, -0.42058212, 0.28725302, 0.34916916, 3.8884463, 0.87066996, -0.37078905, -0.8385081, 3.893511, -10.105501, -9.360814, 0)
+transform = Transform3D(3.9674428, -0.42058212, 0.28725302, 0.34916916, 3.8884463, 0.87066996, -0.37078905, -0.8385081, 3.893511, -1.2390194, -9.360814, 0)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1642484390]
 transform = Transform3D(1, 0, 0, 0, 0.98763996, -0.15642682, 0, 0.15642682, 0.98763996, 6.75, 0, 60)
@@ -37,11 +36,14 @@ size = 52.0
 transform = Transform3D(0.97590363, 0.19518821, 0.09753811, 0, 0.44700828, -0.8945298, -0.21820202, 0.8729749, 0.436237, -28.290405, 9.595394, 23.272758)
 light_energy = 1.2
 
-[node name="building_1" parent="." unique_id=1719161536 instance=ExtResource("5_jjv1t")]
-transform = Transform3D(0.090489104, 0.0011592834, -1.1965827, 0.01537232, -1.1999015, -4.6318915e-10, -1.1964842, -0.015328545, -0.090496495, 47.82982, 10.087814, -176.73553)
-
 [node name="building_2" parent="." unique_id=1644090917 instance=ExtResource("6_03sym")]
 transform = Transform3D(0.4676311, 0, 1.159233, 0, 1.25, 0, -1.159233, 0, 0.4676311, -35.52504, -3.2723885, -114.64237)
 
-[node name="building_3" parent="." unique_id=1513282955 instance=ExtResource("7_tp5tj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.391003, 5.5812225, -110.545876)
+[node name="building_1" parent="." unique_id=2029177253 instance=ExtResource("5_jjv1t")]
+transform = Transform3D(0.15157141, 0, 0.9884463, 0, 1, 0, -0.9884463, 0, 0.15157141, 48.010452, 2.894328, -52.688477)
+
+[node name="building_4" parent="." unique_id=1278509486 instance=ExtResource("5_jjv1t")]
+transform = Transform3D(-0.15336528, 0, -0.98816955, 0, 1, 0, 0.98816955, 0, -0.15336528, 37.162113, 3.901599, -105.95284)
+
+[node name="building_4" parent="building_4" unique_id=1539291459 instance=ExtResource("5_jjv1t")]
+transform = Transform3D(-0.20148832, 0, 0.9794914, 0, 1, 0, -0.9794914, 0, -0.20148832, 67.05565, -1.2839365, 22.176754)

@@ -1,5 +1,6 @@
 # macOS metadata
 .DS_Store
+/assets/.DS_Store
 
 # Godot 4+ specific ignores
 .godot/
