@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://cbt4xp8ydnd63" path="res://assets/background/grass.glb" id="4_grass"]
 [ext_resource type="PackedScene" uid="uid://d025ujdhjqjtj" path="res://assets/background/building_1.glb" id="5_jjv1t"]
 [ext_resource type="PackedScene" uid="uid://6yb6yq66gnl2" path="res://assets/background/building_2.glb" id="6_03sym"]
+[ext_resource type="PackedScene" uid="uid://bmx5pdwkxrmh1" path="res://assets/background/lacrypta_tree.glb" id="7_tp5tj"]
 
 [node name="Background" type="Node3D" unique_id=1086334821]
 
@@ -24,7 +25,7 @@ y_min = 0.0
 y_max = 1.0
 
 [node name="Ball" parent="BallBody" unique_id=1204954275 instance=ExtResource("2_ball")]
-transform = Transform3D(3.9674428, -0.42058212, 0.28725302, 0.34916916, 3.8884463, 0.87066996, -0.37078905, -0.8385081, 3.893511, -1.2390194, -11.296574, 0)
+transform = Transform3D(3.9674428, -0.42058212, 0.28725302, 0.34916916, 3.8884463, 0.87066996, -0.37078905, -0.8385081, 3.893511, 10.601328, -11.296574, 0)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1642484390]
 transform = Transform3D(1, 0, 0, 0, 0.98763996, -0.15642682, 0, 0.15642682, 0.98763996, 6.75, 0, 60)
@@ -47,3 +48,6 @@ transform = Transform3D(-0.15336528, 0, -0.98816955, 0, 1, 0, 0.98816955, 0, -0.
 
 [node name="building_4" parent="building_4" unique_id=1539291459 instance=ExtResource("5_jjv1t")]
 transform = Transform3D(-0.20148832, 0, 0.9794914, 0, 1, 0, -0.9794914, 0, -0.20148832, 67.05565, -1.2839365, 22.176754)
+
+[node name="lacrypta_tree" parent="." unique_id=1662908146 instance=ExtResource("7_tp5tj")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -32.861496, -18.515718, -5.275631)
