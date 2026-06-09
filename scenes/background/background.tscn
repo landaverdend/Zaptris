@@ -10,10 +10,10 @@
 [node name="Background" type="Node3D" unique_id=1086334821]
 
 [node name="Floor" parent="." unique_id=982517080 instance=ExtResource("4_grass")]
-transform = Transform3D(1, 0, 0, 0, 0.9986332, -0.052266236, 0, 0.052266236, 0.9986332, 0.001, -18, -4.995)
+transform = Transform3D(1, 0, 0, 0, 0.9986332, -0.052266236, 0, 0.052266236, 0.9986332, 0.001, -20.040007, -4.995)
 
 [node name="Wall" parent="." unique_id=162779199 instance=ExtResource("1_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -16, -8.171036)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -16.48569, -8.171036)
 
 [node name="BallBody" type="Node3D" parent="." unique_id=1415511182]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.237188, 0, 1.1)
@@ -24,7 +24,7 @@ y_min = 0.0
 y_max = 1.0
 
 [node name="Ball" parent="BallBody" unique_id=1204954275 instance=ExtResource("2_ball")]
-transform = Transform3D(3.9674428, -0.42058212, 0.28725302, 0.34916916, 3.8884463, 0.87066996, -0.37078905, -0.8385081, 3.893511, -1.2390194, -9.360814, 0)
+transform = Transform3D(3.9674428, -0.42058212, 0.28725302, 0.34916916, 3.8884463, 0.87066996, -0.37078905, -0.8385081, 3.893511, -1.2390194, -11.296574, 0)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1642484390]
 transform = Transform3D(1, 0, 0, 0, 0.98763996, -0.15642682, 0, 0.15642682, 0.98763996, 6.75, 0, 60)
