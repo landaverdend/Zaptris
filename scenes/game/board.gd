@@ -32,6 +32,7 @@ func _ready() -> void:
 	_create_piece_nodes()
 	logic.grid_changed.connect(_render_locked_cells)
 	logic.piece_changed.connect(_render_active_piece)
+	logic.hard_drop_performed.connect(_on_hard_drop)
 
 func _create_piece_nodes() -> void:
 	for i in range(4):
@@ -114,3 +115,108 @@ func _render_active_piece() -> void:
 		# (piece is already resting on the stack).
 		_ghost_blocks[i].position = grid_to_world(gr, c)
 		_ghost_blocks[i].visible  = gr >= BUFFER_ROWS and ghost_row != piece.row
+
+# ── Hard drop effect ──────────────────────────────────────────────────────────
+
+func _on_hard_drop(kind: String, rotation: int, col: int, start_row: int, end_row: int) -> void:
+var offsets = Pieces.cells(kind, rotation)
+	var min_dc: int = offsets[0][1]
+	var max_dc: int = offsets[0][1]
+	var min_dr: int = offsets[0][0]
+	var max_dr: int = offsets[0][0]
+	for offset in offsets:
+		if offset[1] < min_dc: min_dc = offset[1]
+		if offset[1] > max_dc: max_dc = offset[1]
+		if offset[0] < min_dr: min_dr = offset[0]
+		if offset[0] > max_dr: max_dr = offset[0]
+
+	var left_x   := float(col + min_dc)
+	var right_x  := float(col + max_dc + 1)
+	var top_y    := float(BOTTOM_ROW - (start_row + min_dr)) + 1.0
+	var bottom_y := float(BOTTOM_ROW - (end_row   + max_dr)) + 1.0  # start above the landed piece
+
+	const FADE_ROWS : float = 5.0  # rows from landing at which alpha → 0
+
+	var height        := top_y - bottom_y
+	var fade_fraction := clampf(1.0 - FADE_ROWS / height, 0.0, 0.98)
+
+	var mat := ShaderMaterial.new()
+	mat.shader = preload("res://scenes/game/hard_drop_streak.gdshader")
+	mat.set_shader_parameter("intensity", 0.12)
+	mat.set_shader_parameter("fade_fraction", fade_fraction)
+
+	var quad := QuadMesh.new()
+	quad.size = Vector2(right_x - left_x, height)
+
+	var mi := MeshInstance3D.new()
+	mi.mesh = quad
+	mi.material_override = mat
+	mi.position = Vector3(
+		(left_x + right_x) * 0.5,
+		(top_y  + bottom_y) * 0.5,
+		0.1
+	)
+	add_child(mi)
+
+	# Fade out then free.
+	var tween := create_tween()
+	tween.tween_method(
+		func(v: float) -> void: mat.set_shader_parameter("intensity", v),
+		0.12, 0.0, 0.4
+	).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_callback(mi.queue_free)
+
+	_spawn_drop_particles(
+		(left_x + right_x) * 0.5,
+		(top_y  + bottom_y) * 0.5,
+		right_x - left_x,
+		height
+	)
+
+func _spawn_drop_particles(cx: float, cy: float, width: float, height: float) -> void:
+	# Color ramp: bright white → transparent over particle lifetime.
+	var grad := Gradient.new()
+	grad.set_color(0, Color(1.0, 1.0, 1.0, 1.0))
+	grad.set_color(1, Color(1.0, 1.0, 1.0, 0.0))
+	var grad_tex := GradientTexture1D.new()
+	grad_tex.gradient = grad
+
+	var proc_mat := ParticleProcessMaterial.new()
+	proc_mat.emission_shape       = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	proc_mat.emission_box_extents = Vector3(width * 0.5, height * 0.5, 0.0)
+	proc_mat.direction            = Vector3(0.0, 1.0, 0.0)
+	proc_mat.spread               = 25.0
+	proc_mat.initial_velocity_min = 2.0
+	proc_mat.initial_velocity_max = 8.0
+	proc_mat.scale_min            = 0.2
+	proc_mat.scale_max            = 0.5
+	proc_mat.gravity              = Vector3(0.0, -4.0, 0.0)
+	proc_mat.color_ramp           = grad_tex
+
+	# Bright quad — high emission energy feeds the glow bloom.
+	var part_mat := StandardMaterial3D.new()
+	part_mat.shading_mode               = BaseMaterial3D.SHADING_MODE_UNSHADED
+	part_mat.vertex_color_use_as_albedo = true
+	part_mat.transparency               = BaseMaterial3D.TRANSPARENCY_ALPHA
+	part_mat.emission_enabled           = true
+	part_mat.emission                   = Color.WHITE
+	part_mat.emission_energy_multiplier = 10.0
+
+	var part_mesh := QuadMesh.new()
+	part_mesh.size     = Vector2(0.3, 0.3)
+	part_mesh.material = part_mat
+
+	var particles := GPUParticles3D.new()
+	particles.amount        = 15
+	particles.lifetime      = 0.7
+	particles.one_shot      = true
+	particles.explosiveness = 0.9
+	particles.randomness    = 0.4
+	particles.process_material = proc_mat
+	particles.draw_pass_1      = part_mesh
+	particles.position         = Vector3(cx, cy, 0.15)
+	add_child(particles)
+
+	# Free once the burst is done.
+	var tween := create_tween()
+	tween.tween_callback(particles.queue_free).set_delay(particles.lifetime + 0.3)

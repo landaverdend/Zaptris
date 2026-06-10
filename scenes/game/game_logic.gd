@@ -36,6 +36,7 @@ signal level_changed(new_level: int)
 signal game_over
 signal pending_garbage_changed(total: int)
 signal attack_generated(lines: int)
+signal hard_drop_performed(kind: String, rotation: int, col: int, start_row: int, end_row: int)
 
 func _ready() -> void:
 	_init_grid()
@@ -316,6 +317,7 @@ func hard_drop() -> void:
 	while _is_valid(active_piece.row + 1, active_piece.col, active_piece.rotation):
 		active_piece.row += 1
 	scorer.on_hard_drop(active_piece.row - start_row)
+	hard_drop_performed.emit(active_piece.kind, active_piece.rotation, active_piece.col, start_row, active_piece.row)
 	lock_piece()
 
 # ── Locking & line clears ─────────────────────────────────────────────────────
