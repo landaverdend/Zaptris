@@ -262,7 +262,7 @@ func _update_camera() -> void:
 		return
 	var ball_body := bg.get_node_or_null("BallBody") as Node3D
 	if ball_body:
-		ball_body.visible = (arena_count == 1)
+		ball_body.visible = true
 
 # ── Countdown ─────────────────────────────────────────────────────────────────
 
