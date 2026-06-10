@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://dfypdd71oyis6"]
+
+[ext_resource type="PackedScene" uid="uid://bcn0a8jd4hs8" path="res://assets/game_arena/hold_frame.glb" id="1_2gu84"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ghw1o"]
+transparency = 1
+albedo_color = Color(0.07058824, 0.07058824, 0.101960786, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_tgpeo"]
+size = Vector3(4.5, 3.5, 0.2)
+
+[node name="Frame" type="Node3D" unique_id=1006308564]
+
+[node name="Backdrop" type="MeshInstance3D" parent="." unique_id=1971984822]
+transform = Transform3D(0.8, 0, 0, 0, 0.667, 0, 0, 0, 0.533, 0.11576903, 0.16980124, -0.6)
+material_override = SubResource("StandardMaterial3D_ghw1o")
+mesh = SubResource("BoxMesh_tgpeo")
+
+[node name="hold_frame" parent="." unique_id=2067480297 instance=ExtResource("1_2gu84")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09625536, 0.18539047, -0.5588879)

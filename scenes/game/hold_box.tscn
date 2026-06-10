@@ -33,4 +33,4 @@ modulate = Color(1, 0.40392157, 0, 1)
 text = "HODL"
 font = ExtResource("3_o2vke")
 font_size = 126
-outline_size = 33
+outline_size = 65

@@ -11,8 +11,7 @@ script = ExtResource("1_xs6rg")
 
 [node name="GameArena" parent="." unique_id=1778691637 instance=ExtResource("1_2igfx")]
 process_mode = 1
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -3.8614311, -17.956993, 44.505527)
-
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -3.8614311, -14.92128, 44.505527)
 
 [node name="Background" parent="." unique_id=1190572250 instance=ExtResource("5_background")]
 

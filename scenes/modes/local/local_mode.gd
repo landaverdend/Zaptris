@@ -203,6 +203,7 @@ func _spawn_arenas() -> void:
 
 		slot.arena = ARENA_SCENE.instantiate()
 		slot.arena.garbage_enabled = true
+		slot.arena.show_level      = false
 		slot.arena.process_mode    = Node.PROCESS_MODE_PAUSABLE
 		slot.arena.position = Vector3(p0 + i * ARENA_SPACING, 0.0, 0.0)
 		add_child(slot.arena)

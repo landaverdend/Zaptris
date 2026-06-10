@@ -30,4 +30,4 @@ modulate = Color(0.37259388, 0.7939823, 0, 1)
 text = "NEXT"
 font = ExtResource("3_h4yki")
 font_size = 165
-outline_size = 28
+outline_size = 65

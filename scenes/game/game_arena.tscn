@@ -7,10 +7,11 @@
 [ext_resource type="PackedScene" uid="uid://1gctjms6h00i" path="res://scenes/game/hold_box.tscn" id="4_6du5l"]
 [ext_resource type="PackedScene" uid="uid://dmsqmcnk2k2o0" path="res://scenes/game/garbage_meter.tscn" id="4_gmeter"]
 [ext_resource type="PackedScene" uid="uid://dy8nvn66bgur4" path="res://scenes/game/piece_queue.tscn" id="4_queue"]
-[ext_resource type="Script" uid="uid://dv5anmcbn0iun" path="res://scenes/game/hud.gd" id="5_hud"]
 [ext_resource type="Shader" uid="uid://cgyf375xxdif3" path="res://scenes/game/sky.gdshader" id="6_sky"]
 [ext_resource type="Shader" uid="uid://duc74iy1q3b72" path="res://scenes/game/board_grid.gdshader" id="7_grid"]
 [ext_resource type="PackedScene" uid="uid://bk25p3ejnapj2" path="res://assets/game_arena/board_frame.glb" id="11_saq4h"]
+[ext_resource type="PackedScene" uid="uid://bft633fhbho4i" path="res://scenes/game/scoreboard.tscn" id="12_64am1"]
+[ext_resource type="Script" uid="uid://bhscqk7bv3np1" path="res://scenes/game/scoreboard.gd" id="13_0m17k"]
 
 [sub_resource type="ShaderMaterial" id="StandardMaterial3D_782ta"]
 render_priority = 0
@@ -72,50 +73,6 @@ transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.72, 13.553262, 17.372412, 
 [node name="GarbageMeter" parent="." unique_id=1623456789 instance=ExtResource("4_gmeter")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.665198, -0.33338237, 1.5712223)
 
-[node name="UILayer" type="CanvasLayer" parent="." unique_id=999000001]
-
-[node name="HUD" type="Control" parent="UILayer" unique_id=774369786]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 2.0
-offset_top = 2.0
-offset_right = 2.0
-offset_bottom = 2.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("5_hud")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/HUD" unique_id=2134529876]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -172.0
-offset_bottom = 183.0
-grow_horizontal = 0
-
-[node name="ScoreLabel" type="Label" parent="UILayer/HUD/VBoxContainer" unique_id=1111111111]
-layout_mode = 2
-text = "SCORE
-0"
-
-[node name="LinesLabel" type="Label" parent="UILayer/HUD/VBoxContainer" unique_id=1111111112]
-layout_mode = 2
-text = "LINES
-0"
-
-[node name="LevelLabel" type="Label" parent="UILayer/HUD/VBoxContainer" unique_id=1111111113]
-layout_mode = 2
-text = "LEVEL
-1"
-
-[node name="ComboLabel" type="Label" parent="UILayer/HUD/VBoxContainer" unique_id=1111111114]
-visible = false
-layout_mode = 2
-
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1140938529]
 environment = SubResource("Environment_782ta")
 
@@ -125,3 +82,7 @@ light_energy = 1.2
 
 [node name="board_frame" parent="." unique_id=595200168 instance=ExtResource("11_saq4h")]
 transform = Transform3D(0.9999955, 0.0027048644, 0.0012865459, -0.0027031023, 0.99999547, -0.0013764885, -0.0012902694, 0.0013729989, 0.9999982, 5.056293, 0.11094761, -0.5090594)
+
+[node name="Scoreboard" parent="." unique_id=448700191 instance=ExtResource("12_64am1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9973378, -2.916081, 0.54711914)
+script = ExtResource("13_0m17k")
