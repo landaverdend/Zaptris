@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bnn6em670l505"
-path.s3tc="res://.godot/imported/PortenoBuilding_UV.png-ab14f66f711da3b22d5702d0665b9d9b.s3tc.ctex"
+uid="uid://jnevlyh2sk4e"
+path.s3tc="res://.godot/imported/obelisco_Obelisk_UV.png-501cdd04538040bf990beea81c21b654.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "7b6f8ea4cfa579d24724c70283afa0e1"
+}
 
 [deps]
 
-source_file="res://assets/raw/PortenoBuilding_UV.png"
-dest_files=["res://.godot/imported/PortenoBuilding_UV.png-ab14f66f711da3b22d5702d0665b9d9b.s3tc.ctex"]
+source_file="res://assets/background/obelisco_Obelisk_UV.png"
+dest_files=["res://.godot/imported/obelisco_Obelisk_UV.png-501cdd04538040bf990beea81c21b654.s3tc.ctex"]
 
 [params]
 

@@ -16,7 +16,7 @@ const CLEAR_FLASH_DUR    : float = 0.1  # scale-up (pop) duration per block
 const CLEAR_COLLAPSE_DUR : float = 0.10  # scale-down (vanish) duration per block
 
 # ── Hard-drop streak timing ────────────────────────────────────────────────────
-const HARD_DROP_OPACITY  : float = 0.01 
+const HARD_DROP_OPACITY  : float = 0.0075
 const HARD_DROP_FADE_DUR : float = 0.45  # seconds for the teardrop to dissipate
 
 @onready var logic: Node = $"../GameLogic"

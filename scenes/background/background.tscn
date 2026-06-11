@@ -4,8 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://w31tnroer0ku" path="res://assets/background/LogoBall.glb" id="2_ball"]
 [ext_resource type="Script" uid="uid://desg8u53djsxl" path="res://scenes/background/ball_roll.gd" id="3_roll"]
 [ext_resource type="PackedScene" uid="uid://cbt4xp8ydnd63" path="res://assets/background/grass.glb" id="4_grass"]
-[ext_resource type="PackedScene" uid="uid://d025ujdhjqjtj" path="res://assets/background/building_1.glb" id="5_jjv1t"]
-[ext_resource type="PackedScene" uid="uid://6yb6yq66gnl2" path="res://assets/background/building_2.glb" id="6_03sym"]
+[ext_resource type="PackedScene" uid="uid://lb11kyrhac75" path="res://assets/background/obelisco.glb" id="6_03sym"]
 [ext_resource type="PackedScene" uid="uid://bmx5pdwkxrmh1" path="res://assets/background/lacrypta_tree.glb" id="7_tp5tj"]
 
 [sub_resource type="Environment" id="Environment_tp5tj"]
@@ -43,20 +42,11 @@ size = 52.0
 transform = Transform3D(0.97590363, 0.19518821, 0.09753811, 0, 0.44700828, -0.8945298, -0.21820202, 0.8729749, 0.436237, -28.290405, 9.595394, 23.272758)
 light_energy = 1.2
 
-[node name="building_2" parent="." unique_id=1644090917 instance=ExtResource("6_03sym")]
-transform = Transform3D(0.4676311, 0, 1.159233, 0, 1.25, 0, -1.159233, 0, 0.4676311, -35.52504, -3.2723885, -114.64237)
-
-[node name="building_1" parent="." unique_id=2029177253 instance=ExtResource("5_jjv1t")]
-transform = Transform3D(0.15157141, 0, 0.9884463, 0, 1, 0, -0.9884463, 0, 0.15157141, 48.010452, 2.894328, -52.688477)
-
-[node name="building_4" parent="." unique_id=1278509486 instance=ExtResource("5_jjv1t")]
-transform = Transform3D(-0.15336528, 0, -0.98816955, 0, 1, 0, 0.98816955, 0, -0.15336528, 37.153736, 3.972577, -105.93186)
-
 [node name="lacrypta_tree" parent="." unique_id=1662908146 instance=ExtResource("7_tp5tj")]
 transform = Transform3D(1.4371512, 0, 1.3908978, 0, 2, 0, -1.3908978, 0, 1.4371512, -38.12795, -18.515718, -5.275631)
 
-[node name="building_5" parent="." unique_id=1539291459 instance=ExtResource("5_jjv1t")]
-transform = Transform3D(0.9988049, 0, 0.048884645, 0, 1, 0, -0.048884645, 0, 0.9988049, 4.9553337, 2.6886406, -43.070656)
-
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1400800508]
 environment = SubResource("Environment_tp5tj")
+
+[node name="obelisco" parent="." unique_id=2064784272 instance=ExtResource("6_03sym")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 6.981579, 29.232435, -260.09082)
