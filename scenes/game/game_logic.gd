@@ -37,6 +37,7 @@ signal game_over
 signal pending_garbage_changed(total: int)
 signal attack_generated(lines: int)
 signal hard_drop_performed(kind: String, rotation: int, col: int, start_row: int, end_row: int)
+signal lines_about_to_clear(rows: Array, clear_type: String, origin_col: float)
 
 func _ready() -> void:
 	_init_grid()
@@ -343,6 +344,8 @@ func lock_piece() -> void:
 	var tspin := Rules.is_tspin(grid, active_piece)
 
 	var color = Pieces.COLORS[active_piece.kind]
+	var origin_col := _piece_origin_col()
+
 	var locked_in_danger := false
 	for cell in Pieces.board_cells(active_piece):
 		var r = cell[0]
@@ -358,6 +361,10 @@ func lock_piece() -> void:
 		print("game over: lock-out in danger zone")
 		game_over.emit()
 		return
+	var full_rows := _find_full_rows()
+	if full_rows.size() > 0:
+		var clear_type_preview := Rules.classify(full_rows.size(), tspin)
+		lines_about_to_clear.emit(full_rows, clear_type_preview, origin_col)
 	var cleared := _clear_lines()
 	var clear_type := Rules.classify(cleared, tspin)
 	if clear_type != "":
@@ -372,6 +379,28 @@ func lock_piece() -> void:
 			attack_generated.emit(attack)
 	grid_changed.emit()
 	spawn_piece()
+
+# Returns the horizontal midpoint (in grid-column units) of the active piece.
+# Averages the dc offsets of all cells so the result is accurate for every
+# piece shape and rotation. Must be called before active_piece is nulled.
+func _piece_origin_col() -> float:
+	var offsets := Pieces.cells(active_piece.kind, active_piece.rotation)
+	var sum_dc := 0
+	for offset in offsets:
+		sum_dc += offset[1]
+	return active_piece.col + float(sum_dc) / float(offsets.size())
+
+func _find_full_rows() -> Array:
+	var rows: Array = []
+	for r in range(ROWS):
+		var full := true
+		for cell in grid[r]:
+			if cell == null:
+				full = false
+				break
+		if full:
+			rows.append(r)
+	return rows
 
 func _clear_lines() -> int:
 	var new_grid: Array = []

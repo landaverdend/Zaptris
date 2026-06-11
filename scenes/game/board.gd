@@ -10,6 +10,16 @@ const BUFFER_ROWS := 3   # rows 0-2 are hidden above the visible board
 const BOTTOM_ROW  := 22  # TOTAL_ROWS - 1; maps to world Y = 0.5
 const COLS        := 10  # GameLogic.COLS
 
+# ── Line-clear animation timing ────────────────────────────────────────────────
+const CLEAR_STAGGER      : float = 0.03  # seconds between each column (left → right)
+const CLEAR_FLASH_DUR    : float = 0.1  # scale-up (pop) duration per block
+const CLEAR_COLLAPSE_DUR : float = 0.10  # scale-down (vanish) duration per block
+
+# ── Hard-drop streak timing ────────────────────────────────────────────────────
+const HARD_DROP_FADE_ROWS  : float = 5.0   # rows from landing where the streak fades to nothing
+const HARD_DROP_INTENSITY  : float = 0.12  # peak streak brightness
+const HARD_DROP_FADE_DUR   : float = 0.40  # seconds for the streak to fade out
+
 @onready var logic: Node = $"../GameLogic"
 
 # 4 persistent block nodes for the active piece + 4 for its ghost.
@@ -26,6 +36,10 @@ var _locked_nodes: Dictionary = {}  # Vector2i(col, row) → Node
 # not on every physics frame.
 var _current_kind: String = ""
 
+# Set while a line-clear animation is playing — suppresses the grid_changed
+# visual rebuild until the animation hands off control manually.
+var _clearing: bool = false
+
 # ── Lifecycle ──────────────────────────────────────────────────────────────────
 
 func _ready() -> void:
@@ -33,6 +47,7 @@ func _ready() -> void:
 	logic.grid_changed.connect(_render_locked_cells)
 	logic.piece_changed.connect(_render_active_piece)
 	logic.hard_drop_performed.connect(_on_hard_drop)
+	logic.lines_about_to_clear.connect(_on_lines_about_to_clear)
 
 func _create_piece_nodes() -> void:
 	for i in range(4):
@@ -63,6 +78,8 @@ func grid_to_world(grid_row: int, grid_col: int) -> Vector3:
 # Fired by grid_changed: piece locked, line cleared, or garbage received.
 # Rebuilds all locked-cell visuals from scratch (cheap — fires rarely).
 func _render_locked_cells() -> void:
+	if _clearing:
+		return
 	for node in _locked_nodes.values():
 		node.queue_free()
 	_locked_nodes.clear()
@@ -111,15 +128,87 @@ func _render_active_piece() -> void:
 		_active_blocks[i].position = grid_to_world(r, c)
 		_active_blocks[i].visible  = true
 
-		# Ghost block: hide when it perfectly overlaps the active piece
-		# (piece is already resting on the stack).
+		# Ghost block: hide when overlapping the active piece, or during line-clear.
 		_ghost_blocks[i].position = grid_to_world(gr, c)
-		_ghost_blocks[i].visible  = gr >= BUFFER_ROWS and ghost_row != piece.row
+		_ghost_blocks[i].visible  = gr >= BUFFER_ROWS and ghost_row != piece.row and not _clearing
+
+# ── Line clear animation ──────────────────────────────────────────────────────
+
+func _on_lines_about_to_clear(rows: Array, _clear_type: String, origin_col: float) -> void:
+	_clearing = true
+
+	# Build a fast lookup for which rows are being cleared.
+	var clearing_set: Dictionary = {}
+	for row in rows:
+		clearing_set[row] = true
+
+	# Pull the block nodes for cleared rows out of _locked_nodes so the
+	# deferred rebuild doesn't free them before the animation finishes.
+	var to_animate: Array = []
+	for row in rows:
+		for col in range(COLS):
+			var key := Vector2i(col, row)
+			if _locked_nodes.has(key):
+				to_animate.append({ "node": _locked_nodes[key], "col": col })
+				_locked_nodes.erase(key)
+
+	if to_animate.is_empty():
+		_clearing = false
+		return
+
+	# The piece was written to grid[] before this signal fired, but grid_changed
+	# is suppressed by _clearing. Render any cells that are in the grid but not
+	# yet in _locked_nodes (the newly locked piece's non-cleared cells) so they
+	# appear immediately instead of popping in after the animation ends.
+	for row in range(TOTAL_ROWS):
+		if clearing_set.has(row):
+			continue  # these cells are being animated, skip them
+		for col in range(COLS):
+			var key := Vector2i(col, row)
+			if _locked_nodes.has(key):
+				continue  # already has a node
+			var color = logic.grid[row][col]
+			if color != null:
+				var block = BLOCK_SCENE.instantiate()
+				add_child(block)
+				block.position = grid_to_world(row, col)
+				block.set_color(color)
+				_locked_nodes[key] = block
+
+	# Farthest possible distance from origin to either edge of the board.
+	var max_dist := maxf(absf(0.5 - origin_col), absf(float(COLS) - 0.5 - origin_col))
+
+	for entry in to_animate:
+		var block  = entry["node"]
+		var col: int = entry["col"]
+
+		# Stagger outward from the piece's center column.
+		# Blocks equidistant on each side fire together for a symmetric burst.
+		var dist  := absf(float(col) + 0.5 - origin_col)
+		var delay := dist * CLEAR_STAGGER
+
+		var tween := create_tween()
+		tween.tween_interval(delay)
+		# Flash up.
+		tween.tween_property(block, "scale", Vector3(1.3, 1.3, 1.3), CLEAR_FLASH_DUR) \
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		# Collapse to nothing.
+		tween.tween_property(block, "scale", Vector3.ZERO, CLEAR_COLLAPSE_DUR) \
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		tween.tween_callback(block.queue_free)
+
+	# Single cleanup tween fires after the farthest block finishes.
+	var total_dur := max_dist * CLEAR_STAGGER + CLEAR_FLASH_DUR + CLEAR_COLLAPSE_DUR + 0.05
+	var cleanup   := create_tween()
+	cleanup.tween_callback(func() -> void:
+		_clearing = false
+		_render_locked_cells()
+	).set_delay(total_dur)
 
 # ── Hard drop effect ──────────────────────────────────────────────────────────
 
 func _on_hard_drop(kind: String, rotation: int, col: int, start_row: int, end_row: int) -> void:
-var offsets = Pieces.cells(kind, rotation)
+	var offsets = Pieces.cells(kind, rotation)
 	var min_dc: int = offsets[0][1]
 	var max_dc: int = offsets[0][1]
 	var min_dr: int = offsets[0][0]
@@ -135,14 +224,12 @@ var offsets = Pieces.cells(kind, rotation)
 	var top_y    := float(BOTTOM_ROW - (start_row + min_dr)) + 1.0
 	var bottom_y := float(BOTTOM_ROW - (end_row   + max_dr)) + 1.0  # start above the landed piece
 
-	const FADE_ROWS : float = 5.0  # rows from landing at which alpha → 0
-
 	var height        := top_y - bottom_y
-	var fade_fraction := clampf(1.0 - FADE_ROWS / height, 0.0, 0.98)
+	var fade_fraction := clampf(1.0 - HARD_DROP_FADE_ROWS / height, 0.0, 0.98)
 
 	var mat := ShaderMaterial.new()
 	mat.shader = preload("res://scenes/game/hard_drop_streak.gdshader")
-	mat.set_shader_parameter("intensity", 0.12)
+	mat.set_shader_parameter("intensity", HARD_DROP_INTENSITY)
 	mat.set_shader_parameter("fade_fraction", fade_fraction)
 
 	var quad := QuadMesh.new()
@@ -162,7 +249,7 @@ var offsets = Pieces.cells(kind, rotation)
 	var tween := create_tween()
 	tween.tween_method(
 		func(v: float) -> void: mat.set_shader_parameter("intensity", v),
-		0.12, 0.0, 0.4
+		HARD_DROP_INTENSITY, 0.0, HARD_DROP_FADE_DUR
 	).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tween.tween_callback(mi.queue_free)
 
