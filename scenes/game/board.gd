@@ -16,9 +16,8 @@ const CLEAR_FLASH_DUR    : float = 0.1  # scale-up (pop) duration per block
 const CLEAR_COLLAPSE_DUR : float = 0.10  # scale-down (vanish) duration per block
 
 # ── Hard-drop streak timing ────────────────────────────────────────────────────
-const HARD_DROP_FADE_ROWS  : float = 5.0   # rows from landing where the streak fades to nothing
-const HARD_DROP_INTENSITY  : float = 0.12  # peak streak brightness
-const HARD_DROP_FADE_DUR   : float = 0.40  # seconds for the streak to fade out
+const HARD_DROP_OPACITY  : float = 0.01 
+const HARD_DROP_FADE_DUR : float = 0.45  # seconds for the teardrop to dissipate
 
 @onready var logic: Node = $"../GameLogic"
 
@@ -208,6 +207,9 @@ func _on_lines_about_to_clear(rows: Array, _clear_type: String, origin_col: floa
 # ── Hard drop effect ──────────────────────────────────────────────────────────
 
 func _on_hard_drop(kind: String, rotation: int, col: int, start_row: int, end_row: int) -> void:
+	if end_row == start_row:
+		return  # piece was already on the floor, nothing to show
+
 	var offsets = Pieces.cells(kind, rotation)
 	var min_dc: int = offsets[0][1]
 	var max_dc: int = offsets[0][1]
@@ -222,15 +224,13 @@ func _on_hard_drop(kind: String, rotation: int, col: int, start_row: int, end_ro
 	var left_x   := float(col + min_dc)
 	var right_x  := float(col + max_dc + 1)
 	var top_y    := float(BOTTOM_ROW - (start_row + min_dr)) + 1.0
-	var bottom_y := float(BOTTOM_ROW - (end_row   + max_dr)) + 1.0  # start above the landed piece
+	var bottom_y := float(BOTTOM_ROW - (end_row   + max_dr)) + 1.0
 
-	var height        := top_y - bottom_y
-	var fade_fraction := clampf(1.0 - HARD_DROP_FADE_ROWS / height, 0.0, 0.98)
+	var height := top_y - bottom_y
 
 	var mat := ShaderMaterial.new()
 	mat.shader = preload("res://scenes/game/hard_drop_streak.gdshader")
-	mat.set_shader_parameter("intensity", HARD_DROP_INTENSITY)
-	mat.set_shader_parameter("fade_fraction", fade_fraction)
+	mat.set_shader_parameter("intensity", HARD_DROP_OPACITY)
 
 	var quad := QuadMesh.new()
 	quad.size = Vector2(right_x - left_x, height)
@@ -245,11 +245,11 @@ func _on_hard_drop(kind: String, rotation: int, col: int, start_row: int, end_ro
 	)
 	add_child(mi)
 
-	# Fade out then free.
+	# Flash in, then dissipate in place.
 	var tween := create_tween()
 	tween.tween_method(
 		func(v: float) -> void: mat.set_shader_parameter("intensity", v),
-		HARD_DROP_INTENSITY, 0.0, HARD_DROP_FADE_DUR
+		HARD_DROP_OPACITY, 0.0, HARD_DROP_FADE_DUR
 	).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tween.tween_callback(mi.queue_free)
 
