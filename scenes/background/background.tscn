@@ -11,19 +11,33 @@
 [ext_resource type="PackedScene" uid="uid://b7ieo5nhn6n1v" path="res://assets/background/building3.glb" id="9_evef5"]
 [ext_resource type="PackedScene" uid="uid://kyrtfkpuffh4" path="res://scenes/background/StreetLamp.tscn" id="10_iptv4"]
 
-[sub_resource type="Environment" id="Environment_tp5tj"]
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_night"]
+sky_top_color = Color(0.1, 0.12, 0.36, 1)
+sky_horizon_color = Color(0.16, 0.19, 0.5, 1)
+sky_curve = 0.09559207
+ground_bottom_color = Color(0.1, 0.12, 0.36, 1)
+ground_horizon_color = Color(0.16, 0.19, 0.5, 1)
+ground_curve = 14323.941
+
+[sub_resource type="Sky" id="Sky_night"]
+sky_material = SubResource("ProceduralSkyMaterial_night")
+
+[sub_resource type="Environment" id="Environment_iptv4"]
+background_mode = 2
+background_color = Color(0.12, 0.16, 0.48, 1)
+background_energy_multiplier = 1.5
+sky = SubResource("Sky_night")
 ambient_light_source = 2
-ambient_light_color = Color(0.53927076, 0.6188098, 0.8684686, 1)
-ambient_light_energy = 0.03
+ambient_light_color = Color(0.45, 0.55, 0.82, 1)
+ambient_light_energy = 0.6
+tonemap_mode = 2
 glow_enabled = true
 glow_intensity = 0.9
-glow_bloom = 0.1
+glow_bloom = 0.25
 glow_blend_mode = 2
 volumetric_fog_enabled = true
 volumetric_fog_density = 0.0224
-volumetric_fog_albedo = Color(0.61960787, 0.7764706, 0.8352941, 1)
 volumetric_fog_emission_energy = 6.6
-volumetric_fog_detail_spread = 2.0000005
 
 [node name="Background" type="Node3D" unique_id=1086334821]
 
@@ -42,7 +56,7 @@ y_min = 0.0
 y_max = 1.0
 
 [node name="Ball" parent="BallBody" unique_id=1204954275 instance=ExtResource("2_ball")]
-transform = Transform3D(3.9674428, -0.42058212, 0.28725302, 0.34916916, 3.8884463, 0.87066996, -0.37078905, -0.8385081, 3.893511, 1.8651333, -11.296574, 0)
+transform = Transform3D(3.9674428, -0.42058212, 0.28725302, 0.34916916, 3.8884463, 0.87066996, -0.37078905, -0.8385081, 3.893511, 51.278164, -11.296574, 0)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1642484390]
 transform = Transform3D(1, 0, 0, 0, 0.9865208, -0.16363591, 0, 0.16363591, 0.9865208, 6.75, 0, 60)
@@ -54,7 +68,7 @@ size = 52.0
 transform = Transform3D(1.4371512, 0, 1.3908978, 0, 2, 0, -1.3908978, 0, 1.4371512, -38.12795, -18.515718, -5.275631)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1400800508]
-environment = SubResource("Environment_tp5tj")
+environment = SubResource("Environment_iptv4")
 
 [node name="obelisco" parent="." unique_id=2064784272 instance=ExtResource("6_03sym")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6777954, 67.356125, -519.5753)
@@ -82,7 +96,7 @@ spot_angle_attenuation = 0.7320433
 [node name="SpotLight3D2" type="SpotLight3D" parent="." unique_id=176513493]
 transform = Transform3D(0.99651116, 0.053220723, 0.06428931, 0.0012077903, 0.7610248, -0.6487217, -0.083451204, 0.646536, 0.75830543, 11.735933, 58.263, -468.977)
 light_color = Color(0, 0.65, 1, 1)
-light_energy = 16.245
+light_energy = 13.42
 light_volumetric_fog_energy = 16.0
 spot_range = 120.0
 spot_attenuation = 0.78
