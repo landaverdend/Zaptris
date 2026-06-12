@@ -34,7 +34,7 @@ script = ExtResource("1_188km")
 script = ExtResource("2_r0j2f")
 
 [node name="Backdrop" type="MeshInstance3D" parent="Board" unique_id=1944563305]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 10, -0.66463625)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.045, 10, -0.665)
 layers = 5
 material_override = SubResource("StandardMaterial3D_782ta")
 mesh = SubResource("BoxMesh_8qre4")
@@ -52,7 +52,7 @@ transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.72, 13.553262, 17.372412, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.665198, -0.33338237, 1.5712223)
 
 [node name="board_frame" parent="." unique_id=595200168 instance=ExtResource("11_saq4h")]
-transform = Transform3D(0.9999955, 0.0027048644, 0.0012865459, -0.0027031023, 0.99999547, -0.0013764885, -0.0012902694, 0.0013729989, 0.9999982, 5.056293, 0.11094761, -0.5090594)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.056293, 0.11094761, -0.5090594)
 
 [node name="Scoreboard" parent="." unique_id=448700191 instance=ExtResource("12_64am1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9973378, -2.916081, 0.54711914)

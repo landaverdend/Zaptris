@@ -6,13 +6,13 @@ class_name Pieces
 const PIECE_TYPES = ["I", "O", "T", "S", "Z", "J", "L"]
 
 const COLORS = {
-	"I": Color(0.0, 1.0, 1.0),
-	"O": Color(1.0, 1.0, 0.0),
-	"T": Color(0.6, 0.0, 0.8),
-	"S": Color(0.0, 0.8, 0.0),
-	"Z": Color(0.9, 0.1, 0.1),
-	"J": Color(0.1, 0.1, 0.9),
-	"L": Color(1.0, 0.5, 0.0),
+	"I": Color(0.12, 0.82, 0.85),  # electric teal — neon on Corrientes
+	"O": Color(0.97, 0.79, 0.08),  # amber yellow — Buenos Aires taxi
+	"T": Color(0.90, 0.15, 0.52),  # hot pink — milonga neon
+	"S": Color(0.35, 0.88, 0.32),  # vivid green — traffic light / old LED
+	"Z": Color(0.88, 0.12, 0.15),  # crimson — brake lights / tango bar sign
+	"J": Color(0.22, 0.52, 0.95),  # cobalt blue — billboard light
+	"L": Color(0.97, 0.50, 0.10),  # warm orange — sodium street lamp
 }
 
 const SHAPES = {
