@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" uid="uid://1gctjms6h00i" path="res://scenes/game/hold_box.tscn" id="4_6du5l"]
 [ext_resource type="PackedScene" uid="uid://dmsqmcnk2k2o0" path="res://scenes/game/garbage_meter.tscn" id="4_gmeter"]
 [ext_resource type="PackedScene" uid="uid://dy8nvn66bgur4" path="res://scenes/game/piece_queue.tscn" id="4_queue"]
-[ext_resource type="Shader" uid="uid://cgyf375xxdif3" path="res://scenes/game/sky.gdshader" id="6_sky"]
 [ext_resource type="Shader" uid="uid://duc74iy1q3b72" path="res://scenes/game/board_grid.gdshader" id="7_grid"]
 [ext_resource type="PackedScene" uid="uid://bk25p3ejnapj2" path="res://assets/game_arena/board_frame.glb" id="11_saq4h"]
 [ext_resource type="PackedScene" uid="uid://bft633fhbho4i" path="res://scenes/game/scoreboard.tscn" id="12_64am1"]
@@ -25,28 +24,6 @@ shader_parameter/line_alpha = 0.610000028975
 [sub_resource type="BoxMesh" id="BoxMesh_8qre4"]
 size = Vector3(10, 20, 0.2)
 
-[sub_resource type="ShaderMaterial" id="SkyMaterial_1"]
-shader = ExtResource("6_sky")
-
-[sub_resource type="Sky" id="Sky_1"]
-sky_material = SubResource("SkyMaterial_1")
-
-[sub_resource type="Environment" id="Environment_782ta"]
-background_mode = 2
-background_color = Color(0.04, 0.04, 0.06, 1)
-sky = SubResource("Sky_1")
-sky_custom_fov = 87.7
-ambient_light_color = Color(0.2, 0.2, 0.3, 1)
-ambient_light_energy = 0.15
-glow_levels/2 = 0.0
-glow_levels/3 = 1.0
-glow_levels/4 = 0.8
-glow_levels/5 = 0.4
-glow_intensity = 0.8
-glow_strength = 1.2
-glow_bloom = 0.15
-glow_blend_mode = 2
-
 [node name="GameArena" type="Node3D" unique_id=148713631]
 script = ExtResource("0_arena")
 
@@ -58,6 +35,7 @@ script = ExtResource("2_r0j2f")
 
 [node name="Backdrop" type="MeshInstance3D" parent="Board" unique_id=1944563305]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 10, -0.66463625)
+layers = 5
 material_override = SubResource("StandardMaterial3D_782ta")
 mesh = SubResource("BoxMesh_8qre4")
 
@@ -73,16 +51,13 @@ transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.72, 13.553262, 17.372412, 
 [node name="GarbageMeter" parent="." unique_id=1623456789 instance=ExtResource("4_gmeter")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.665198, -0.33338237, 1.5712223)
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1140938529]
-environment = SubResource("Environment_782ta")
-
-[node name="SunLight" type="DirectionalLight3D" parent="." unique_id=1315500264]
-transform = Transform3D(0.97590363, 0.19518821, 0.09753811, 0, 0.44700828, -0.8945298, -0.21820202, 0.8729749, 0.436237, 3.5286164, 15.095409, 23.272758)
-light_energy = 1.2
-
 [node name="board_frame" parent="." unique_id=595200168 instance=ExtResource("11_saq4h")]
 transform = Transform3D(0.9999955, 0.0027048644, 0.0012865459, -0.0027031023, 0.99999547, -0.0013764885, -0.0012902694, 0.0013729989, 0.9999982, 5.056293, 0.11094761, -0.5090594)
 
 [node name="Scoreboard" parent="." unique_id=448700191 instance=ExtResource("12_64am1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9973378, -2.916081, 0.54711914)
 script = ExtResource("13_0m17k")
+
+[node name="DebugCamera" type="Camera3D" parent="." unique_id=766917052]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 10, 40)
+visible = false

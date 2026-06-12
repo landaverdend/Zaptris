@@ -2,20 +2,24 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b0kldh7hdk743"
-path="res://.godot/imported/ChunkBuilding_UV.png-2922e0c4c2b4f58fe86d4fe332956bac.ctex"
+uid="uid://btnlwvn11pwq2"
+path.s3tc="res://.godot/imported/building3_streetsingsled.png-22d63845be44d9cc2440b7292d8b9f52.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
+}
+generator_parameters={
+"md5": "ec8777197f2bb6608cab80ad5abd1a16"
 }
 
 [deps]
 
-source_file="res://assets/raw/ChunkBuilding_UV.png"
-dest_files=["res://.godot/imported/ChunkBuilding_UV.png-2922e0c4c2b4f58fe86d4fe332956bac.ctex"]
+source_file="res://assets/background/building3_streetsingsled.png"
+dest_files=["res://.godot/imported/building3_streetsingsled.png-22d63845be44d9cc2440b7292d8b9f52.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -23,7 +27,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -37,4 +41,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

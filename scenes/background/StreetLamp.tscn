@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://kyrtfkpuffh4"]
+
+[ext_resource type="PackedScene" uid="uid://c8df4ggkundh0" path="res://assets/background/streetlamp.glb" id="1_pn1m6"]
+
+[node name="StreetLamp" type="Node3D" unique_id=1992637962]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.220412, -1.2727108, 2.7466574)
+
+[node name="streetlamp" parent="." unique_id=1298670572 instance=ExtResource("1_pn1m6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61.18154, 1.7027931, 23.092985)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="." unique_id=317085741]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 9.535401, 1.5497632)
+light_color = Color(1, 0.6901961, 0.1254902, 1)
+light_energy = 16.0
+light_indirect_energy = 4.76
+light_volumetric_fog_energy = 3.361
+light_size = 0.18
+spot_range = 24.435
+spot_angle = 24.34

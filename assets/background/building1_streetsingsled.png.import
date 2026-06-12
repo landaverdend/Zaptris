@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://jpaljvpy10j4"
-path.s3tc="res://.godot/imported/building_1_SlabBuilding_UV.png-c90345716ad9e799b2dc5f03db7080fa.s3tc.ctex"
+uid="uid://71j0y0dqtq2g"
+path.s3tc="res://.godot/imported/building1_streetsingsled.png-86e41ed11fd8120bf1ed7af833379895.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "56fa1bd1bf519ae3b2ef2ae8a3308c61"
+"md5": "ec8777197f2bb6608cab80ad5abd1a16"
 }
 
 [deps]
 
-source_file="res://assets/background/building_1_SlabBuilding_UV.png"
-dest_files=["res://.godot/imported/building_1_SlabBuilding_UV.png-c90345716ad9e799b2dc5f03db7080fa.s3tc.ctex"]
+source_file="res://assets/background/building1_streetsingsled.png"
+dest_files=["res://.godot/imported/building1_streetsingsled.png-86e41ed11fd8120bf1ed7af833379895.s3tc.ctex"]
 
 [params]
 

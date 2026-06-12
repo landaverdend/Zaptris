@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bx40vab708icb"
-path.s3tc="res://.godot/imported/building_2_TowerBuilding_UV.png-e7c2a3c7301d4280019c24781e3dd46d.s3tc.ctex"
+uid="uid://3twwvqili12c"
+path.s3tc="res://.godot/imported/obelisco_bricks.png-e29c7aebd4a6a3f61a398b3fdc56dad2.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={
-"md5": "6af4a10d12ff6d92e22c62a91c18d9a6"
+"md5": "516f40be0c20721b772e2b616d325244"
 }
 
 [deps]
 
-source_file="res://assets/background/building_2_TowerBuilding_UV.png"
-dest_files=["res://.godot/imported/building_2_TowerBuilding_UV.png-e7c2a3c7301d4280019c24781e3dd46d.s3tc.ctex"]
+source_file="res://assets/background/obelisco_bricks.png"
+dest_files=["res://.godot/imported/obelisco_bricks.png-e29c7aebd4a6a3f61a398b3fdc56dad2.s3tc.ctex"]
 
 [params]
 

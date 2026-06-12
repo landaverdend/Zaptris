@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c471gaxi2i7c0"
-path.s3tc="res://.godot/imported/ChunkBuilding_tex.png-e6d9bc4c1f1cd844d5a199b089bcec74.s3tc.ctex"
+uid="uid://j402mlt3bokv"
+path.s3tc="res://.godot/imported/streetlamp_Streetsignals.png-ffbc0518b0c7a3c77d5872e25a3fa328.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "c1cb103e2783fad8b40f9e60b16c61f2"
+}
 
 [deps]
 
-source_file="res://assets/raw/ChunkBuilding_tex.png"
-dest_files=["res://.godot/imported/ChunkBuilding_tex.png-e6d9bc4c1f1cd844d5a199b089bcec74.s3tc.ctex"]
+source_file="res://assets/background/streetlamp_Streetsignals.png"
+dest_files=["res://.godot/imported/streetlamp_Streetsignals.png-ffbc0518b0c7a3c77d5872e25a3fa328.s3tc.ctex"]
 
 [params]
 

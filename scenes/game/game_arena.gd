@@ -16,6 +16,17 @@ extends Node3D
 @onready var piece_queue: Node3D = $PieceQueue
 @onready var scoreboard: Node3D  = $Scoreboard
 
+# Render layer 3 = arena.  ArenaLight's cull mask targets only this layer
+# so it won't bleed into the background.
+const RENDER_LAYER := 5  # bits: layer 1 + layer 3
+
 func _ready() -> void:
 	logic.garbage_enabled = garbage_enabled
 	scoreboard.setup(logic, show_level)
+	_apply_layers(self)
+
+func _apply_layers(node: Node) -> void:
+	if node is VisualInstance3D:
+		node.layers = RENDER_LAYER
+	for child in node.get_children():
+		_apply_layers(child)

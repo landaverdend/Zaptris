@@ -1,13 +1,13 @@
 [gd_scene format=3 uid="uid://codj6tfotpq3r"]
 
 [ext_resource type="Script" uid="uid://bq24101nmxb7g" path="res://scenes/modes/local/local_mode.gd" id="1_local"]
-[ext_resource type="PackedScene" path="res://scenes/background/background.tscn" id="2_background"]
+[ext_resource type="PackedScene" uid="uid://rpccclpijd2n" path="res://scenes/background/background.tscn" id="2_background"]
 
 [node name="LocalMode" type="Node3D" unique_id=-294967295]
 process_mode = 3
 script = ExtResource("1_local")
 
-[node name="Background" parent="." instance=ExtResource("2_background")]
+[node name="Background" parent="." unique_id=791968089 instance=ExtResource("2_background")]
 
 [node name="UILayer" type="CanvasLayer" parent="." unique_id=705032705]
 layer = 10
@@ -87,6 +87,8 @@ offset_left = -160.0
 offset_top = -148.0
 offset_right = -8.0
 offset_bottom = -8.0
+grow_horizontal = 0
+grow_vertical = 0
 
 [node name="VBox" type="VBoxContainer" parent="UILayer/DebugGarbage" unique_id=-89934590]
 layout_mode = 1

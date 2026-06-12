@@ -8,6 +8,8 @@ extends Node3D
 # Creates a unique material per block so each can have its own color
 # without affecting others.
 # Pass ghost = true for the drop-preview: same color, semi-transparent.
+const EMISSION_ENERGY : float = 0.1  # tweak: higher = more bloom
+
 func set_color(color: Color, ghost: bool = false) -> void:
 	if mesh_instance == null:
 		return
@@ -19,4 +21,7 @@ func set_color(color: Color, ghost: bool = false) -> void:
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	else:
 		mat.albedo_color = color
+		mat.emission_enabled = true
+		mat.emission = color
+		mat.emission_energy_multiplier = EMISSION_ENERGY
 	mesh_instance.material_override = mat

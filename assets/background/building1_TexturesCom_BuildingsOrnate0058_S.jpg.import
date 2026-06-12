@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://by2ypb2kr1y5y"
-path.s3tc="res://.godot/imported/building_1_SlabBuilding_tex.png-9c3c8c08b536c151789b361c23dd0557.s3tc.ctex"
+uid="uid://h0mwtge5mbvs"
+path.s3tc="res://.godot/imported/building1_TexturesCom_BuildingsOrnate0058_S.jpg-c276a4d38d558c3cecf5d19cd67f9ad2.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "984670d09fc71b488d6efef8912b8a5f"
+}
 
 [deps]
 
-source_file="res://assets/background/building_1_SlabBuilding_tex.png"
-dest_files=["res://.godot/imported/building_1_SlabBuilding_tex.png-9c3c8c08b536c151789b361c23dd0557.s3tc.ctex"]
+source_file="res://assets/background/building1_TexturesCom_BuildingsOrnate0058_S.jpg"
+dest_files=["res://.godot/imported/building1_TexturesCom_BuildingsOrnate0058_S.jpg-c276a4d38d558c3cecf5d19cd67f9ad2.s3tc.ctex"]
 
 [params]
 
