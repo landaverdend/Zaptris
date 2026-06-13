@@ -18,7 +18,6 @@ func _ready() -> void:
 	var cfg := config if config else GameArenaConfig.new()
 	logic.garbage_enabled = cfg.garbage_enabled
 	scoreboard.setup(logic, cfg.show_level)
-	qr_display.visible    = cfg.show_qr
 	_apply_layers(self)
 
 func set_qr_texture(bytes: PackedByteArray) -> void:

@@ -22,6 +22,8 @@ class MatchConfig:
 	var free_pot_sats:      int   = 100
 	var payout_percent:     float = 0.05   # fraction of starting pot paid out per tick
 	var payout_interval:    float = 10.0   # seconds between payouts
+	var attack_sats:        int   = 5     # invoice amount for routing reliability
+	var attack_lines:       int   = 5      # garbage lines sent per attack (decoupled from sats)
 
 var config := MatchConfig.new()
 
@@ -30,9 +32,8 @@ var config := MatchConfig.new()
 class PlayerSlot:
 	var arena:             Node3D
 	var card:              Node
-	var paid:              bool            = false
-	var qr_bytes:          PackedByteArray = PackedByteArray()
-	var lightning_address: String          = ""
+	var paid:              bool   = false
+	var lightning_address: String = ""
 
 # ── State ──────────────────────────────────────────────────────────────────────
 
@@ -50,11 +51,11 @@ var sats_per_tick: int = 0
 
 # ── Logic nodes ────────────────────────────────────────────────────────────────
 
-var router: Node          = null
-var local_rules: Node     = null
-var countdown_timer: Node = null
-var payment_timer: Timer  = null
-var bridge: Node          = null
+var router: Node           = null
+var local_rules: Node      = null
+var countdown_timer: Node  = null
+var payment_timer: Timer   = null
+var payment_service: PaymentService = null
 
 # ── Node refs ─────────────────────────────────────────────────────────────────
 
@@ -69,28 +70,17 @@ var bridge: Node          = null
 @onready var _dbg_lines_label: Label    = $UILayer/DebugGarbage/VBox/AmountRow/LinesLabel
 
 var _dbg_lines: int = 4
-var _zap_qr_bytes: PackedByteArray = PackedByteArray()
 
 # ── Lifecycle ─────────────────────────────────────────────────────────────────
 
 func _ready() -> void:
-	bridge = RustBridge.new()
-	bridge.name = "RustBridge"
-	add_child(bridge)
-	bridge.invoice_ready.connect(_on_invoice_ready)
-	bridge.invoice_paid.connect(_on_invoice_paid)
-	bridge.address_checked.connect(_on_address_checked)
-	bridge.payment_settled.connect(_on_payment_settled)
-	bridge.zap_received.connect(_on_zap_received)
-	bridge.zap_qr_ready.connect(_on_zap_qr_ready)
-
-	bridge.setup_zap_qr()
-
-	var poll_timer := Timer.new()
-	poll_timer.wait_time = 1.0
-	poll_timer.autostart = true
-	poll_timer.timeout.connect(bridge.poll)
-	add_child(poll_timer)
+	payment_service = PaymentService.new()
+	payment_service.name = "PaymentService"
+	add_child(payment_service)
+	payment_service.invoice_qr_ready.connect(_on_invoice_qr_ready)
+	payment_service.garbage_attack.connect(_on_garbage_attack)
+	payment_service.address_checked.connect(_on_address_checked)
+	payment_service.payment_settled.connect(_on_payment_settled)
 
 	countdown_timer = COUNTDOWN_SCRIPT.new()
 	countdown_timer.name = "CountdownTimer"
@@ -140,25 +130,24 @@ func _on_device_joined(arena_index: int, device_label: String) -> void:
 	if arena_index < players.size():
 		players[arena_index].card.set_device(device_label)
 
-func _on_invoice_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
+## Attack invoice QR ready — show it on the arena so spectators can scan.
+func _on_invoice_qr_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
+	print("[LocalMode] invoice_qr_ready player=%d bytes=%d" % [player_index, qr_bytes.size()])
 	if player_index >= players.size(): return
-	var slot: PlayerSlot = players[player_index]
-	slot.qr_bytes = qr_bytes
-	slot.card.set_qr(qr_bytes)
-	slot.arena.set_qr_texture(qr_bytes)
+	players[player_index].arena.set_zap_qr_texture(qr_bytes)
 
-func _on_invoice_paid(player_index: int) -> void:
-	if player_index >= players.size(): return
-	var slot: PlayerSlot = players[player_index]
-	slot.paid = true
-	slot.card.show_paid()
-	slot.arena.clear_qr_texture()
+## Spectator paid an attack invoice — send garbage to that player.
+func _on_garbage_attack(player_index: int, amount_sats: int) -> void:
+	if state != State.PLAYING: return
+	if player_index < 0 or player_index >= players.size(): return
+	_set_pot(pot_sats + amount_sats)
+	players[player_index].arena.get_node("GameLogic").receive_garbage(config.attack_lines)
 
 func _on_check_pressed(index: int) -> void:
 	var address: String = players[index].card.get_lightning_address()
 	if address.is_empty(): return
 	players[index].lightning_address = address
-	bridge.check_lightning_address(index, address)
+	payment_service.check_address(index, address)
 
 func _on_address_checked(player_index: int, is_valid: bool, message: String) -> void:
 	if player_index < players.size():
@@ -216,20 +205,12 @@ func _spawn_arenas() -> void:
 
 		# Restore payment state carried over from the previous spawn.
 		if i < players.size():
-			var prev: PlayerSlot = players[i]
-			slot.paid     = prev.paid
-			slot.qr_bytes = prev.qr_bytes
+			slot.paid = players[i].paid
 
 		if not config.free_mode:
 			slot.card.set_requires_payment()
-			if not slot.qr_bytes.is_empty():
-				slot.card.set_qr(slot.qr_bytes)
-				slot.arena.set_qr_texture(slot.qr_bytes)
 			if slot.paid:
 				slot.card.show_paid()
-				slot.arena.clear_qr_texture()
-			elif i >= players.size():  # genuinely new slot
-				bridge.create_player_invoice(i, config.buy_in_sats)
 		else:
 			slot.paid = true
 
@@ -245,9 +226,6 @@ func _spawn_arenas() -> void:
 
 	router.start_listening(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
 	_update_camera()
-	if not _zap_qr_bytes.is_empty():
-		for slot: PlayerSlot in players:
-			slot.arena.set_zap_qr_texture(_zap_qr_bytes)
 	_position_lobby_cards.call_deferred()
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -304,6 +282,7 @@ func _on_countdown_finished() -> void:
 	_begin_play()
 
 func _on_all_ready() -> void:
+	print("[LocalMode] _on_all_ready")
 	if not config.free_mode and not players.all(func(s: PlayerSlot) -> bool: return s.paid):
 		return
 	state = State.COUNTDOWN
@@ -316,6 +295,7 @@ func _on_all_ready() -> void:
 # ── Game start ────────────────────────────────────────────────────────────────
 
 func _begin_play() -> void:
+	print("[LocalMode] _begin_play arena_count=%d" % arena_count)
 	state = State.PLAYING
 	var round_seed := randi()
 	for slot: PlayerSlot in players:
@@ -327,6 +307,9 @@ func _begin_play() -> void:
 		slot.arena.get_node("GameLogic").reset(round_seed)
 		slot.arena.get_node("GameLogic").start()
 	local_rules.start_round(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
+
+	if arena_count > 1:
+		payment_service.start_attack_invoices(arena_count, config.attack_sats)
 
 	# Lock in the starting pot and derive the per-tick payout once.
 	starting_pot  = pot_sats
@@ -357,10 +340,10 @@ func _on_match_over(winner_index: int) -> void:
 	for slot: PlayerSlot in players:
 		slot.arena.process_mode = Node.PROCESS_MODE_DISABLED
 
-	# Pay the remaining pot to the winner.
+	payment_service.clear_invoices()
 	var winner: PlayerSlot = players[winner_index]
 	if pot_sats > 0 and not winner.lightning_address.is_empty():
-		bridge.pay_pot_remainder(winner.lightning_address, pot_sats)
+		payment_service.pay_pot_remainder(winner.lightning_address, pot_sats)
 		_set_pot(0)
 
 	countdown_label.text = "Player %d\nWins the Match!" % (winner_index + 1)
@@ -384,15 +367,11 @@ func _reset_match() -> void:
 	state = State.LOBBY
 
 func _reset_payments() -> void:
-	bridge.clear_pending_invoices()
-	for i in range(players.size()):
-		var slot: PlayerSlot = players[i]
-		slot.paid     = config.free_mode
-		slot.qr_bytes = PackedByteArray()
+	payment_service.clear_invoices()
+	for slot: PlayerSlot in players:
+		slot.paid = config.free_mode
 		slot.card.reset_payment()
 		slot.arena.clear_qr_texture()
-		if not config.free_mode:
-			bridge.create_player_invoice(i, config.buy_in_sats)
 
 func _start_next_round() -> void:
 	for slot: PlayerSlot in players:
@@ -416,34 +395,12 @@ func _on_payment_tick() -> void:
 	if slot.lightning_address.is_empty():
 		return
 	var amount := mini(sats_per_tick, pot_sats)
-	bridge.pay_winner(slot.lightning_address, amount)
+	payment_service.pay_winner(slot.lightning_address, amount)
 	_set_pot(pot_sats - amount)
 
 func _on_payment_settled(amount: int, success: bool) -> void:
 	if not success:
 		push_warning("[payment] failed for %d sats — pot already decremented" % amount)
-
-func _on_zap_received(player_index: int, amount_sats: int, command: String) -> void:
-	if state != State.PLAYING:
-		return
-	if player_index < 0 or player_index >= players.size():
-		return
-	# Inbound sats always go into the pot — bystanders are funding the prize pool.
-	_set_pot(pot_sats + amount_sats)
-	match command:
-		"GARBAGE":
-			# 1 line of garbage per sat, up to 15.
-			var lines := clampi(amount_sats, 1, 15)
-			players[player_index].arena.get_node("GameLogic").receive_garbage(lines)
-
-# ── Zap QR ────────────────────────────────────────────────────────────────────
-
-## Called by the bridge once it has fetched nostrPubkey from LNURL and
-## generated the nostr:npub1… QR. Displays it in the top-right corner.
-func _on_zap_qr_ready(qr_bytes: PackedByteArray) -> void:
-	_zap_qr_bytes = qr_bytes
-	for slot: PlayerSlot in players:
-		slot.arena.set_zap_qr_texture(qr_bytes)
 
 ## Returns the index of the sole leader, or -1 if scores are tied.
 func _highest_scorer() -> int:

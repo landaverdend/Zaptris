@@ -5,10 +5,6 @@ var arr_value: float = 2.0
 var player_num: int = 1
 var requires_payment: bool = false
 
-@onready var das_slider: HSlider    = $CenterContainer/VBox/DASRow/DASSlider
-@onready var das_label: Label       = $CenterContainer/VBox/DASRow/DASValue
-@onready var arr_slider: HSlider    = $CenterContainer/VBox/ARRRow/ARRSlider
-@onready var arr_label: Label       = $CenterContainer/VBox/ARRRow/ARRValue
 @onready var lightning: LineEdit    = $CenterContainer/VBox/LightningRow/LightningEdit
 @onready var address_status: Label  = $CenterContainer/VBox/AddressStatus
 @onready var qr_rect: TextureRect   = $CenterContainer/VBox/QRRect
@@ -19,8 +15,6 @@ signal ready_pressed
 signal check_pressed
 
 func _ready() -> void:
-	das_slider.value_changed.connect(_on_das_changed)
-	arr_slider.value_changed.connect(_on_arr_changed)
 	ready_btn.pressed.connect(func(): ready_pressed.emit())
 	$CenterContainer/VBox/LightningRow/CheckButton.pressed.connect(
 		func(): check_pressed.emit()
@@ -68,16 +62,6 @@ func show_address_result(is_valid: bool, message: String) -> void:
 func set_device(device_label: String) -> void:
 	$CenterContainer/VBox/DeviceLabel.text = device_label
 	lightning.editable = (device_label == "Keyboard")
-
-# ── Slider callbacks ──────────────────────────────────────────────────────────
-
-func _on_das_changed(value: float) -> void:
-	das_value = value
-	das_label.text = "%.1ff" % value
-
-func _on_arr_changed(value: float) -> void:
-	arr_value = value
-	arr_label.text = "%.1ff" % value
 
 func set_qr(bytes: PackedByteArray) -> void:
 	if bytes.is_empty():

@@ -19,11 +19,9 @@ unsafe impl ExtensionLibrary for StacktrisExtension {}
 
 pub(crate) enum BridgeEvent {
     InvoiceReady(i64, Vec<u8>),        // player_index, PNG bytes
-    InvoicePaid(i64),                  // player_index
+    InvoicePaid(i64, i64),             // player_index, amount_sats
     AddressChecked(i64, bool, String), // player_index, valid, message
     PaymentSettled(i64, bool),         // amount_sats, success
-    ZapCommand(i64, i64, String),      // player_index, amount_sats, command
-    ZapQrReady(Vec<u8>),               // PNG bytes for the zap QR
     Log(String),                       // diagnostic message → godot_print
 }
 
@@ -63,7 +61,6 @@ impl INode for RustBridge {
         match payments::PaymentClient::from_env(Arc::clone(&self.rt)) {
             Ok(client) => {
                 client.start_watching(self.tx.clone());
-                client.start_watching_commands(self.tx.clone());
                 self.payment_client = Some(Arc::new(client));
                 godot_print!("[payments] NWC client ready");
             }
@@ -94,9 +91,11 @@ impl RustBridge {
                         idx.to_variant(), ba.to_variant(),
                     ]);
                 }
-                BridgeEvent::InvoicePaid(idx) => {
-                    godot_print!("[payments] invoice_paid — player {idx}");
-                    self.base_mut().emit_signal("invoice_paid", &[idx.to_variant()]);
+                BridgeEvent::InvoicePaid(idx, amount_sats) => {
+                    godot_print!("[payments] invoice_paid — player {idx} {amount_sats} sats");
+                    self.base_mut().emit_signal("invoice_paid", &[
+                        idx.to_variant(), amount_sats.to_variant(),
+                    ]);
                 }
                 BridgeEvent::AddressChecked(idx, valid, msg) => {
                     self.base_mut().emit_signal("address_checked", &[
@@ -110,18 +109,6 @@ impl RustBridge {
                         amount.to_variant(), success.to_variant(),
                     ]);
                 }
-                BridgeEvent::ZapCommand(player_idx, amount_sats, command) => {
-                    godot_print!("[nostr] zap → player={player_idx} {amount_sats} sats cmd={command}");
-                    self.base_mut().emit_signal("zap_received", &[
-                        player_idx.to_variant(),
-                        amount_sats.to_variant(),
-                        GString::from(command).to_variant(),
-                    ]);
-                }
-                BridgeEvent::ZapQrReady(bytes) => {
-                    let ba = PackedByteArray::from(bytes.as_slice());
-                    self.base_mut().emit_signal("zap_qr_ready", &[ba.to_variant()]);
-                }
                 BridgeEvent::Log(msg) => {
                     godot_print!("{msg}");
                 }
@@ -131,10 +118,24 @@ impl RustBridge {
 
     // ── Payments ──────────────────────────────────────────────────────────────
 
-    /// Request a buy-in invoice for a player. Emits `invoice_ready` when the
-    /// QR is available (via the next poll()).
+    /// Request a fixed-amount buy-in invoice for a player.
+    /// Emits `invoice_ready(player_index, qr_bytes)` on the next poll().
     #[func]
     fn create_player_invoice(&self, player_index: i64, amount_sats: i64) {
+        let memo = format!("Zapstris buy-in P{}", player_index + 1);
+        self.spawn_invoice(player_index, amount_sats as u64, memo);
+    }
+
+    /// Request a fixed-amount attack invoice for a player.
+    /// Paying it sends `amount_sats` lines of garbage to that player.
+    /// Emits `invoice_ready(player_index, qr_bytes)` on the next poll().
+    #[func]
+    fn create_attack_invoice(&self, player_index: i64, amount_sats: i64) {
+        let memo = format!("Zapstris attack P{} ({} sats)", player_index + 1, amount_sats);
+        self.spawn_invoice(player_index, amount_sats as u64, memo);
+    }
+
+    fn spawn_invoice(&self, player_index: i64, amount_sats: u64, memo: String) {
         let client = match &self.payment_client {
             Some(c) => Arc::clone(c),
             None => {
@@ -142,19 +143,27 @@ impl RustBridge {
                 return;
             }
         };
-        let tx   = self.tx.clone();
-        let memo = format!("Zapstris buy-in P{}", player_index + 1);
-
+        let tx = self.tx.clone();
         self.rt.spawn(async move {
-            match client.create_invoice(player_index, amount_sats as u64, &memo).await {
+            match client.create_invoice(player_index, amount_sats, &memo).await {
                 Ok(invoice) => {
-                    // QR encoding is CPU-bound sync work — off-load to blocking pool.
+                    // Log via channel — godot_print! is not safe on background threads.
+                    tx.send(BridgeEvent::Log(format!(
+                        "[payments] invoice ready player={player_index} len={}", invoice.len()
+                    ))).ok();
                     let png = tokio::task::spawn_blocking(move || qr::generate_png(&invoice))
                         .await
                         .unwrap_or_else(|e| { eprintln!("[qr] panic: {e}"); Vec::new() });
+                    tx.send(BridgeEvent::Log(format!(
+                        "[payments] qr png bytes={}", png.len()
+                    ))).ok();
                     tx.send(BridgeEvent::InvoiceReady(player_index, png)).ok();
                 }
-                Err(e) => eprintln!("[payments] invoice error for player {player_index}: {e}"),
+                Err(e) => {
+                    tx.send(BridgeEvent::Log(format!(
+                        "[payments] invoice error player={player_index}: {e}"
+                    ))).ok();
+                }
             }
         });
     }
@@ -275,51 +284,19 @@ impl RustBridge {
         qr::generate_qr(&data.to_string())
     }
 
-    // ── Zap QR ────────────────────────────────────────────────────────────────
-
-    /// Generate a QR from HOST_LIGHTNING_ADDRESS and emit zap_qr_ready.
-    /// Bystanders scan this with any Lightning wallet, enter an amount + memo
-    /// ("0 GARBAGE"), and pay. The command watcher picks it up via list_transactions.
-    #[func]
-    fn setup_zap_qr(&self) {
-        dotenvy::dotenv().ok();
-        let address = match std::env::var("HOST_LIGHTNING_ADDRESS") {
-            Ok(a)  => a.trim().to_string(),
-            Err(_) => {
-                godot_print!("[zap] HOST_LIGHTNING_ADDRESS not set — skipping zap QR");
-                return;
-            }
-        };
-        let tx = self.tx.clone();
-        self.rt.spawn(async move {
-            tx.send(BridgeEvent::Log(format!("[zap] QR → {address}"))).ok();
-            let png = tokio::task::spawn_blocking(move || qr::generate_png(&address))
-                .await
-                .unwrap_or_else(|e| { eprintln!("[zap] QR panic: {e}"); Vec::new() });
-            tx.send(BridgeEvent::ZapQrReady(png)).ok();
-        });
-    }
-
     // ── Signals ───────────────────────────────────────────────────────────────
 
     #[signal]
     fn invoice_ready(player_index: i64, qr_bytes: PackedByteArray);
 
+    /// Fired when a fixed-amount attack invoice settles.
+    /// amount_sats equals the invoice amount, which is also the garbage line count.
     #[signal]
-    fn invoice_paid(player_index: i64);
+    fn invoice_paid(player_index: i64, amount_sats: i64);
 
     #[signal]
     fn address_checked(player_index: i64, is_valid: bool, message: GString);
 
     #[signal]
     fn payment_settled(amount_sats: i64, success: bool);
-
-    /// Fired when a bystander zaps the game with a command note.
-    /// command is uppercase, e.g. "GARBAGE".
-    #[signal]
-    fn zap_received(player_index: i64, amount_sats: i64, command: GString);
-
-    /// Fired once setup_zap_qr() completes — PNG bytes for the nostr:npub1… QR.
-    #[signal]
-    fn zap_qr_ready(qr_bytes: PackedByteArray);
 }
