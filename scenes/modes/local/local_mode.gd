@@ -198,12 +198,16 @@ func _spawn_arenas() -> void:
 	for i in range(arena_count):
 		var slot := PlayerSlot.new()
 
+		var cfg := GameArenaConfig.new()
+		cfg.garbage_enabled = true
+		cfg.show_level      = false
+		cfg.show_qr         = arena_count > 1
+
 		slot.arena = ARENA_SCENE.instantiate()
-		slot.arena.garbage_enabled = true
-		slot.arena.show_level      = false
-		slot.arena.process_mode    = Node.PROCESS_MODE_PAUSABLE
-		slot.arena.scale    = Vector3(s, s, s)
-		slot.arena.position = Vector3(p0 + i * ARENA_SPACING * s, 0.0, 0.0)
+		slot.arena.config       = cfg
+		slot.arena.process_mode = Node.PROCESS_MODE_PAUSABLE
+		slot.arena.scale        = Vector3(s, s, s)
+		slot.arena.position     = Vector3(p0 + i * ARENA_SPACING * s, 0.0, 0.0)
 		add_child(slot.arena)
 
 		slot.card = LOBBY_CARD_SCENE.instantiate()

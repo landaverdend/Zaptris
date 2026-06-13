@@ -5,6 +5,9 @@ extends Node3D
 @onready var action_label: Label3D = $ActionLabel
 @onready var scan_label: Label3D   = $ScanLabel
 
+func _ready() -> void:
+	visible = false
+
 ## Show a QR code with styled labels.
 ## action_text → top label  (e.g. "⚡ BUY IN" / "⚡ ZAP TO ATTACK")
 func show_qr(bytes: PackedByteArray, action_text: String, scan_text: String) -> void:
