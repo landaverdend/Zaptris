@@ -6,7 +6,7 @@ const ROUTER_SCRIPT      := preload("res://scenes/modes/local/input_router.gd")
 const LOCAL_RULES_SCRIPT := preload("res://scenes/modes/local/local_rules.gd")
 const COUNTDOWN_SCRIPT   := preload("res://scenes/game/countdown_timer.gd")
 
-const MIN_PLAYERS := 1
+const MIN_PLAYERS := 2
 const MAX_PLAYERS := 4
 
 # 3D layout — world-space units between arena origins.
@@ -40,7 +40,7 @@ class PlayerSlot:
 enum State { LOBBY, COUNTDOWN, PLAYING, ROUND_END, MATCH_END }
 var state   := State.LOBBY
 var players: Array[PlayerSlot] = []
-var arena_count: int = 1
+var arena_count: int = 2
 
 ## Total sats in the pot. Decremented as sats stream out during gameplay.
 var pot_sats:     int = 0
@@ -142,6 +142,7 @@ func _on_garbage_attack(player_index: int, amount_sats: int) -> void:
 	if player_index < 0 or player_index >= players.size(): return
 	_set_pot(pot_sats + amount_sats)
 	players[player_index].arena.get_node("GameLogic").receive_garbage(config.attack_lines)
+	players[player_index].arena.show_loading_qr()
 
 func _on_check_pressed(index: int) -> void:
 	var address: String = players[index].card.get_lightning_address()
@@ -310,6 +311,8 @@ func _begin_play() -> void:
 
 	if arena_count > 1:
 		payment_service.start_attack_invoices(arena_count, config.attack_sats)
+		for slot: PlayerSlot in players:
+			slot.arena.show_loading_qr()
 
 	# Lock in the starting pot and derive the per-tick payout once.
 	starting_pot  = pot_sats

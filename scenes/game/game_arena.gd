@@ -26,6 +26,9 @@ func set_qr_texture(bytes: PackedByteArray) -> void:
 func clear_qr_texture() -> void:
 	qr_display.hide_qr()
 
+func show_loading_qr() -> void:
+	qr_display.show_loading()
+
 func set_zap_qr_texture(bytes: PackedByteArray) -> void:
 	qr_display.show_qr(bytes, "⚡ ZAP TO ATTACK", "SCAN TO ATTACK")
 

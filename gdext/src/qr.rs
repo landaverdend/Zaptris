@@ -12,7 +12,7 @@ pub fn generate_png(data: &str) -> Vec<u8> {
     let img = code
         .render::<image::Luma<u8>>()
         .quiet_zone(true)
-        .module_dimensions(10, 10)
+        .module_dimensions(9, 9)
         .build();
 
     let mut png_bytes: Vec<u8> = Vec::new();
