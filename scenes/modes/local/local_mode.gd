@@ -64,7 +64,7 @@ var bridge: Node          = null
 @onready var lobby_layer: Control       = $UILayer/LobbyLayer
 @onready var countdown_overlay: Control = $UILayer/CountdownOverlay
 @onready var countdown_label: Label     = $UILayer/CountdownOverlay/Label
-@onready var pot_label: Label           = $UILayer/PotLabel
+@onready var pot_amount_3d: Label3D     = $Pot/Amount
 @onready var debug_panel: Control       = $UILayer/DebugGarbage
 @onready var _dbg_lines_label: Label    = $UILayer/DebugGarbage/VBox/AmountRow/LinesLabel
 @onready var zap_qr: TextureRect        = $UILayer/ZapQR
@@ -187,16 +187,11 @@ func _clear_arenas() -> void:
 func _spawn_arenas() -> void:
 	local_rules.setup(arena_count)
 
-	# Distribute lobby cards evenly across the lower portion of the screen.
-	# Proper 3D→screen projection for the cards is deferred (step 4).
-	var vp_size := get_viewport().get_visible_rect().size
-	var card_w  := vp_size.x / arena_count
-	var card_h  := 280.0
-
-	# Centre all arenas on the fixed camera X (6.75).
-	# p0 = ARENA_SPACING * (1 - N) / 2 puts arena 0 so the whole spread
-	# is symmetric around X=6.75 regardless of player count.
-	var p0 := ARENA_SPACING * (1.0 - arena_count) / 2.0
+	# Scale arenas so all N fit on screen, then re-centre around the camera's X=6.75.
+	# Arena content spans local x=[-3, 16.5] (centre = 6.75), so the scaled world
+	# centre of arena i is: position.x + 6.75 * s.
+	var s  := _compute_arena_scale()
+	var p0 := 6.75 * (1.0 - s) + ARENA_SPACING * s * (1.0 - arena_count) / 2.0
 
 	for i in range(arena_count):
 		var slot := PlayerSlot.new()
@@ -205,12 +200,13 @@ func _spawn_arenas() -> void:
 		slot.arena.garbage_enabled = true
 		slot.arena.show_level      = false
 		slot.arena.process_mode    = Node.PROCESS_MODE_PAUSABLE
-		slot.arena.position = Vector3(p0 + i * ARENA_SPACING, 0.0, 0.0)
+		slot.arena.scale    = Vector3(s, s, s)
+		slot.arena.position = Vector3(p0 + i * ARENA_SPACING * s, 0.0, 0.0)
 		add_child(slot.arena)
 
 		slot.card = LOBBY_CARD_SCENE.instantiate()
 		lobby_layer.add_child(slot.card)
-		slot.card.setup(i + 1, Vector2(card_w * i, vp_size.y - card_h), Vector2(card_w, card_h))
+		slot.card.setup(i + 1)
 
 		# Restore payment state carried over from the previous spawn.
 		if i < players.size():
@@ -241,6 +237,7 @@ func _spawn_arenas() -> void:
 
 	router.start_listening(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
 	_update_camera()
+	_position_lobby_cards.call_deferred()
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -253,8 +250,33 @@ func _update_pot() -> void:
 	_set_pot(config.free_pot_sats if config.free_mode else config.buy_in_sats * arena_count)
 
 func _set_pot(value: int) -> void:
-	pot_sats       = value
-	pot_label.text = "⚡ %d sats" % pot_sats
+	pot_sats            = value
+	pot_amount_3d.text  = "⚡ %d" % pot_sats
+
+func _position_lobby_cards() -> void:
+	var camera := get_viewport().get_camera_3d()
+	if camera == null:
+		return
+	for i in range(players.size()):
+		var ax := players[i].arena.position.x
+		var s  := players[i].arena.scale.x
+		var pts: Array[Vector2] = [
+			camera.unproject_position(Vector3(ax + 0.045  * s, 0.0,       -0.665 * s)),
+			camera.unproject_position(Vector3(ax + 0.045  * s, 20.0 * s,  -0.665 * s)),
+			camera.unproject_position(Vector3(ax + 10.045 * s, 0.0,       -0.665 * s)),
+			camera.unproject_position(Vector3(ax + 10.045 * s, 20.0 * s,  -0.665 * s)),
+		]
+		var s_min: Vector2 = pts[0]
+		var s_max: Vector2 = pts[0]
+		for p: Vector2 in pts:
+			s_min = s_min.min(p)
+			s_max = s_max.max(p)
+		players[i].card.position = s_min
+		players[i].card.size     = s_max - s_min
+
+func _compute_arena_scale() -> float:
+	# 4 players = baseline (1.0). Each player fewer adds a small bump.
+	return 1.0 + (MAX_PLAYERS - arena_count) * 0.15
 
 func _update_camera() -> void:
 	# Camera is fixed — never move it. Only toggle the ball.

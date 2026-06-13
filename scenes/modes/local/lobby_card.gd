@@ -26,10 +26,8 @@ func _ready() -> void:
 		func(): check_pressed.emit()
 	)
 
-func setup(num: int, board_pos: Vector2, board_size: Vector2) -> void:
+func setup(num: int) -> void:
 	player_num        = num
-	position          = board_pos
-	size              = board_size
 	player_label.text = "Player %d" % player_num
 	$CenterContainer/VBox/DeviceLabel.text = "Waiting to join..."
 	lightning.editable = false
