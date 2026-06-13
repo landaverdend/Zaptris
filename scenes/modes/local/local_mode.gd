@@ -67,9 +67,9 @@ var bridge: Node          = null
 @onready var pot_amount_3d: Label3D     = $Pot/Amount
 @onready var debug_panel: Control       = $UILayer/DebugGarbage
 @onready var _dbg_lines_label: Label    = $UILayer/DebugGarbage/VBox/AmountRow/LinesLabel
-@onready var zap_qr: TextureRect        = $UILayer/ZapQR
 
 var _dbg_lines: int = 4
+var _zap_qr_bytes: PackedByteArray = PackedByteArray()
 
 # ── Lifecycle ─────────────────────────────────────────────────────────────────
 
@@ -145,12 +145,14 @@ func _on_invoice_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
 	var slot: PlayerSlot = players[player_index]
 	slot.qr_bytes = qr_bytes
 	slot.card.set_qr(qr_bytes)
+	slot.arena.set_qr_texture(qr_bytes)
 
 func _on_invoice_paid(player_index: int) -> void:
 	if player_index >= players.size(): return
 	var slot: PlayerSlot = players[player_index]
 	slot.paid = true
 	slot.card.show_paid()
+	slot.arena.clear_qr_texture()
 
 func _on_check_pressed(index: int) -> void:
 	var address: String = players[index].card.get_lightning_address()
@@ -218,8 +220,10 @@ func _spawn_arenas() -> void:
 			slot.card.set_requires_payment()
 			if not slot.qr_bytes.is_empty():
 				slot.card.set_qr(slot.qr_bytes)
+				slot.arena.set_qr_texture(slot.qr_bytes)
 			if slot.paid:
 				slot.card.show_paid()
+				slot.arena.clear_qr_texture()
 			elif i >= players.size():  # genuinely new slot
 				bridge.create_player_invoice(i, config.buy_in_sats)
 		else:
@@ -237,6 +241,9 @@ func _spawn_arenas() -> void:
 
 	router.start_listening(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
 	_update_camera()
+	if not _zap_qr_bytes.is_empty():
+		for slot: PlayerSlot in players:
+			slot.arena.set_zap_qr_texture(_zap_qr_bytes)
 	_position_lobby_cards.call_deferred()
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -258,8 +265,8 @@ func _position_lobby_cards() -> void:
 	if camera == null:
 		return
 	for i in range(players.size()):
-		var ax := players[i].arena.position.x
-		var s  := players[i].arena.scale.x
+		var ax: float = players[i].arena.position.x
+		var s: float  = players[i].arena.scale.x
 		var pts: Array[Vector2] = [
 			camera.unproject_position(Vector3(ax + 0.045  * s, 0.0,       -0.665 * s)),
 			camera.unproject_position(Vector3(ax + 0.045  * s, 20.0 * s,  -0.665 * s)),
@@ -379,6 +386,7 @@ func _reset_payments() -> void:
 		slot.paid     = config.free_mode
 		slot.qr_bytes = PackedByteArray()
 		slot.card.reset_payment()
+		slot.arena.clear_qr_texture()
 		if not config.free_mode:
 			bridge.create_player_invoice(i, config.buy_in_sats)
 
@@ -429,12 +437,9 @@ func _on_zap_received(player_index: int, amount_sats: int, command: String) -> v
 ## Called by the bridge once it has fetched nostrPubkey from LNURL and
 ## generated the nostr:npub1… QR. Displays it in the top-right corner.
 func _on_zap_qr_ready(qr_bytes: PackedByteArray) -> void:
-	var img := Image.new()
-	if img.load_png_from_buffer(qr_bytes) != OK:
-		push_warning("[zap] failed to decode QR PNG")
-		return
-	zap_qr.texture = ImageTexture.create_from_image(img)
-	zap_qr.visible = true
+	_zap_qr_bytes = qr_bytes
+	for slot: PlayerSlot in players:
+		slot.arena.set_zap_qr_texture(qr_bytes)
 
 ## Returns the index of the sole leader, or -1 if scores are tied.
 func _highest_scorer() -> int:

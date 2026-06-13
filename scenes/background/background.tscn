@@ -26,8 +26,8 @@ sky_material = SubResource("ProceduralSkyMaterial_night")
 background_mode = 2
 sky = SubResource("Sky_night")
 ambient_light_source = 2
-ambient_light_color = Color(0.45, 0.55, 0.82, 1)
-ambient_light_energy = 0.6
+ambient_light_color = Color(0.13044703, 0.5980449, 0.8530027, 1)
+ambient_light_energy = 0.09
 tonemap_mode = 2
 glow_enabled = true
 glow_intensity = 1.0
@@ -77,7 +77,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6777954, 67.356125, -519.57
 transform = Transform3D(-0.09789555, 0, 0.9951968, 0, 1, 0, -0.9951968, 0, -0.09789555, 37.70971, 71.93197, -547.0642)
 
 [node name="building2" parent="." unique_id=177402109 instance=ExtResource("8_yvnxx")]
-transform = Transform3D(-0.19923107, 0, 0.9799525, -0.013117915, 0.9999104, -0.0026669623, -0.9798647, -0.013386275, -0.19921322, -6.5155163, 87.15609, -523.9758)
+transform = Transform3D(-0.18019469, 0.00025955122, 0.9836311, -0.013117916, 0.9999104, -0.0026669619, -0.9835434, -0.013383758, -0.18017507, 2.4388428, 87.15609, -526.67676)
 
 [node name="building3" parent="." unique_id=1810261564 instance=ExtResource("9_evef5")]
 transform = Transform3D(-0.03507388, 0, 0.9993847, 0, 1, 0, -0.9993847, 0, -0.03507388, 39.44761, 79.36604, -523.8882)
@@ -125,5 +125,8 @@ light_color = Color(0.47058824, 0.1764706, 0.2, 1)
 light_energy = 15.513
 omni_range = 9.887
 
-[node name="StreetLamp" parent="." unique_id=1992637962 instance=ExtResource("10_iptv4")]
+[node name="StreetLamp2" parent="." unique_id=1992637962 instance=ExtResource("10_iptv4")]
+transform = Transform3D(-1.9136271, 0, 0.58140427, 0, 2, 0, -0.58140427, 0, -1.9136271, 29.754093, -5.317, -3.457)
+
+[node name="StreetLamp" parent="." unique_id=161643470 instance=ExtResource("10_iptv4")]
 transform = Transform3D(-1.9331197, 0, -0.5128826, 0, 2, 0, 0.5128826, 0, -1.9331197, -18.39018, -5.316858, -3.4570208)

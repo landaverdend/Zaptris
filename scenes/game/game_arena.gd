@@ -1,3 +1,4 @@
+class_name GameArena
 extends Node3D
 
 @export var cell_size: float = 1.0
@@ -15,6 +16,7 @@ extends Node3D
 @onready var hold_box: Node3D    = $HoldBox
 @onready var piece_queue: Node3D = $PieceQueue
 @onready var scoreboard: Node3D  = $Scoreboard
+@onready var qr_display: Node3D  = $QRDisplay
 
 # Render layer 3 = arena.  ArenaLight's cull mask targets only this layer
 # so it won't bleed into the background.
@@ -24,6 +26,15 @@ func _ready() -> void:
 	logic.garbage_enabled = garbage_enabled
 	scoreboard.setup(logic, show_level)
 	_apply_layers(self)
+
+func set_qr_texture(bytes: PackedByteArray) -> void:
+	qr_display.show_qr(bytes, "⚡ BUY IN", "SCAN TO JOIN")
+
+func clear_qr_texture() -> void:
+	qr_display.hide_qr()
+
+func set_zap_qr_texture(bytes: PackedByteArray) -> void:
+	qr_display.show_qr(bytes, "⚡ ZAP TO ATTACK", "SCAN TO ATTACK")
 
 func _apply_layers(node: Node) -> void:
 	if node is VisualInstance3D:

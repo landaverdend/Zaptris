@@ -6,7 +6,7 @@
 [node name="Scoreboard" type="Node3D" unique_id=448700191]
 
 [node name="ScoreBox" parent="." unique_id=1006308564 instance=ExtResource("1_wlrip")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4551444, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.829, 0)
 
 [node name="Label" type="Label3D" parent="ScoreBox" unique_id=1009248686]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.116, 0.8, 0)
@@ -24,7 +24,7 @@ font_size = 176
 outline_size = 69
 
 [node name="Lines" parent="." unique_id=1319983464 instance=ExtResource("1_wlrip")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9155481, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.35, 0)
 
 [node name="Label" type="Label3D" parent="Lines" unique_id=578761173]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.116, 0.8, 0)
@@ -42,7 +42,7 @@ font_size = 176
 outline_size = 69
 
 [node name="Level" parent="Lines" unique_id=1241837092 instance=ExtResource("1_wlrip")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4103413, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.542, 0)
 
 [node name="Label" type="Label3D" parent="Lines/Level" unique_id=1335451289]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.116, 0.8, 0)
