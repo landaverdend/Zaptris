@@ -145,24 +145,44 @@ impl RustBridge {
         };
         let tx = self.tx.clone();
         self.rt.spawn(async move {
-            match client.create_invoice(player_index, amount_sats, &memo).await {
-                Ok(invoice) => {
-                    // Log via channel — godot_print! is not safe on background threads.
-                    tx.send(BridgeEvent::Log(format!(
-                        "[payments] invoice ready player={player_index} len={}", invoice.len()
-                    ))).ok();
-                    let png = tokio::task::spawn_blocking(move || qr::generate_png(&invoice))
-                        .await
-                        .unwrap_or_else(|e| { eprintln!("[qr] panic: {e}"); Vec::new() });
-                    tx.send(BridgeEvent::Log(format!(
-                        "[payments] qr png bytes={}", png.len()
-                    ))).ok();
-                    tx.send(BridgeEvent::InvoiceReady(player_index, png)).ok();
-                }
-                Err(e) => {
-                    tx.send(BridgeEvent::Log(format!(
-                        "[payments] invoice error player={player_index}: {e}"
-                    ))).ok();
+            // The NWC relay websocket may not be connected yet right after
+            // client initialisation. Retry a few times with a short delay
+            // before giving up — the loading skeleton covers the wait.
+            const MAX_ATTEMPTS: u32 = 5;
+            const RETRY_MS:     u64 = 2_000;
+
+            for attempt in 1..=MAX_ATTEMPTS {
+                match client.create_invoice(player_index, amount_sats, &memo).await {
+                    Ok(invoice) => {
+                        tx.send(BridgeEvent::Log(format!(
+                            "[payments] invoice ready player={player_index} len={}", invoice.len()
+                        ))).ok();
+                        let png = tokio::task::spawn_blocking(move || qr::generate_png(&invoice))
+                            .await
+                            .unwrap_or_else(|e| { eprintln!("[qr] panic: {e}"); Vec::new() });
+                        tx.send(BridgeEvent::Log(format!(
+                            "[payments] qr png bytes={}", png.len()
+                        ))).ok();
+                        tx.send(BridgeEvent::InvoiceReady(player_index, png)).ok();
+                        return;
+                    }
+                    Err(e) => {
+                        let retryable = e.contains("relay not connected")
+                            || e.contains("not published")
+                            || e.contains("status changed");
+                        if retryable && attempt < MAX_ATTEMPTS {
+                            tx.send(BridgeEvent::Log(format!(
+                                "[payments] relay not ready, retrying player={player_index} \
+                                 (attempt {attempt}/{MAX_ATTEMPTS}) in {RETRY_MS}ms…"
+                            ))).ok();
+                            tokio::time::sleep(tokio::time::Duration::from_millis(RETRY_MS)).await;
+                        } else {
+                            tx.send(BridgeEvent::Log(format!(
+                                "[payments] invoice error player={player_index} \
+                                 after {attempt} attempt(s): {e}"
+                            ))).ok();
+                        }
+                    }
                 }
             }
         });

@@ -21,16 +21,19 @@ func _ready() -> void:
 	_apply_layers(self)
 
 func set_qr_texture(bytes: PackedByteArray) -> void:
-	qr_display.show_qr(bytes, "⚡ BUY IN", "SCAN TO JOIN")
+	qr_display.show_qr(bytes)
 
 func clear_qr_texture() -> void:
 	qr_display.hide_qr()
+
+func add_sats_won(amount: int) -> void:
+	scoreboard.add_sats(amount)
 
 func show_loading_qr() -> void:
 	qr_display.show_loading()
 
 func set_zap_qr_texture(bytes: PackedByteArray) -> void:
-	qr_display.show_qr(bytes, "⚡ ZAP TO ATTACK", "SCAN TO ATTACK")
+	qr_display.show_qr(bytes)
 
 func _apply_layers(node: Node) -> void:
 	if node is VisualInstance3D:

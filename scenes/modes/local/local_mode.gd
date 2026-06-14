@@ -48,6 +48,8 @@ var pot_sats:     int = 0
 var starting_pot: int = 0
 ## Sats paid out per tick, computed once at game start.
 var sats_per_tick: int = 0
+## Player index that triggered the last pay_winner call; -1 if none pending.
+var _last_tick_winner: int = -1
 
 # ── Logic nodes ────────────────────────────────────────────────────────────────
 
@@ -398,10 +400,14 @@ func _on_payment_tick() -> void:
 	if slot.lightning_address.is_empty():
 		return
 	var amount := mini(sats_per_tick, pot_sats)
+	_last_tick_winner = winner_idx
 	payment_service.pay_winner(slot.lightning_address, amount)
 	_set_pot(pot_sats - amount)
 
 func _on_payment_settled(amount: int, success: bool) -> void:
+	if success and _last_tick_winner >= 0 and _last_tick_winner < players.size():
+		players[_last_tick_winner].arena.add_sats_won(amount)
+	_last_tick_winner = -1
 	if not success:
 		push_warning("[payment] failed for %d sats — pot already decremented" % amount)
 

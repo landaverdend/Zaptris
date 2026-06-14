@@ -4,8 +4,10 @@ extends Node3D
 @onready var lines_value: Label3D = $Lines/Value
 @onready var level_value: Label3D = $Lines/Level/Value
 @onready var level_box:   Node3D  = $Lines/Level
+@onready var sats_value:  Label3D = $SatsWon/Value
 
 var _logic: Node
+var _sats_won: int = 0
 
 func setup(logic: Node, show_level: bool = true) -> void:
 	_logic = logic
@@ -16,6 +18,12 @@ func setup(logic: Node, show_level: bool = true) -> void:
 	lines_value.text = "0"
 	level_value.text = "1"
 	level_box.visible = show_level
+	_sats_won = 0
+	sats_value.text  = "0"
+
+func add_sats(amount: int) -> void:
+	_sats_won += amount
+	sats_value.text = str(_sats_won)
 
 func _on_score_changed(new_score: int) -> void:
 	score_value.text = str(new_score)
