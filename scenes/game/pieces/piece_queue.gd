@@ -1,6 +1,6 @@
 extends Node3D
 
-const BLOCK_SCENE    := preload("res://scenes/game/block.tscn")
+const BLOCK_SCENE    := preload("res://scenes/game/board/block.tscn")
 const PREVIEW_COUNT  := 5
 const PREVIEW_SCALE  := 0.5   # blocks render at half size inside the queue
 const SLOT_SPACING   := 2.5   # world units between slot centers

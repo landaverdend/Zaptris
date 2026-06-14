@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bft633fhbho4i"]
 
-[ext_resource type="PackedScene" uid="uid://dfypdd71oyis6" path="res://scenes/game/Frame.tscn" id="1_wlrip"]
+[ext_resource type="PackedScene" uid="uid://dfypdd71oyis6" path="res://scenes/game/board/Frame.tscn" id="1_wlrip"]
 [ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="2_wmfsi"]
 
 [node name="Scoreboard" type="Node3D" unique_id=448700191]

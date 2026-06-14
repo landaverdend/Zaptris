@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dl1l5w3a7q6y3"]
 
-[ext_resource type="PackedScene" uid="uid://chh3bmua26pb1" path="res://scenes/game/game_arena.tscn" id="1_2igfx"]
+[ext_resource type="PackedScene" uid="uid://chh3bmua26pb1" path="res://scenes/game/arena/game_arena.tscn" id="1_2igfx"]
 [ext_resource type="Script" uid="uid://bv3ho1p5a6m2o" path="res://scenes/modes/solo/solo_mode.gd" id="1_xs6rg"]
 [ext_resource type="Script" uid="uid://d2yhohqqmrwex" path="res://scenes/modes/solo/solo_rules.gd" id="3_buwap"]
 [ext_resource type="PackedScene" uid="uid://rpccclpijd2n" path="res://scenes/background/background.tscn" id="5_background"]

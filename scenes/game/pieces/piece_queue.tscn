@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dy8nvn66bgur4"]
 
-[ext_resource type="Script" uid="uid://dwygl3vekd54d" path="res://scenes/game/piece_queue.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwygl3vekd54d" path="res://scenes/game/pieces/piece_queue.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://umpyblq1qyd1" path="res://assets/game_arena/piece_queue.glb" id="2_632v3"]
 [ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="3_h4yki"]
 

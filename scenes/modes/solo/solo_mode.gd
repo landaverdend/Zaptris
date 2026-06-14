@@ -1,7 +1,7 @@
 extends Node3D
 
-const PlayerInputScript  := preload("res://scenes/game/player_input.gd")
-const CountdownScript    := preload("res://scenes/game/countdown_timer.gd")
+const PlayerInputScript  := preload("res://scenes/game/logic/player_input.gd")
+const CountdownScript    := preload("res://scenes/game/logic/countdown_timer.gd")
 
 # ── State machine ──────────────────────────────────────────────────────────────
 

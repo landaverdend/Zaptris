@@ -1,6 +1,6 @@
 extends Node3D
 
-const BLOCK_SCENE   := preload("res://scenes/game/block.tscn")
+const BLOCK_SCENE   := preload("res://scenes/game/board/block.tscn")
 const MAX_LINES     := 20
 const GARBAGE_COLOR := Color(0.55, 0.04, 0.04)  # dark red
 

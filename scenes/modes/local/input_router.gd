@@ -1,7 +1,7 @@
 extends Node
 
-const PlayerInputScript    := preload("res://scenes/game/player_input.gd")
-const ControllerProfiles   := preload("res://scenes/game/controller_profiles.gd")
+const PlayerInputScript    := preload("res://scenes/game/logic/player_input.gd")
+const ControllerProfiles   := preload("res://scenes/game/logic/controller_profiles.gd")
 
 # Fired when a new device claims an arena slot.
 signal device_joined(arena_index: int, device_label: String)

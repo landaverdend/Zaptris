@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://1gctjms6h00i"]
 
-[ext_resource type="Script" uid="uid://dx86e4aatjbu6" path="res://scenes/game/hold_box.gd" id="1"]
+[ext_resource type="Script" uid="uid://dx86e4aatjbu6" path="res://scenes/game/pieces/hold_box.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://bcn0a8jd4hs8" path="res://assets/game_arena/hold_frame.glb" id="2_drh82"]
 [ext_resource type="FontFile" uid="uid://dap6iuirk0dla" path="res://assets/ui/fonts/Orbitron/static/Orbitron-ExtraBold.ttf" id="3_o2vke"]
 

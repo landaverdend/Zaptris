@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://i164ym0m5xs3"]
 
-[ext_resource type="Script" uid="uid://cvujvc528323o" path="res://scenes/game/qr_display.gd" id="1_qrd"]
+[ext_resource type="Script" uid="uid://cvujvc528323o" path="res://scenes/game/ui/qr_display.gd" id="1_qrd"]
 [ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="2_font"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_panel"]

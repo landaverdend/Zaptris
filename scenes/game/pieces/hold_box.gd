@@ -1,6 +1,6 @@
 extends Node3D
 
-const BLOCK_SCENE := preload("res://scenes/game/block.tscn")
+const BLOCK_SCENE := preload("res://scenes/game/board/block.tscn")
 
 @onready var logic: Node = $"../GameLogic"
 @onready var piece_display: Node3D = $PieceDisplay

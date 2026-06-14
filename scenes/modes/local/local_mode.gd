@@ -1,10 +1,10 @@
 extends Node3D
 
-const ARENA_SCENE        := preload("res://scenes/game/game_arena.tscn")
+const ARENA_SCENE        := preload("res://scenes/game/arena/game_arena.tscn")
 const LOBBY_CARD_SCENE   := preload("res://scenes/modes/local/lobby_card.tscn")
 const ROUTER_SCRIPT      := preload("res://scenes/modes/local/input_router.gd")
 const LOCAL_RULES_SCRIPT := preload("res://scenes/modes/local/local_rules.gd")
-const COUNTDOWN_SCRIPT   := preload("res://scenes/game/countdown_timer.gd")
+const COUNTDOWN_SCRIPT   := preload("res://scenes/game/logic/countdown_timer.gd")
 
 const MIN_PLAYERS := 2
 const MAX_PLAYERS := 4

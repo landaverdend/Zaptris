@@ -2,7 +2,7 @@ extends Node3D
 
 const WARNING_THRESHOLD = 3  # locked cell within top N visible rows triggers warning
 
-const BLOCK_SCENE := preload("res://scenes/game/block.tscn")
+const BLOCK_SCENE := preload("res://scenes/game/board/block.tscn")
 
 # Grid constants — mirror GameLogic so board.gd doesn't depend on its internals.
 const TOTAL_ROWS  := 23  # GameLogic.ROWS
@@ -229,7 +229,7 @@ func _on_hard_drop(kind: String, rotation: int, col: int, start_row: int, end_ro
 	var height := top_y - bottom_y
 
 	var mat := ShaderMaterial.new()
-	mat.shader = preload("res://scenes/game/hard_drop_streak.gdshader")
+	mat.shader = preload("res://scenes/game/effects/hard_drop_streak.gdshader")
 	mat.set_shader_parameter("intensity", HARD_DROP_OPACITY)
 
 	var quad := QuadMesh.new()

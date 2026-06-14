@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://bq24101nmxb7g" path="res://scenes/modes/local/local_mode.gd" id="1_local"]
 [ext_resource type="PackedScene" uid="uid://rpccclpijd2n" path="res://scenes/background/background.tscn" id="2_background"]
-[ext_resource type="PackedScene" uid="uid://dfypdd71oyis6" path="res://scenes/game/Frame.tscn" id="3_o06ul"]
+[ext_resource type="PackedScene" uid="uid://dfypdd71oyis6" path="res://scenes/game/board/Frame.tscn" id="3_o06ul"]
 [ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="4_pwlng"]
-[ext_resource type="PackedScene" uid="uid://i164ym0m5xs3" path="res://scenes/game/qr_display.tscn" id="5_q3mdj"]
+[ext_resource type="PackedScene" uid="uid://i164ym0m5xs3" path="res://scenes/game/ui/qr_display.tscn" id="5_q3mdj"]
 
 [node name="LocalMode" type="Node3D" unique_id=-294967295]
 process_mode = 3
