@@ -17,7 +17,7 @@ const RENDER_LAYER := 5  # bits: layer 1 + layer 3
 func _ready() -> void:
 	var cfg := config if config else GameArenaConfig.new()
 	logic.garbage_enabled = cfg.garbage_enabled
-	scoreboard.setup(logic, cfg.show_level)
+	scoreboard.setup(logic, cfg.show_level, cfg.show_sats)
 	_apply_layers(self)
 
 func set_qr_texture(bytes: PackedByteArray) -> void:

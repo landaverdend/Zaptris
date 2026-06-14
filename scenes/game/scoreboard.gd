@@ -9,7 +9,7 @@ extends Node3D
 var _logic: Node
 var _sats_won: int = 0
 
-func setup(logic: Node, show_level: bool = true) -> void:
+func setup(logic: Node, show_level: bool = true, show_sats: bool = false) -> void:
 	_logic = logic
 	_logic.scorer.score_changed.connect(_on_score_changed)
 	_logic.lines_cleared.connect(_on_lines_cleared)
@@ -19,7 +19,8 @@ func setup(logic: Node, show_level: bool = true) -> void:
 	level_value.text = "1"
 	level_box.visible = show_level
 	_sats_won = 0
-	sats_value.text  = "0"
+	sats_value.text        = "0"
+	$SatsWon.visible       = show_sats
 
 func add_sats(amount: int) -> void:
 	_sats_won += amount

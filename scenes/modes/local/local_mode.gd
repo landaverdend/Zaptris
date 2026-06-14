@@ -194,6 +194,7 @@ func _spawn_arenas() -> void:
 		cfg.garbage_enabled = true
 		cfg.show_level      = false
 		cfg.show_qr         = arena_count > 1
+		cfg.show_sats       = arena_count > 1
 
 		slot.arena = ARENA_SCENE.instantiate()
 		slot.arena.config       = cfg
