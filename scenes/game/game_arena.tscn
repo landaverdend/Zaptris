@@ -7,11 +7,14 @@
 [ext_resource type="PackedScene" uid="uid://1gctjms6h00i" path="res://scenes/game/hold_box.tscn" id="4_6du5l"]
 [ext_resource type="PackedScene" uid="uid://dmsqmcnk2k2o0" path="res://scenes/game/garbage_meter.tscn" id="4_gmeter"]
 [ext_resource type="PackedScene" uid="uid://dy8nvn66bgur4" path="res://scenes/game/piece_queue.tscn" id="4_queue"]
+[ext_resource type="Material" uid="uid://b0v3l2unsu3lf" path="res://scenes/game/danger_particle.tres" id="7_0s1q1"]
 [ext_resource type="Shader" uid="uid://duc74iy1q3b72" path="res://scenes/game/board_grid.gdshader" id="7_grid"]
 [ext_resource type="PackedScene" uid="uid://bk25p3ejnapj2" path="res://assets/game_arena/board_frame.glb" id="11_saq4h"]
 [ext_resource type="PackedScene" uid="uid://bft633fhbho4i" path="res://scenes/game/scoreboard.tscn" id="12_64am1"]
 [ext_resource type="Script" uid="uid://bhscqk7bv3np1" path="res://scenes/game/scoreboard.gd" id="13_0m17k"]
 [ext_resource type="PackedScene" uid="uid://i164ym0m5xs3" path="res://scenes/game/qr_display.tscn" id="14_qrd"]
+[ext_resource type="Shader" uid="uid://w7jcc1koh6od" path="res://scenes/game/danger_overlay.gdshader" id="15_danger"]
+[ext_resource type="Script" uid="uid://d08h6job3tl06" path="res://scenes/game/danger_overlay.gd" id="16_danger"]
 
 [sub_resource type="ShaderMaterial" id="StandardMaterial3D_782ta"]
 render_priority = 0
@@ -24,6 +27,47 @@ shader_parameter/line_alpha = 0.610000028975
 
 [sub_resource type="BoxMesh" id="BoxMesh_8qre4"]
 size = Vector3(10, 20, 0.2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_danger"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("15_danger")
+shader_parameter/danger = 0.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_danger"]
+size = Vector2(10, 20)
+
+[sub_resource type="Gradient" id="Gradient_eomad"]
+colors = PackedColorArray(1, 0.15, 0.05, 1, 1, 0.3, 0.05, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_5nito"]
+gradient = SubResource("Gradient_eomad")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_he5vm"]
+emission_shape = 3
+emission_box_extents = Vector3(5, 10, 0)
+direction = Vector3(0, 1, 0)
+spread = 70.0
+initial_velocity_min = 0.5
+initial_velocity_max = 2.0
+gravity = Vector3(0, 0.3, 0)
+scale_min = 0.06
+scale_max = 0.14
+color_ramp = SubResource("GradientTexture1D_5nito")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_in76w"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_a2vxh"]
+material = SubResource("StandardMaterial3D_in76w")
+size = Vector2(0.25, 0.25)
 
 [node name="GameArena" type="Node3D" unique_id=148713631]
 script = ExtResource("0_arena")
@@ -39,6 +83,23 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.045, 10, -0.665)
 layers = 5
 material_override = SubResource("StandardMaterial3D_782ta")
 mesh = SubResource("BoxMesh_8qre4")
+
+[node name="DangerOverlay" type="Node3D" parent="Board" unique_id=881726354]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.045, 10, -0.495)
+script = ExtResource("16_danger")
+
+[node name="Mesh" type="MeshInstance3D" parent="Board/DangerOverlay" unique_id=991726354]
+layers = 5
+material_override = SubResource("ShaderMaterial_danger")
+mesh = SubResource("QuadMesh_danger")
+
+[node name="Particles" type="GPUParticles3D" parent="Board/DangerOverlay" unique_id=518853171]
+material_override = ExtResource("7_0s1q1")
+emitting = false
+amount = 6
+lifetime = 1.5
+process_material = SubResource("ParticleProcessMaterial_he5vm")
+draw_pass_1 = SubResource("QuadMesh_a2vxh")
 
 [node name="PlayerInput" type="Node" parent="." unique_id=1234567890]
 script = ExtResource("3_input")

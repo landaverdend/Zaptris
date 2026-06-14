@@ -3,12 +3,13 @@ extends Node3D
 
 @export var config: GameArenaConfig
 
-@onready var logic: Node         = $GameLogic
-@onready var board: Node3D       = $Board
-@onready var hold_box: Node3D    = $HoldBox
-@onready var piece_queue: Node3D = $PieceQueue
-@onready var scoreboard: Node3D  = $Scoreboard
-@onready var qr_display: Node3D  = $QRDisplay
+@onready var logic: Node            = $GameLogic
+@onready var board: Node3D          = $Board
+@onready var hold_box: Node3D       = $HoldBox
+@onready var piece_queue: Node3D    = $PieceQueue
+@onready var scoreboard: Node3D     = $Scoreboard
+@onready var qr_display: Node3D     = $QRDisplay
+@onready var danger_overlay: Node3D = $Board/DangerOverlay
 
 # Render layer 3 = arena.  ArenaLight's cull mask targets only this layer
 # so it won't bleed into the background.
@@ -18,6 +19,7 @@ func _ready() -> void:
 	var cfg := config if config else GameArenaConfig.new()
 	logic.garbage_enabled = cfg.garbage_enabled
 	scoreboard.setup(logic, cfg.show_level, cfg.show_sats)
+	logic.danger_changed.connect(func(is_danger: bool): danger_overlay.activate(is_danger))
 	_apply_layers(self)
 
 func set_qr_texture(bytes: PackedByteArray) -> void:
