@@ -5,6 +5,7 @@ const COLS = 10
 const ROWS = 23           # 3 buffer + 20 visible
 const BUFFER_ROWS = 3     # hidden rows above the visible board (rows 0–2)
 const DANGER_ROWS = 2     # rows 0–1 are the kill zone — piece here = X warning
+const DANGER_THRESHOLD = 3  # locked cell within top N visible rows triggers danger
 var cell_size: int = 36
 
 const LOCK_DELAY_FRAMES = 30    # frames before a floored piece locks (500ms @ 60Hz)
@@ -38,6 +39,9 @@ signal pending_garbage_changed(total: int)
 signal attack_generated(lines: int)
 signal hard_drop_performed(kind: String, rotation: int, col: int, start_row: int, end_row: int)
 signal lines_about_to_clear(rows: Array, clear_type: String, origin_col: float)
+signal danger_changed(is_danger: bool)
+
+var _in_danger: bool = false
 
 func _ready() -> void:
 	_init_grid()
@@ -148,6 +152,7 @@ func reset(bag_seed: int) -> void:
 	hold_changed.emit()
 	queue_changed.emit()
 	pending_garbage_changed.emit(0)
+	_check_danger()
 
 # ── Gravity interface ─────────────────────────────────────────────────────────
 
@@ -260,6 +265,7 @@ func _push_garbage(lines: int, gap_col: int) -> void:
 			return
 	pending_garbage_changed.emit(get_pending_garbage())
 	grid_changed.emit()
+	_check_danger()
 
 # ── Ghost piece ───────────────────────────────────────────────────────────────
 
@@ -379,6 +385,7 @@ func lock_piece() -> void:
 			attack_generated.emit(attack)
 	grid_changed.emit()
 	spawn_piece()
+	_check_danger()
 
 # Returns the horizontal midpoint (in grid-column units) of the active piece.
 # Averages the dc offsets of all cells so the result is accurate for every
@@ -389,6 +396,20 @@ func _piece_origin_col() -> float:
 	for offset in offsets:
 		sum_dc += offset[1]
 	return active_piece.col + float(sum_dc) / float(offsets.size())
+
+func _check_danger() -> void:
+	var danger := false
+	for r in range(BUFFER_ROWS, BUFFER_ROWS + DANGER_THRESHOLD):
+		for c in range(COLS):
+			if grid[r][c] != null:
+				danger = true
+				break
+		if danger:
+			break
+	if danger != _in_danger:
+		_in_danger = danger
+		danger_changed.emit(danger)
+		print("DANGER MODE: ", danger)
 
 func _find_full_rows() -> Array:
 	var rows: Array = []

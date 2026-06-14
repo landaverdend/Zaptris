@@ -9,6 +9,8 @@ signal garbage_attack(player_index: int, amount_sats: int)
 signal address_checked(player_index: int, is_valid: bool, message: String)
 ## Payout result from pay_winner() / pay_pot_remainder().
 signal payment_settled(amount_sats: int, success: bool)
+## Fired once after init — true if HOST_NWC was configured successfully.
+signal nwc_ready(online: bool)
 
 var _bridge: Node = null
 var _attack_sats: int = 15
@@ -27,6 +29,8 @@ func _ready() -> void:
 	poll_timer.autostart = true
 	poll_timer.timeout.connect(_bridge.poll)
 	add_child(poll_timer)
+
+	nwc_ready.emit(_bridge.is_nwc_configured())
 
 # ── Public API ────────────────────────────────────────────────────────────────
 

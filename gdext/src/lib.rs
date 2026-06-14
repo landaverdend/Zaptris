@@ -72,6 +72,14 @@ impl INode for RustBridge {
 #[godot_api]
 impl RustBridge {
 
+    // ── Status ────────────────────────────────────────────────────────────────
+
+    /// Returns true if HOST_NWC was set and the NWC client initialised successfully.
+    #[func]
+    fn is_nwc_configured(&self) -> bool {
+        self.payment_client.is_some()
+    }
+
     // ── Queue drain (called by GDScript Timer every 1s) ───────────────────────
 
     #[func]

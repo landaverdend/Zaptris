@@ -42,6 +42,9 @@ var state   := State.LOBBY
 var players: Array[PlayerSlot] = []
 var arena_count: int = 2
 
+## Which player indices have received their QR code (lobby pre-creation).
+var _qr_ready: Array[bool] = []
+
 ## Total sats in the pot. Decremented as sats stream out during gameplay.
 var pot_sats:     int = 0
 ## Locked in at game start — payout amount is derived from this, not live pot_sats.
@@ -70,6 +73,7 @@ var payment_service: PaymentService = null
 @onready var pot_amount_3d: Label3D     = $Pot/Amount
 @onready var debug_panel: Control       = $UILayer/DebugGarbage
 @onready var _dbg_lines_label: Label    = $UILayer/DebugGarbage/VBox/AmountRow/LinesLabel
+@onready var _nwc_label: Label          = $UILayer/NWCStatus
 
 var _dbg_lines: int = 4
 
@@ -78,6 +82,7 @@ var _dbg_lines: int = 4
 func _ready() -> void:
 	payment_service = PaymentService.new()
 	payment_service.name = "PaymentService"
+	payment_service.nwc_ready.connect(_on_nwc_ready)
 	add_child(payment_service)
 	payment_service.invoice_qr_ready.connect(_on_invoice_qr_ready)
 	payment_service.garbage_attack.connect(_on_garbage_attack)
@@ -135,6 +140,10 @@ func _on_device_joined(arena_index: int, device_label: String) -> void:
 ## Attack invoice QR ready — show it on the arena so spectators can scan.
 func _on_invoice_qr_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
 	print("[LocalMode] invoice_qr_ready player=%d bytes=%d" % [player_index, qr_bytes.size()])
+	if player_index < _qr_ready.size():
+		_qr_ready[player_index] = true
+	_nwc_label.text     = "NWC ⚡ ONLINE"
+	_nwc_label.modulate = Color(0.3, 1.0, 0.4, 1)
 	if player_index >= players.size(): return
 	players[player_index].arena.set_zap_qr_texture(qr_bytes)
 
@@ -171,8 +180,8 @@ func _respawn() -> void:
 func _clear_arenas() -> void:
 	router.stop_listening()
 	local_rules.reset_ready()
-	# Slots are rebuilt below but payment state (paid, qr_bytes) is preserved
-	# in the new slots — only _reset_payments() wipes it (on match end).
+	if payment_service:
+		payment_service.clear_invoices()
 	for slot in players:
 		slot.arena.queue_free()
 		slot.card.queue_free()
@@ -229,6 +238,13 @@ func _spawn_arenas() -> void:
 		players.pop_back()
 
 	router.start_listening(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
+
+	# Pre-create attack invoices so the relay has time to connect before game start.
+	_qr_ready.resize(arena_count)
+	_qr_ready.fill(false)
+	if arena_count > 1:
+		payment_service.start_attack_invoices(arena_count, config.attack_sats)
+
 	_update_camera()
 	_position_lobby_cards.call_deferred()
 
@@ -313,9 +329,9 @@ func _begin_play() -> void:
 	local_rules.start_round(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
 
 	if arena_count > 1:
-		payment_service.start_attack_invoices(arena_count, config.attack_sats)
-		for slot: PlayerSlot in players:
-			slot.arena.show_loading_qr()
+		for i in range(players.size()):
+			if i >= _qr_ready.size() or not _qr_ready[i]:
+				players[i].arena.show_loading_qr()
 
 	# Lock in the starting pot and derive the per-tick payout once.
 	starting_pot  = pot_sats
@@ -366,6 +382,9 @@ func _reset_match() -> void:
 		slot.card.reset_ready_button()
 	_reset_payments()
 	_update_pot()
+	if arena_count > 1:
+		_qr_ready.fill(false)
+		payment_service.start_attack_invoices(arena_count, config.attack_sats)
 	countdown_overlay.hide()
 	lobby_layer.show()
 	$UILayer/PlayerControls.show()
@@ -427,6 +446,16 @@ func _highest_scorer() -> int:
 		elif score == best_score:
 			tied = true
 	return -1 if tied else best_idx
+
+# ── NWC status ────────────────────────────────────────────────────────────────
+
+func _on_nwc_ready(online: bool) -> void:
+	if online:
+		_nwc_label.text     = "NWC ◌ CONNECTING..."
+		_nwc_label.modulate = Color(1.0, 0.85, 0.1, 1)
+	else:
+		_nwc_label.text     = "NWC ○ OFFLINE"
+		_nwc_label.modulate = Color(0.45, 0.45, 0.45, 1)
 
 # ── Debug ─────────────────────────────────────────────────────────────────────
 

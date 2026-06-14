@@ -97,7 +97,7 @@ impl PaymentClient {
                     };
                     match nwc.lookup_invoice(params).await {
                         Ok(resp) if resp.settled_at.is_some() => {
-                            let amount_sats = resp.amount as i64;
+                            let amount_sats = (resp.amount / 1000) as i64;
                             eprintln!("[payments] invoice settled — job_id={job_id} amount={amount_sats}");
                             pending.lock().unwrap().remove(&hash);
                             tx.send(crate::BridgeEvent::InvoicePaid(job_id, amount_sats)).ok();
