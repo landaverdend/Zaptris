@@ -65,10 +65,18 @@ horizontal_alignment = 1
 
 [node name="RestartButton" type="Button" parent="UILayer/GameOverScreen/CenterContainer/VBox" unique_id=2000000006]
 layout_mode = 2
+focus_neighbor_top = NodePath("../MenuButton")
+focus_neighbor_bottom = NodePath("../MenuButton")
+focus_next = NodePath("../MenuButton")
+focus_previous = NodePath("../MenuButton")
 text = "PLAY AGAIN"
 
 [node name="MenuButton" type="Button" parent="UILayer/GameOverScreen/CenterContainer/VBox" unique_id=2000000007]
 layout_mode = 2
+focus_neighbor_top = NodePath("../RestartButton")
+focus_neighbor_bottom = NodePath("../RestartButton")
+focus_next = NodePath("../RestartButton")
+focus_previous = NodePath("../RestartButton")
 text = "MAIN MENU"
 
 [node name="PauseScreen" type="Control" parent="UILayer" unique_id=-1294967295]
@@ -110,14 +118,26 @@ horizontal_alignment = 1
 
 [node name="ResumeButton" type="Button" parent="UILayer/PauseScreen/CenterContainer/VBox" unique_id=-1294967290]
 layout_mode = 2
+focus_neighbor_top = NodePath("../MenuButton")
+focus_neighbor_bottom = NodePath("../RestartButton")
+focus_next = NodePath("../RestartButton")
+focus_previous = NodePath("../MenuButton")
 text = "RESUME"
 
 [node name="RestartButton" type="Button" parent="UILayer/PauseScreen/CenterContainer/VBox" unique_id=-1294967289]
 layout_mode = 2
+focus_neighbor_top = NodePath("../ResumeButton")
+focus_neighbor_bottom = NodePath("../MenuButton")
+focus_next = NodePath("../MenuButton")
+focus_previous = NodePath("../ResumeButton")
 text = "RESTART"
 
 [node name="MenuButton" type="Button" parent="UILayer/PauseScreen/CenterContainer/VBox" unique_id=-1294967288]
 layout_mode = 2
+focus_neighbor_top = NodePath("../RestartButton")
+focus_neighbor_bottom = NodePath("../ResumeButton")
+focus_next = NodePath("../ResumeButton")
+focus_previous = NodePath("../RestartButton")
 text = "MAIN MENU"
 
 [node name="Countdown" type="Control" parent="UILayer" unique_id=1356403402]

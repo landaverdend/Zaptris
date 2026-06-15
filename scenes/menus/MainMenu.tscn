@@ -33,14 +33,26 @@ horizontal_alignment = 1
 
 [node name="Solo" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1109589247]
 layout_mode = 2
+focus_neighbor_top = NodePath("../Options")
+focus_neighbor_bottom = NodePath("../Multiplayer")
+focus_next = NodePath("../Multiplayer")
+focus_previous = NodePath("../Options")
 text = "Solo"
 
 [node name="Multiplayer" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1489044475]
 layout_mode = 2
+focus_neighbor_top = NodePath("../Solo")
+focus_neighbor_bottom = NodePath("../Options")
+focus_next = NodePath("../Options")
+focus_previous = NodePath("../Solo")
 text = "Local Multiplayer"
 
 [node name="Options" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1612943812]
 layout_mode = 2
+focus_neighbor_top = NodePath("../Multiplayer")
+focus_neighbor_bottom = NodePath("../Solo")
+focus_next = NodePath("../Solo")
+focus_previous = NodePath("../Multiplayer")
 text = "Options
 "
 

@@ -86,6 +86,7 @@ mesh = SubResource("BoxMesh_8qre4")
 
 [node name="DangerOverlay" type="Node3D" parent="Board" unique_id=881726354]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.045, 10, -0.495)
+visible = false
 script = ExtResource("16_danger")
 
 [node name="Mesh" type="MeshInstance3D" parent="Board/DangerOverlay" unique_id=991726354]

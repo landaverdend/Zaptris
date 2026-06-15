@@ -1,6 +1,6 @@
 class_name PlayerInput extends Node
 
-enum InputSource { UNCLAIMED, KEYBOARD, CONTROLLER }
+enum InputSource { UNCLAIMED, KEYBOARD, CONTROLLER, ANY }
 
 # Set via configure() — not exported since InputRouter owns assignment.
 var input_source: InputSource = InputSource.UNCLAIMED
@@ -63,6 +63,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				return
 			if event.device != device_id:
 				return
+		InputSource.ANY:
+			pass
 
 	# One-shot actions
 	if event.is_action_pressed("hard_drop"):

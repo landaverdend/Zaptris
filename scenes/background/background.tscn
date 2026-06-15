@@ -55,7 +55,7 @@ shader_parameter/bottom_color = Color(0.034812562, 0.1182662, 0.2827367, 1)
 shader_parameter/sun_scatter = Color(0.2806805, 0.058539763, 0.06578804, 1)
 shader_parameter/astro_tint = Color(1, 1, 1, 1)
 shader_parameter/astro_scale = 10.0
-shader_parameter/astro_intensity = 1.1000000014901201
+shader_parameter/astro_intensity = 1.10000000149012
 shader_parameter/stars_intensity = 0.60000000894072
 shader_parameter/shooting_stars_intensity = 0.0
 shader_parameter/shooting_star_tint = Color(0, 0, 0, 1)
@@ -68,6 +68,11 @@ background_mode = 2
 sky = SubResource("Sky_3mmpu")
 sky_custom_fov = 90.0
 ambient_light_source = 3
+glow_enabled = true
+glow_intensity = 0.6
+glow_strength = 1.2
+glow_bloom = 0.2
+glow_blend_mode = 2
 adjustment_enabled = true
 adjustment_contrast = 1.09
 adjustment_saturation = 1.5
@@ -114,7 +119,7 @@ transform = Transform3D(-0.03507388, 0, 0.9993847, 0, 1, 0, -0.9993847, 0, -0.03
 
 [node name="SpotLight3D3" type="SpotLight3D" parent="." unique_id=154088775]
 transform = Transform3D(0.99604326, -0.08292232, -0.03196315, 0.05545925, 0.8610247, -0.5055303, 0.0694408, 0.5017574, 0.86221665, 5.7705135, 60.98456, -473.35638)
-light_energy = 0.012
+light_energy = 0.074
 light_indirect_energy = 0.0
 light_volumetric_fog_energy = 16.0
 light_specular = 0.0
@@ -125,19 +130,18 @@ spot_angle_attenuation = 0.7320433
 
 [node name="SpotLight3D2" type="SpotLight3D" parent="." unique_id=176513493]
 transform = Transform3D(0.99651116, 0.053220723, 0.06428931, 0.0012077903, 0.7610248, -0.6487217, -0.083451204, 0.646536, 0.75830543, 11.735933, 58.263, -468.977)
-light_color = Color(0, 0.65, 1, 1)
-light_energy = 13.42
+light_color = Color(0, 0.9764706, 1, 1)
+light_energy = 20.0
 light_volumetric_fog_energy = 16.0
 spot_range = 120.0
 spot_attenuation = 0.78
 spot_angle = 10.16
 
 [node name="SpotLight3D" type="SpotLight3D" parent="." unique_id=1628665918]
-transform = Transform3D(0.90231025, -0.13900426, -0.40806136, 0.079100564, 0.9839014, -0.1602534, 0.4237681, 0.11232039, 0.8987796, -22.517982, 58.26271, -468.97668)
-light_color = Color(0, 0.65, 1, 1)
-light_energy = 15.74
-light_volumetric_fog_energy = 16.0
-light_cull_mask = 2
+transform = Transform3D(0.90231025, -0.13900425, -0.4080614, 0.071054615, 0.9815959, -0.1772593, 0.4251912, 0.13094825, 0.89558095, -22.517982, 58.26271, -468.97668)
+light_color = Color(0, 0.9764706, 1, 1)
+light_energy = 20.0
+light_cull_mask = 3
 spot_range = 120.0
 spot_attenuation = 0.67
 spot_angle = 14.1
@@ -164,7 +168,7 @@ transform = Transform3D(-0.19413157, 0, 0.9809756, 0, 1, 0, -0.9809756, 0, -0.19
 environment = SubResource("Environment_aga1r")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=436258489]
-transform = Transform3D(0.7573556, -0.52643824, 0.38636163, 0.11720024, 0.69164526, 0.7126646, -0.6423991, -0.4944588, 0.58552, 0, 0, 62.13797)
+transform = Transform3D(0.75735563, -0.52643824, 0.3863617, 0.51240754, 0.845873, 0.14811301, -0.40478522, 0.08580038, 0.9103775, 5.5631256, 5.464836, 49.42991)
 light_color = Color(1, 0.7647059, 0.83137256, 1)
 light_energy = 0.1
 
@@ -175,6 +179,18 @@ light_indirect_energy = 2.969
 light_volumetric_fog_energy = 0.745
 light_specular = 5.355
 spot_range = 25.629
+spot_attenuation = 1.21
+spot_angle = 42.92
+spot_angle_attenuation = 1.1487037
+
+[node name="building_light" type="SpotLight3D" parent="building_light" unique_id=432230238]
+transform = Transform3D(0.8804378, 0.30103603, -0.36634207, -0.34473804, 0.9368641, -0.05866256, 0.32555315, 0.17794076, 0.92862916, -23.788452, -16.743614, 33.745636)
+light_color = Color(1, 0.627451, 0.98039216, 1)
+light_energy = 17.145
+light_indirect_energy = 2.969
+light_volumetric_fog_energy = 0.745
+light_specular = 5.355
+spot_range = 70.082245
 spot_attenuation = 1.21
 spot_angle = 42.92
 spot_angle_attenuation = 1.1487037

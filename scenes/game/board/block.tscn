@@ -1,9 +1,11 @@
-[gd_scene format=3 uid="uid://c04igd8bksjlf"]
+[gd_scene format=3 uid="uid://pogx3vhctfcm"]
 
-[ext_resource type="Script" uid="uid://2j4uk21hpsld" path="res://scenes/game/board/block.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://57f06g8jexuy" path="res://assets/game_arena/block.glb" id="2_block"]
+[ext_resource type="Script" uid="uid://dwpdb1uos0r5o" path="res://scenes/game/board/block.gd" id="2_g4ao4"]
+[ext_resource type="Texture2D" uid="uid://m2qcrwjkouco" path="res://assets/game_arena/block_sprite.png" id="3_sprite"]
 
 [node name="Block" type="Node3D" unique_id=226599647]
-script = ExtResource("1")
+script = ExtResource("2_g4ao4")
 
-[node name="BlockMesh" parent="." unique_id=2043371614 instance=ExtResource("2_block")]
+[node name="Sprite" type="Sprite3D" parent="." unique_id=303855633]
+pixel_size = 0.0149
+texture = ExtResource("3_sprite")
