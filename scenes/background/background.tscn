@@ -168,7 +168,7 @@ transform = Transform3D(-0.19413157, 0, 0.9809756, 0, 1, 0, -0.9809756, 0, -0.19
 environment = SubResource("Environment_aga1r")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=436258489]
-transform = Transform3D(0.75735563, -0.52643824, 0.3863617, 0.51240754, 0.845873, 0.14811301, -0.40478522, 0.08580038, 0.9103775, 5.5631256, 5.464836, 49.42991)
+transform = Transform3D(0.75735563, -0.52643824, 0.38636166, 0.51240754, 0.845873, 0.14811298, -0.40478522, 0.08580042, 0.91037756, 5.5631256, -4.872877, 102.8716)
 light_color = Color(1, 0.7647059, 0.83137256, 1)
 light_energy = 0.1
 

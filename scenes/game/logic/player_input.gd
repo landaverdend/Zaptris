@@ -14,7 +14,7 @@ var device_id: int = -1
 var _held: Dictionary = {}
 var _last_horizontal: String = ""
 
-const REPEATABLE = ["move_left", "move_right", "soft_drop"]
+const HORIZONTAL = ["move_left", "move_right"]
 
 # Called by InputRouter (local) or SoloMode (solo) to bind a device.
 func configure(source: InputSource, dev_id: int = -1) -> void:
@@ -34,7 +34,15 @@ func _physics_process(_delta: float) -> void:
 		return
 	if logic.active_piece == null:
 		return
-	for action in _held.keys():
+
+	# Soft drop: fires every frame while held, no DAS delay.
+	if _held.has("soft_drop"):
+		logic.soft_drop()
+
+	# DAS/ARR for horizontal movement only.
+	for action in HORIZONTAL:
+		if not _held.has(action):
+			continue
 		var held = _held[action]
 		held["frames"] += 1
 		if held["frames"] < das_frames:
@@ -50,6 +58,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if input_source == InputSource.UNCLAIMED:
 		return
 	if logic.active_piece == null:
+		return
+
+	# OS key-repeat events would reset the DAS counter mid-charge — filter them.
+	if event is InputEventKey and event.echo:
 		return
 
 	# Filter by source — keyboard and controller 0 both have device=0,
@@ -80,11 +92,18 @@ func _unhandled_input(event: InputEvent) -> void:
 		logic.hold()
 		return
 
-	# Repeatable actions
-	for action in REPEATABLE:
+	# Soft drop: just track press/release; _physics_process fires it every frame.
+	if event.is_action_pressed("soft_drop"):
+		_held["soft_drop"] = {}
+		return
+	if event.is_action_released("soft_drop"):
+		_held.erase("soft_drop")
+		return
+
+	# Horizontal movement with DAS/ARR
+	for action in HORIZONTAL:
 		if event.is_action_pressed(action):
-			if action == "move_left" or action == "move_right":
-				_last_horizontal = action
+			_last_horizontal = action
 			_dispatch(action)
 			_held[action] = {"frames": 0.0, "arr_counter": 0.0}
 		elif event.is_action_released(action):
@@ -108,5 +127,3 @@ func _dispatch(action: String) -> void:
 			logic.try_move(0, -1)
 		"move_right":
 			logic.try_move(0, 1)
-		"soft_drop":
-			logic.soft_drop()

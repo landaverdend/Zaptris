@@ -4,7 +4,7 @@ const PlayerInputScript    := preload("res://scenes/game/logic/player_input.gd")
 const ControllerProfiles   := preload("res://scenes/game/logic/controller_profiles.gd")
 
 # Fired when a new device claims an arena slot.
-signal device_joined(arena_index: int, device_label: String)
+signal device_joined(arena_index: int, device_label: String, source: int, dev_id: int)
 
 const GAME_ACTIONS := [
 	"move_left", "move_right", "soft_drop",
@@ -84,7 +84,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		input_node.arr_frames = ControllerProfiles.DEFAULT_CONTROLLER_ARR
 	input_node.configure(source, dev_id)
 
-	emit_signal("device_joined", arena_index, device_label)
+	emit_signal("device_joined", arena_index, device_label, source, dev_id)
 
 	if _registry.size() >= _arenas.size():
 		stop_listening()

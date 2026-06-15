@@ -77,6 +77,10 @@ var payment_service: PaymentService = null
 
 var _dbg_lines: int = 4
 
+# dev_id → arena_index, populated one frame after join so the join press
+# itself doesn't immediately trigger Ready.
+var _controller_slots: Dictionary = {}
+
 # ── Lifecycle ─────────────────────────────────────────────────────────────────
 
 func _ready() -> void:
@@ -133,9 +137,33 @@ func _on_remove_pressed() -> void:
 	arena_count -= 1
 	_respawn()
 
-func _on_device_joined(arena_index: int, device_label: String) -> void:
+func _on_device_joined(arena_index: int, device_label: String, source: int, dev_id: int) -> void:
 	if arena_index < players.size():
 		players[arena_index].card.set_device(device_label)
+		if source == PlayerInput.InputSource.CONTROLLER:
+			call_deferred("_register_controller", dev_id, arena_index)
+			call_deferred("_focus_controller_ready", arena_index)
+
+func _register_controller(dev_id: int, arena_index: int) -> void:
+	_controller_slots[dev_id] = arena_index
+
+func _focus_controller_ready(arena_index: int) -> void:
+	if arena_index < players.size():
+		players[arena_index].card.focus_ready_btn()
+
+# Use _input (fires before GUI) so we consume the event before Godot's
+# native button focus system also processes it — prevents double-fire.
+func _input(event: InputEvent) -> void:
+	if state != State.LOBBY:
+		return
+	if not (event is InputEventJoypadButton) or not (event as InputEventJoypadButton).pressed:
+		return
+	if not event.is_action_pressed("ui_accept"):
+		return
+	var dev := (event as InputEventJoypadButton).device
+	if dev in _controller_slots:
+		get_viewport().set_input_as_handled()
+		_on_player_ready(_controller_slots[dev])
 
 ## Attack invoice QR ready — show it on the arena so spectators can scan.
 func _on_invoice_qr_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
@@ -178,6 +206,7 @@ func _respawn() -> void:
 	_update_pot()
 
 func _clear_arenas() -> void:
+	_controller_slots.clear()
 	router.stop_listening()
 	local_rules.reset_ready()
 	if payment_service:
@@ -374,6 +403,7 @@ func _on_match_over(winner_index: int) -> void:
 	_reset_match()
 
 func _reset_match() -> void:
+	_controller_slots.clear()
 	local_rules.setup(arena_count)
 	var new_seed := randi()
 	for slot: PlayerSlot in players:

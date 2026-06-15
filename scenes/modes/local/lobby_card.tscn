@@ -51,17 +51,13 @@ layout_mode = 2
 size_flags_horizontal = 4
 stretch_mode = 2
 
-[node name="LightningRow" type="HBoxContainer" parent="CenterContainer/VBox" unique_id=1705032724]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="LightningEdit" type="LineEdit" parent="CenterContainer/VBox/LightningRow" unique_id=1705032711]
+[node name="LightningEdit" type="LineEdit" parent="CenterContainer/VBox" unique_id=1705032711]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("2_vhqty")
 placeholder_text = "Lightning address"
 
-[node name="CheckButton" type="Button" parent="CenterContainer/VBox/LightningRow" unique_id=1705032725]
+[node name="CheckButton" type="Button" parent="CenterContainer/VBox" unique_id=1705032725]
 layout_mode = 2
 focus_mode = 0
 theme_override_fonts/font = ExtResource("2_vhqty")
@@ -75,6 +71,5 @@ horizontal_alignment = 1
 
 [node name="ReadyButton" type="Button" parent="CenterContainer/VBox" unique_id=1705032722]
 layout_mode = 2
-focus_mode = 0
 theme_override_fonts/font = ExtResource("2_vhqty")
 text = "Ready?"

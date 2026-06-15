@@ -5,7 +5,7 @@ var arr_value: float = 2.0
 var player_num: int = 1
 var requires_payment: bool = false
 
-@onready var lightning: LineEdit    = $CenterContainer/VBox/LightningRow/LightningEdit
+@onready var lightning: LineEdit    = $CenterContainer/VBox/LightningEdit
 @onready var address_status: Label  = $CenterContainer/VBox/AddressStatus
 @onready var qr_rect: TextureRect   = $CenterContainer/VBox/QRRect
 @onready var player_label: Label    = $CenterContainer/VBox/PlayerLabel
@@ -16,7 +16,7 @@ signal check_pressed
 
 func _ready() -> void:
 	ready_btn.pressed.connect(func(): ready_pressed.emit())
-	$CenterContainer/VBox/LightningRow/CheckButton.pressed.connect(
+	$CenterContainer/VBox/CheckButton.pressed.connect(
 		func(): check_pressed.emit()
 	)
 
@@ -70,6 +70,9 @@ func set_qr(bytes: PackedByteArray) -> void:
 	img.load_png_from_buffer(bytes)
 	qr_rect.texture = ImageTexture.create_from_image(img)
 	qr_rect.show()
+
+func focus_ready_btn() -> void:
+	ready_btn.grab_focus()
 
 # ── Accessor for LocalMode ────────────────────────────────────────────────────
 
