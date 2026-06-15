@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://by2f1byxop25a"]
 
 [ext_resource type="Script" uid="uid://37tla8bk54ph" path="res://scenes/modes/local/lobby_card.gd" id="1_card"]
+[ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="2_vhqty"]
 
 [node name="LobbyCard" type="Control" unique_id=1705032705]
 layout_mode = 3
@@ -32,12 +33,14 @@ theme_override_constants/separation = 16
 
 [node name="PlayerLabel" type="Label" parent="CenterContainer/VBox" unique_id=1705032709]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_vhqty")
 theme_override_font_sizes/font_size = 32
 text = "Player 1"
 horizontal_alignment = 1
 
 [node name="DeviceLabel" type="Label" parent="CenterContainer/VBox" unique_id=1705032710]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_vhqty")
 theme_override_font_sizes/font_size = 18
 text = "Keyboard"
 horizontal_alignment = 1
@@ -55,11 +58,13 @@ theme_override_constants/separation = 6
 [node name="LightningEdit" type="LineEdit" parent="CenterContainer/VBox/LightningRow" unique_id=1705032711]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2_vhqty")
 placeholder_text = "Lightning address"
 
 [node name="CheckButton" type="Button" parent="CenterContainer/VBox/LightningRow" unique_id=1705032725]
 layout_mode = 2
 focus_mode = 0
+theme_override_fonts/font = ExtResource("2_vhqty")
 text = "Check"
 
 [node name="AddressStatus" type="Label" parent="CenterContainer/VBox" unique_id=1705032726]
@@ -71,4 +76,5 @@ horizontal_alignment = 1
 [node name="ReadyButton" type="Button" parent="CenterContainer/VBox" unique_id=1705032722]
 layout_mode = 2
 focus_mode = 0
+theme_override_fonts/font = ExtResource("2_vhqty")
 text = "Ready?"

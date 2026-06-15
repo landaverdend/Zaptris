@@ -261,12 +261,19 @@ func _on_hard_drop(kind: String, rotation: int, col: int, start_row: int, end_ro
 	)
 
 func _spawn_drop_particles(cx: float, cy: float, width: float, height: float) -> void:
-	# Color ramp: bright white → transparent over particle lifetime.
+	# Alpha fade over particle lifetime.
 	var grad := Gradient.new()
 	grad.set_color(0, Color(1.0, 1.0, 1.0, 1.0))
 	grad.set_color(1, Color(1.0, 1.0, 1.0, 0.0))
 	var grad_tex := GradientTexture1D.new()
 	grad_tex.gradient = grad
+
+	# Per-particle color: indigo or orange.
+	var init_grad := Gradient.new()
+	init_grad.set_color(0, Color(0.4, 0.0, 0.9, 1.0))
+	init_grad.set_color(1, Color(1.0, 0.5, 0.0, 1.0))
+	var init_grad_tex := GradientTexture1D.new()
+	init_grad_tex.gradient = init_grad
 
 	var proc_mat := ParticleProcessMaterial.new()
 	proc_mat.emission_shape       = ParticleProcessMaterial.EMISSION_SHAPE_BOX
@@ -279,15 +286,12 @@ func _spawn_drop_particles(cx: float, cy: float, width: float, height: float) ->
 	proc_mat.scale_max            = 0.5
 	proc_mat.gravity              = Vector3(0.0, -4.0, 0.0)
 	proc_mat.color_ramp           = grad_tex
+	proc_mat.color_initial_ramp   = init_grad_tex
 
-	# Bright quad — high emission energy feeds the glow bloom.
 	var part_mat := StandardMaterial3D.new()
 	part_mat.shading_mode               = BaseMaterial3D.SHADING_MODE_UNSHADED
 	part_mat.vertex_color_use_as_albedo = true
 	part_mat.transparency               = BaseMaterial3D.TRANSPARENCY_ALPHA
-	part_mat.emission_enabled           = true
-	part_mat.emission                   = Color.WHITE
-	part_mat.emission_energy_multiplier = 10.0
 
 	var part_mesh := QuadMesh.new()
 	part_mesh.size     = Vector2(0.3, 0.3)
