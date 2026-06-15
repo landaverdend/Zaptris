@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://c2b3t26mchtsv"]
+
+[ext_resource type="Material" uid="uid://ctx5ghssnwtjq" path="res://scenes/game/ui/garbage_block_mat.tres" id="1_ltp6y"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_tffiv"]
+size = Vector2(0.55, 0.85)
+
+[node name="GarbageBlock" type="MeshInstance3D" unique_id=1237928446]
+material_override = ExtResource("1_ltp6y")
+mesh = SubResource("QuadMesh_tffiv")

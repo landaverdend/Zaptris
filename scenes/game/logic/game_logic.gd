@@ -227,6 +227,11 @@ func get_pending_garbage() -> int:
 		total += batch["lines"]
 	return total
 
+func get_garbage_urgency() -> float:
+	if garbage_queue.is_empty():
+		return 0.0
+	return 1.0 - float(garbage_queue[0]["frames"]) / float(GARBAGE_DELAY_FRAMES)
+
 func _tick_garbage() -> void:
 	if not garbage_enabled or garbage_queue.is_empty():
 		return

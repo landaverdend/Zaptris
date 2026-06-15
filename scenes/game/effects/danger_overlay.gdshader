@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode blend_mix, depth_draw_never, cull_disabled, unshaded;
+render_mode blend_mix, depth_draw_never, depth_test_disabled, cull_disabled, unshaded;
 
 uniform float danger : hint_range(0.0, 1.0) = 0.0;
 
