@@ -24,10 +24,6 @@ func _initialize() -> void:
 		b.visible  = false
 		_blocks.append(b)
 
-	# Grab the material from a live instance — guaranteed to be the one the
-	# renderer is actually using, regardless of how resources are cached.
-	# Duplicate so each meter has its own material instance — they'd otherwise
-	# share the same resource and overwrite each other's fill_ratio every frame.
 	_mat = (_blocks[0].get_active_material(0) as ShaderMaterial).duplicate()
 	for b in _blocks:
 		b.material_override = _mat
@@ -41,4 +37,16 @@ func _process(_delta: float) -> void:
 func _on_garbage_changed(total: int) -> void:
 	var count := clampi(total, 0, MAX_LINES)
 	for i in range(_blocks.size()):
-		_blocks[i].visible = i < count
+		var block := _blocks[i]
+		if i < count:
+			if not block.visible:
+				block.scale = Vector3.ZERO
+				block.visible = true
+				var tw := get_tree().create_tween()
+				tw.tween_property(block, "scale", Vector3.ONE, 0.18) \
+					.set_delay(i * 0.04) \
+					.set_ease(Tween.EASE_OUT) \
+					.set_trans(Tween.TRANS_BACK)
+		else:
+			block.visible = false
+			block.scale = Vector3.ONE
