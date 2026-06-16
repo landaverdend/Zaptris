@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://dfypdd71oyis6" path="res://scenes/game/board/Frame.tscn" id="3_o06ul"]
 [ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="4_pwlng"]
 [ext_resource type="PackedScene" uid="uid://i164ym0m5xs3" path="res://scenes/game/ui/qr_display.tscn" id="5_q3mdj"]
-[ext_resource type="PackedScene" path="res://scenes/game/effects/lightning_zap.tscn" id="6_zap"]
+[ext_resource type="PackedScene" uid="uid://dh7m3kqavxw2n" path="res://scenes/game/effects/lightning_zap.tscn" id="6_zap"]
 
 [node name="LocalMode" type="Node3D" unique_id=-294967295]
 process_mode = 3
@@ -142,8 +142,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="NWCStatus" type="Label" parent="UILayer" unique_id=221983401]
-layout_mode = 3
-anchors_preset = 0
+modulate = Color(0.4, 0.4, 0.4, 1)
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 220.0
@@ -151,7 +150,6 @@ offset_bottom = 30.0
 theme_override_fonts/font = ExtResource("4_pwlng")
 theme_override_font_sizes/font_size = 13
 text = "NWC ○ OFFLINE"
-modulate = Color(0.4, 0.4, 0.4, 1)
 
 [node name="Pot" parent="." unique_id=1006308564 instance=ExtResource("3_o06ul")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 4.962905, 27.967936, 24.032341)
@@ -172,7 +170,10 @@ font_size = 100
 outline_size = 69
 
 [node name="LightningZap" parent="Pot" unique_id=2100000001 instance=ExtResource("6_zap")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4678011, 0.15)
+transform = Transform3D(-0.66032934, -0.75097615, 0, 0.75097615, -0.66032934, 0, 0, 0, 1, -0.33216286, -0.37841892, 1.1038475)
+bolt_height = 10.0
+bolt_width = 3.0
+bolt_color = Color(0.972549, 0.7921569, 0, 1)
 
 [node name="QRDisplay" parent="." unique_id=361450806 instance=ExtResource("5_q3mdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.402962, 28.428667, 24.032)
