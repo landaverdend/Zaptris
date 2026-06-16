@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://dfypdd71oyis6" path="res://scenes/game/board/Frame.tscn" id="3_o06ul"]
 [ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="4_pwlng"]
 [ext_resource type="PackedScene" uid="uid://i164ym0m5xs3" path="res://scenes/game/ui/qr_display.tscn" id="5_q3mdj"]
+[ext_resource type="PackedScene" path="res://scenes/game/effects/lightning_zap.tscn" id="6_zap"]
 
 [node name="LocalMode" type="Node3D" unique_id=-294967295]
 process_mode = 3
@@ -107,6 +108,11 @@ layout_mode = 2
 focus_mode = 0
 text = "→ Send to P1"
 
+[node name="ZapButton" type="Button" parent="UILayer/DebugGarbage/VBox" unique_id=2100000002]
+layout_mode = 2
+focus_mode = 0
+text = "⚡ Zap Pot"
+
 [node name="CountdownOverlay" type="Control" parent="UILayer" unique_id=410065409]
 visible = false
 layout_mode = 3
@@ -164,6 +170,9 @@ text = "POT"
 font = ExtResource("4_pwlng")
 font_size = 100
 outline_size = 69
+
+[node name="LightningZap" parent="Pot" unique_id=2100000001 instance=ExtResource("6_zap")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4678011, 0.15)
 
 [node name="QRDisplay" parent="." unique_id=361450806 instance=ExtResource("5_q3mdj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.402962, 28.428667, 24.032)

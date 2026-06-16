@@ -11,6 +11,8 @@ func _ready() -> void:
 	_mat.set_shader_parameter("danger", 0.0)
 
 func activate(active: bool) -> void:
+	if active:
+		show()
 	if _tween:
 		_tween.kill()
 	_tween = create_tween()
@@ -19,4 +21,6 @@ func activate(active: bool) -> void:
 		func(v: float): _mat.set_shader_parameter("danger", v),
 		from, 1.0 if active else 0.0, 0.35
 	)
+	if not active:
+		_tween.tween_callback(hide)
 	_particles.emitting = active

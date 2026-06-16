@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://dh7m3kqavxw2n"]
+
+[ext_resource type="Script" uid="uid://y4hucbpb2mdh" path="res://scenes/game/effects/lightning_zap.gd" id="1_script"]
+[ext_resource type="Shader" uid="uid://b64s6yuokboeq" path="res://scenes/game/effects/lightning_zap.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
+shader = ExtResource("2_shader")
+shader_parameter/progress = 0.0
+shader_parameter/fade = 1.0
+shader_parameter/bolt_width = 0.06
+shader_parameter/bolt_color = Color(0.55, 0.85, 1.0, 1.0)
+
+[sub_resource type="QuadMesh" id="QuadMesh_1"]
+size = Vector2(1.5, 6.0)
+material = SubResource("ShaderMaterial_1")
+
+[sub_resource type="Gradient" id="Gradient_1"]
+colors = PackedColorArray(0.8, 0.95, 1.0, 1.0, 0.45, 0.75, 1.0, 0.0)
+offsets = PackedFloat32Array(0.0, 1.0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_1"]
+gradient = SubResource("Gradient_1")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_1"]
+emission_shape = 0
+spread = 180.0
+initial_velocity_min = 2.5
+initial_velocity_max = 7.0
+gravity = Vector3(0, -4, 0)
+damping_min = 8.0
+damping_max = 14.0
+scale_min = 0.1
+scale_max = 0.25
+color_ramp = SubResource("GradientTexture1D_1")
+
+[node name="LightningZap" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Bolt" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+mesh = SubResource("QuadMesh_1")
+
+[node name="Sparks" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 16
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.92
+randomness = 0.75
+process_material = SubResource("ParticleProcessMaterial_1")

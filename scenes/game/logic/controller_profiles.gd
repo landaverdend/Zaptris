@@ -46,5 +46,5 @@ static func _switch_profile() -> Dictionary:
 		"hard_drop":  [JOY_BUTTON_DPAD_UP],
 		"rotate_cw":  [JOY_BUTTON_B, JOY_BUTTON_X],              # A or Y on Switch
 		"rotate_ccw": [JOY_BUTTON_A, JOY_BUTTON_Y],              # B or X on Switch
-		"hold":       [JOY_BUTTON_LEFT_SHOULDER, JOY_BUTTON_RIGHT_SHOULDER], # L or R
+		"hold":       [JOY_BUTTON_LEFT_SHOULDER, JOY_BUTTON_RIGHT_SHOULDER],
 	}

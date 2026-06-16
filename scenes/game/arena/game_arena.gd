@@ -7,7 +7,10 @@ extends Node3D
 @onready var board: Node3D          = $Board
 @onready var hold_box: Node3D       = $HoldBox
 @onready var piece_queue: Node3D    = $PieceQueue
-@onready var scoreboard: Node3D     = $Scoreboard
+@onready var score_box: Node3D      = $ScoreBox
+@onready var lines_box: Node3D      = $LinesBox
+@onready var level_box: Node3D      = $LevelBox
+@onready var sats_box: Node3D       = $SatsBox
 @onready var qr_display: Node3D     = $QRDisplay
 @onready var danger_overlay: Node3D = $Board/DangerOverlay
 
@@ -18,7 +21,10 @@ const RENDER_LAYER := 5  # bits: layer 1 + layer 3
 func _ready() -> void:
 	var cfg := config if config else GameArenaConfig.new()
 	logic.garbage_enabled = cfg.garbage_enabled
-	scoreboard.setup(logic, cfg.show_level, cfg.show_sats)
+	score_box.setup(logic)
+	lines_box.setup(logic)
+	level_box.setup(logic, cfg.show_level)
+	sats_box.setup(cfg.show_sats)
 	logic.danger_changed.connect(func(is_danger: bool): danger_overlay.activate(is_danger))
 	_apply_layers(self)
 
@@ -29,7 +35,7 @@ func clear_qr_texture() -> void:
 	qr_display.hide_qr()
 
 func add_sats_won(amount: int) -> void:
-	scoreboard.add_sats(amount)
+	sats_box.add_sats(amount)
 
 func show_loading_qr() -> void:
 	qr_display.show_loading()

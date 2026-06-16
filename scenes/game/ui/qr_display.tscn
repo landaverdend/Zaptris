@@ -27,7 +27,7 @@ texture_filter = 0
 [node name="ActionLabel" type="Label3D" parent="." unique_id=1750104594]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
 modulate = Color(1, 1, 0, 1)
-text = "⚡ ZAP TO ATTACK"
+text = "⚡ PAY TO ATTACK"
 font = ExtResource("2_font")
 font_size = 110
 outline_size = 50

@@ -8,7 +8,7 @@ extends Node3D
 @onready var loading_label: Label3D  = $LoadingLabel
 
 @export_group("Display Text")
-@export var action_text: String = "⚡ ZAP TO ATTACK":
+@export var action_text: String = "⚡ PAY TO ATTACK":
 	set(v):
 		action_text = v
 		if action_label:

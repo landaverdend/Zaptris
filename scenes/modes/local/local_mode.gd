@@ -71,6 +71,7 @@ var payment_service: PaymentService = null
 @onready var countdown_overlay: Control = $UILayer/CountdownOverlay
 @onready var countdown_label: Label     = $UILayer/CountdownOverlay/Label
 @onready var pot_amount_3d: Label3D     = $Pot/Amount
+@onready var _pot_zap: Node3D           = $Pot/LightningZap
 @onready var debug_panel: Control       = $UILayer/DebugGarbage
 @onready var _dbg_lines_label: Label    = $UILayer/DebugGarbage/VBox/AmountRow/LinesLabel
 @onready var _nwc_label: Label          = $UILayer/NWCStatus
@@ -107,6 +108,7 @@ func _ready() -> void:
 	$UILayer/DebugGarbage/VBox/AmountRow/DecButton.pressed.connect(_on_dbg_dec)
 	$UILayer/DebugGarbage/VBox/AmountRow/IncButton.pressed.connect(_on_dbg_inc)
 	$UILayer/DebugGarbage/VBox/SendButton.pressed.connect(_on_dbg_send)
+	$UILayer/DebugGarbage/VBox/ZapButton.pressed.connect(func() -> void: _pot_zap.play())
 	_dbg_lines_label.text = str(_dbg_lines)
 
 	router = ROUTER_SCRIPT.new()
@@ -290,6 +292,8 @@ func _update_pot() -> void:
 func _set_pot(value: int) -> void:
 	pot_sats            = value
 	pot_amount_3d.text  = "⚡ %d" % pot_sats
+	if state == State.PLAYING:
+		_pot_zap.play()
 
 func _position_lobby_cards() -> void:
 	var camera := get_viewport().get_camera_3d()
