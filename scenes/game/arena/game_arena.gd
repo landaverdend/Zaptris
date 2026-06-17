@@ -11,6 +11,7 @@ extends Node3D
 @onready var lines_box: Node3D      = $LinesBox
 @onready var level_box: Node3D      = $LevelBox
 @onready var sats_box: Node3D       = $SatsBox
+@onready var combo_popup: Node3D    = $ComboPopup
 @onready var qr_display: Node3D     = $QRDisplay
 @onready var danger_overlay: Node3D = $Board/DangerOverlay
 
@@ -25,6 +26,7 @@ func _ready() -> void:
 	lines_box.setup(logic)
 	level_box.setup(logic, cfg.show_level)
 	sats_box.setup(cfg.show_sats)
+	combo_popup.setup(logic)
 	logic.danger_changed.connect(func(is_danger: bool): danger_overlay.activate(is_danger))
 	_apply_layers(self)
 
