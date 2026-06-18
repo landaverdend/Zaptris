@@ -71,7 +71,7 @@ var payment_service: PaymentService = null
 @onready var countdown_overlay: Control = $UILayer/CountdownOverlay
 @onready var countdown_label: Label     = $UILayer/CountdownOverlay/Label
 @onready var pot_amount_3d: Label3D     = $Pot/Amount
-@onready var _pot_zap: Node3D           = $Pot/LightningZap
+@onready var _pot_zaps: Array[Node3D]   = [$Pot/LightningZap, $Pot/LightningZap2]
 @onready var debug_panel: Control       = $UILayer/DebugGarbage
 @onready var _dbg_lines_label: Label    = $UILayer/DebugGarbage/VBox/AmountRow/LinesLabel
 @onready var _nwc_label: Label          = $UILayer/NWCStatus
@@ -91,6 +91,7 @@ func _ready() -> void:
 	add_child(payment_service)
 	payment_service.invoice_qr_ready.connect(_on_invoice_qr_ready)
 	payment_service.garbage_attack.connect(_on_garbage_attack)
+	payment_service.payment_received.connect(_on_payment_received)
 	payment_service.address_checked.connect(_on_address_checked)
 	payment_service.payment_settled.connect(_on_payment_settled)
 
@@ -108,7 +109,7 @@ func _ready() -> void:
 	$UILayer/DebugGarbage/VBox/AmountRow/DecButton.pressed.connect(_on_dbg_dec)
 	$UILayer/DebugGarbage/VBox/AmountRow/IncButton.pressed.connect(_on_dbg_inc)
 	$UILayer/DebugGarbage/VBox/SendButton.pressed.connect(_on_dbg_send)
-	$UILayer/DebugGarbage/VBox/ZapButton.pressed.connect(func() -> void: _pot_zap.play())
+	$UILayer/DebugGarbage/VBox/ZapButton.pressed.connect(_play_pot_zaps)
 	_dbg_lines_label.text = str(_dbg_lines)
 
 	router = ROUTER_SCRIPT.new()
@@ -184,6 +185,15 @@ func _on_garbage_attack(player_index: int, amount_sats: int) -> void:
 	_set_pot(pot_sats + amount_sats)
 	players[player_index].arena.get_node("GameLogic").receive_garbage(config.attack_lines)
 	players[player_index].arena.show_loading_qr()
+
+## Any payment confirmed received — zap the pot regardless of what it triggers.
+func _on_payment_received(_player_index: int, _amount_sats: int) -> void:
+	if state == State.PLAYING:
+		_play_pot_zaps()
+
+func _play_pot_zaps() -> void:
+	for zap in _pot_zaps:
+		zap.play()
 
 func _on_check_pressed(index: int) -> void:
 	var address: String = players[index].card.get_lightning_address()
@@ -292,8 +302,6 @@ func _update_pot() -> void:
 func _set_pot(value: int) -> void:
 	pot_sats            = value
 	pot_amount_3d.text  = "⚡ %d" % pot_sats
-	if state == State.PLAYING:
-		_pot_zap.play()
 
 func _position_lobby_cards() -> void:
 	var camera := get_viewport().get_camera_3d()

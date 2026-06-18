@@ -20,6 +20,7 @@
 [ext_resource type="Script" uid="uid://b6jacmtne4dkl" path="res://scenes/game/ui/level_box.gd" id="19_levelbox"]
 [ext_resource type="Script" uid="uid://ciyniyy7occll" path="res://scenes/game/ui/combo_popup.gd" id="20_kx5f3"]
 [ext_resource type="Script" uid="uid://dvelfhnyvam8d" path="res://scenes/game/ui/sats_box.gd" id="20_satsbox"]
+[ext_resource type="Script" uid="uid://dwuajfql8aj3j" path="res://scenes/game/ui/sfx.gd" id="21_q4wvg"]
 
 [sub_resource type="ShaderMaterial" id="StandardMaterial3D_782ta"]
 render_priority = 0
@@ -214,3 +215,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11725426, 0.71384525, 0)
 font = ExtResource("13_font")
 font_size = 160
 outline_size = 69
+
+[node name="Sfx" type="Node" parent="." unique_id=1303384244]
+script = ExtResource("21_q4wvg")

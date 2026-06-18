@@ -46,7 +46,6 @@ func _ready() -> void:
 	process_mat.color_ramp   = grad_tex
 	_sparks.process_material = process_mat
 
-	# Flash: same duplicate-per-instance treatment.
 	_flash_mat = (_flash.get_active_material(0)).duplicate() as ShaderMaterial
 	_flash_mat.set_shader_parameter("flash_color", bolt_color.lightened(0.5))
 	var flash_mesh := (_flash.mesh as QuadMesh).duplicate() as QuadMesh
@@ -68,7 +67,7 @@ func play() -> void:
 	tw.tween_interval(0.06)
 	# Fade bolt out
 	tw.tween_method(func(v: float) -> void: _mat.set_shader_parameter("fade", v),
-		1.0, 0.0, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		1.0, 0.0, 0.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tw.tween_callback(func() -> void: _bolt.visible = false)
 
 func _impact() -> void:
@@ -83,5 +82,5 @@ func _impact() -> void:
 	ftw.tween_property(_flash, "scale", Vector3.ONE * (bolt_width * 2.2 + 0.5), 0.18) \
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	ftw.tween_method(func(v: float) -> void: _flash_mat.set_shader_parameter("intensity", v),
-		1.0, 0.0, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		1.0, 0.0, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	ftw.chain().tween_callback(func() -> void: _flash.visible = false)

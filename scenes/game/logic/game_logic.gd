@@ -40,6 +40,8 @@ signal attack_generated(lines: int)
 signal hard_drop_performed(kind: String, rotation: int, col: int, start_row: int, end_row: int)
 signal lines_about_to_clear(rows: Array, clear_type: String, origin_col: float)
 signal danger_changed(is_danger: bool)
+signal piece_rotated
+signal piece_moved
 
 var _in_danger: bool = false
 
@@ -292,6 +294,7 @@ func try_move(dr: int, dc: int) -> bool:
 			_handle_lock_reset()
 		active_piece.last_action_was_rotation = false
 		piece_changed.emit()
+		piece_moved.emit()
 		return true
 	return false
 
@@ -309,6 +312,7 @@ func try_rotate(dir: int) -> bool:
 			if active_piece.is_floored:
 				_handle_lock_reset()
 			piece_changed.emit()
+			piece_rotated.emit()
 			return true
 	return false
 

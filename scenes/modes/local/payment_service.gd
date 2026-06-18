@@ -5,6 +5,8 @@ extends Node
 signal invoice_qr_ready(player_index: int, qr_bytes: PackedByteArray)
 ## Spectator paid an attack invoice — apply garbage to that player.
 signal garbage_attack(player_index: int, amount_sats: int)
+## A payment was confirmed received, regardless of what it's used for.
+signal payment_received(player_index: int, amount_sats: int)
 ## Result of check_address() — for validating payout destinations.
 signal address_checked(player_index: int, is_valid: bool, message: String)
 ## Payout result from pay_winner() / pay_pot_remainder().
@@ -67,6 +69,7 @@ func _on_invoice_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
 	invoice_qr_ready.emit(player_index, qr_bytes)
 
 func _on_invoice_paid(player_index: int, amount_sats: int) -> void:
+	payment_received.emit(player_index, amount_sats)
 	garbage_attack.emit(player_index, amount_sats)
 	_bridge.create_attack_invoice(player_index, _attack_sats)
 
