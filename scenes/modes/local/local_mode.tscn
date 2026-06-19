@@ -6,6 +6,7 @@
 [ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="4_pwlng"]
 [ext_resource type="PackedScene" uid="uid://i164ym0m5xs3" path="res://scenes/game/ui/qr_display.tscn" id="5_q3mdj"]
 [ext_resource type="PackedScene" uid="uid://dh7m3kqavxw2n" path="res://scenes/game/effects/lightning_zap.tscn" id="6_zap"]
+[ext_resource type="Script" path="res://scenes/modes/local/match_pot.gd" id="7_matchpot"]
 
 [node name="LocalMode" type="Node3D" unique_id=-294967295]
 process_mode = 3
@@ -158,6 +159,7 @@ text = "NWC ○ OFFLINE"
 
 [node name="Pot" parent="." unique_id=1006308564 instance=ExtResource("3_o06ul")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 4.962905, 27.967936, 24.032341)
+script = ExtResource("7_matchpot")
 
 [node name="LightningZap2" parent="Pot" unique_id=415087735 instance=ExtResource("6_zap")]
 transform = Transform3D(0.59118295, 0.8065373, 0, -0.8065373, 0.59118295, 0, 0, 0, 1, 0.64987874, 0.3477583, 1.1040001)

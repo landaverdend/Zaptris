@@ -5,7 +5,6 @@ const LOBBY_CARD_SCENE   := preload("res://scenes/modes/local/lobby_card.tscn")
 const ROUTER_SCRIPT      := preload("res://scenes/modes/local/input_router.gd")
 const LOCAL_RULES_SCRIPT := preload("res://scenes/modes/local/local_rules.gd")
 const COUNTDOWN_SCRIPT   := preload("res://scenes/game/logic/countdown_timer.gd")
-const SATS_STREAM_SCENE  := preload("res://scenes/game/effects/sats_stream.tscn")
 
 const MIN_PLAYERS := 2
 const MAX_PLAYERS := 4
@@ -46,21 +45,11 @@ var arena_count: int = 2
 ## Which player indices have received their QR code (lobby pre-creation).
 var _qr_ready: Array[bool] = []
 
-## Total sats in the pot. Decremented as sats stream out during gameplay.
-var pot_sats:     int = 0
-## Locked in at game start — payout amount is derived from this, not live pot_sats.
-var starting_pot: int = 0
-## Sats paid out per tick, computed once at game start.
-var sats_per_tick: int = 0
-## Player index that triggered the last pay_winner call; -1 if none pending.
-var _last_tick_winner: int = -1
-
 # ── Logic nodes ────────────────────────────────────────────────────────────────
 
 var router: Node           = null
 var local_rules: Node      = null
 var countdown_timer: Node  = null
-var payment_timer: Timer   = null
 var payment_service: PaymentService = null
 
 # ── Node refs ─────────────────────────────────────────────────────────────────
@@ -71,9 +60,7 @@ var payment_service: PaymentService = null
 @onready var lobby_layer: Control       = $UILayer/LobbyLayer
 @onready var countdown_overlay: Control = $UILayer/CountdownOverlay
 @onready var countdown_label: Label     = $UILayer/CountdownOverlay/Label
-@onready var _pot: Node3D               = $Pot
-@onready var pot_amount_3d: Label3D     = $Pot/Amount
-@onready var _pot_zaps: Array[Node3D]   = [$Pot/LightningZap, $Pot/LightningZap2]
+@onready var match_pot: Node3D          = $Pot
 @onready var debug_panel: Control       = $UILayer/DebugGarbage
 @onready var _dbg_lines_label: Label    = $UILayer/DebugGarbage/VBox/AmountRow/LinesLabel
 @onready var _nwc_label: Label          = $UILayer/NWCStatus
@@ -93,25 +80,19 @@ func _ready() -> void:
 	add_child(payment_service)
 	payment_service.invoice_qr_ready.connect(_on_invoice_qr_ready)
 	payment_service.garbage_attack.connect(_on_garbage_attack)
-	payment_service.payment_received.connect(_on_payment_received)
 	payment_service.address_checked.connect(_on_address_checked)
-	payment_service.payment_settled.connect(_on_payment_settled)
+
+	match_pot.setup(payment_service)
 
 	countdown_timer = COUNTDOWN_SCRIPT.new()
 	countdown_timer.name = "CountdownTimer"
 	add_child(countdown_timer)
 	countdown_timer.finished.connect(_on_countdown_finished)
 
-	payment_timer = Timer.new()
-	payment_timer.one_shot = false
-	payment_timer.autostart = false
-	payment_timer.timeout.connect(_on_payment_tick)
-	add_child(payment_timer)
-
 	$UILayer/DebugGarbage/VBox/AmountRow/DecButton.pressed.connect(_on_dbg_dec)
 	$UILayer/DebugGarbage/VBox/AmountRow/IncButton.pressed.connect(_on_dbg_inc)
 	$UILayer/DebugGarbage/VBox/SendButton.pressed.connect(_on_dbg_send)
-	$UILayer/DebugGarbage/VBox/ZapButton.pressed.connect(_play_pot_zaps)
+	$UILayer/DebugGarbage/VBox/ZapButton.pressed.connect(match_pot.play_pot_zap)
 	$UILayer/DebugGarbage/VBox/StreamButton.pressed.connect(_on_dbg_stream)
 	_dbg_lines_label.text = str(_dbg_lines)
 
@@ -181,32 +162,15 @@ func _on_invoice_qr_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
 	if player_index >= players.size(): return
 	players[player_index].arena.set_zap_qr_texture(qr_bytes)
 
-## Spectator paid an attack invoice — send garbage to that player.
+## Spectator paid an attack invoice — grow the pot (and zap it), send
+## garbage to that player. Gated here rather than in MatchPot since "don't
+## react while still in the lobby" is game-mode state, not pot state.
 func _on_garbage_attack(player_index: int, amount_sats: int) -> void:
 	if state != State.PLAYING: return
 	if player_index < 0 or player_index >= players.size(): return
-	_set_pot(pot_sats + amount_sats)
+	match_pot.add(amount_sats)
 	players[player_index].arena.get_node("GameLogic").receive_garbage(config.attack_lines)
 	players[player_index].arena.show_loading_qr()
-
-## Any payment confirmed received — zap the pot regardless of what it triggers.
-func _on_payment_received(_player_index: int, _amount_sats: int) -> void:
-	if state == State.PLAYING:
-		_play_pot_zaps()
-
-func _play_pot_zaps() -> void:
-	for zap in _pot_zaps:
-		zap.play()
-
-## A leader payout settled — animate sats traveling from the pot to that
-## player's SatsBox. SatsBox position varies with player count/layout, so
-## this reads its live global_position rather than assuming a fixed spot.
-func _play_pot_to_winner_stream(player_index: int) -> void:
-	if player_index < 0 or player_index >= players.size():
-		return
-	var stream := SATS_STREAM_SCENE.instantiate()
-	add_child(stream)
-	stream.play_between(_pot.global_position, players[player_index].arena.sats_box.global_position)
 
 func _on_check_pressed(index: int) -> void:
 	var address: String = players[index].card.get_lightning_address()
@@ -310,11 +274,7 @@ func _update_buttons() -> void:
 	remove_button.disabled = arena_count <= MIN_PLAYERS
 
 func _update_pot() -> void:
-	_set_pot(config.free_pot_sats if config.free_mode else config.buy_in_sats * arena_count)
-
-func _set_pot(value: int) -> void:
-	pot_sats            = value
-	pot_amount_3d.text  = "⚡ %d" % pot_sats
+	match_pot.reset(config.free_pot_sats if config.free_mode else config.buy_in_sats * arena_count)
 
 func _position_lobby_cards() -> void:
 	var camera := get_viewport().get_camera_3d()
@@ -387,11 +347,7 @@ func _begin_play() -> void:
 			if i >= _qr_ready.size() or not _qr_ready[i]:
 				players[i].arena.show_loading_qr()
 
-	# Lock in the starting pot and derive the per-tick payout once.
-	starting_pot  = pot_sats
-	sats_per_tick = max(1, int(starting_pot * config.payout_percent))
-	payment_timer.wait_time = config.payout_interval
-	payment_timer.start()
+	match_pot.start_payouts(config.payout_percent, config.payout_interval, _current_leader)
 
 	await get_tree().create_timer(0.6).timeout
 	countdown_overlay.hide()
@@ -400,7 +356,7 @@ func _begin_play() -> void:
 
 func _on_round_over(winner_index: int) -> void:
 	state = State.ROUND_END
-	payment_timer.stop()
+	match_pot.stop_payouts()
 	for slot: PlayerSlot in players:
 		slot.arena.process_mode = Node.PROCESS_MODE_DISABLED
 	var wins: Array = local_rules.get_wins()
@@ -412,15 +368,12 @@ func _on_round_over(winner_index: int) -> void:
 
 func _on_match_over(winner_index: int) -> void:
 	state = State.MATCH_END
-	payment_timer.stop()
+	match_pot.stop_payouts()
 	for slot: PlayerSlot in players:
 		slot.arena.process_mode = Node.PROCESS_MODE_DISABLED
 
 	payment_service.clear_invoices()
-	var winner: PlayerSlot = players[winner_index]
-	if pot_sats > 0 and not winner.lightning_address.is_empty():
-		payment_service.pay_pot_remainder(winner.lightning_address, pot_sats)
-		_set_pot(0)
+	match_pot.pay_remainder(players[winner_index].lightning_address)
 
 	countdown_label.text = "Player %d\nWins the Match!" % (winner_index + 1)
 	countdown_overlay.show()
@@ -463,29 +416,7 @@ func _start_next_round() -> void:
 	state = State.COUNTDOWN
 	countdown_timer.start(countdown_label)
 
-# ── Payment tick ──────────────────────────────────────────────────────────────
-
-func _on_payment_tick() -> void:
-	if state != State.PLAYING or pot_sats <= 0:
-		return
-	var winner_idx := _highest_scorer()
-	if winner_idx < 0:
-		return  # tied — no payment until someone pulls ahead
-	var slot: PlayerSlot = players[winner_idx]
-	if slot.lightning_address.is_empty():
-		return
-	var amount := mini(sats_per_tick, pot_sats)
-	_last_tick_winner = winner_idx
-	payment_service.pay_winner(slot.lightning_address, amount)
-	_set_pot(pot_sats - amount)
-
-func _on_payment_settled(amount: int, success: bool) -> void:
-	if success and _last_tick_winner >= 0 and _last_tick_winner < players.size():
-		players[_last_tick_winner].arena.add_sats_won(amount)
-		_play_pot_to_winner_stream(_last_tick_winner)
-	_last_tick_winner = -1
-	if not success:
-		push_warning("[payment] failed for %d sats — pot already decremented" % amount)
+# ── Leader lookup (consumed by MatchPot's payout tick) ────────────────────────
 
 ## Returns the index of the sole leader, or -1 if scores are tied.
 func _highest_scorer() -> int:
@@ -502,6 +433,18 @@ func _highest_scorer() -> int:
 		elif score == best_score:
 			tied = true
 	return -1 if tied else best_idx
+
+## Callable passed to MatchPot.start_payouts() — returns null (no eligible
+## leader: tied, or no address set) or {arena, address} for whoever's
+## currently leading. Keeps MatchPot decoupled from PlayerSlot.
+func _current_leader() -> Variant:
+	var idx := _highest_scorer()
+	if idx < 0:
+		return null
+	var slot: PlayerSlot = players[idx]
+	if slot.lightning_address.is_empty():
+		return null
+	return { "arena": slot.arena, "address": slot.lightning_address }
 
 # ── NWC status ────────────────────────────────────────────────────────────────
 
@@ -529,4 +472,4 @@ func _on_dbg_send() -> void:
 
 func _on_dbg_stream() -> void:
 	if players.is_empty(): return
-	_play_pot_to_winner_stream(0)
+	match_pot.debug_stream_to(players[0].arena)

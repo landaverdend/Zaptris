@@ -25,6 +25,52 @@ pub(crate) enum BridgeEvent {
     Log(String),                       // diagnostic message → godot_print
 }
 
+// ── Retry helpers ────────────────────────────────────────────────────────────────
+//
+// The NWC relay websocket is frequently slow to (re)connect — both invoice
+// creation and payouts hit it, so both need the same "retry a few times
+// before giving up" resilience. Without this, a single slow round-trip
+// silently fails a whole leader payout (and skips the sats-stream animation
+// that's gated on success).
+
+const RETRY_MAX_ATTEMPTS: u32 = 5;
+const RETRY_DELAY_MS:     u64 = 2_000;
+
+fn is_retryable(e: &str) -> bool {
+    e.contains("relay not connected")
+        || e.contains("not published")
+        || e.contains("status changed")
+        || e.contains("timeout")
+}
+
+/// Retry an NWC pay_invoice call — same relay flakiness as invoice creation.
+async fn pay_invoice_with_retry(
+    client: &payments::PaymentClient,
+    bolt11: &str,
+    tx: &mpsc::SyncSender<BridgeEvent>,
+    label: &str,
+) -> Result<(), String> {
+    let mut last_err = String::new();
+    for attempt in 1..=RETRY_MAX_ATTEMPTS {
+        match client.pay_invoice(bolt11).await {
+            Ok(())  => return Ok(()),
+            Err(e)  => {
+                last_err = e;
+                if is_retryable(&last_err) && attempt < RETRY_MAX_ATTEMPTS {
+                    tx.send(BridgeEvent::Log(format!(
+                        "[payments] {label} relay not ready, retrying \
+                         (attempt {attempt}/{RETRY_MAX_ATTEMPTS}) in {RETRY_DELAY_MS}ms…"
+                    ))).ok();
+                    tokio::time::sleep(tokio::time::Duration::from_millis(RETRY_DELAY_MS)).await;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+    Err(last_err)
+}
+
 // ── Bridge node ────────────────────────────────────────────────────────────────
 
 #[derive(GodotClass)]
@@ -156,10 +202,7 @@ impl RustBridge {
             // The NWC relay websocket may not be connected yet right after
             // client initialisation. Retry a few times with a short delay
             // before giving up — the loading skeleton covers the wait.
-            const MAX_ATTEMPTS: u32 = 5;
-            const RETRY_MS:     u64 = 2_000;
-
-            for attempt in 1..=MAX_ATTEMPTS {
+            for attempt in 1..=RETRY_MAX_ATTEMPTS {
                 match client.create_invoice(player_index, amount_sats, &memo).await {
                     Ok(invoice) => {
                         tx.send(BridgeEvent::Log(format!(
@@ -175,15 +218,12 @@ impl RustBridge {
                         return;
                     }
                     Err(e) => {
-                        let retryable = e.contains("relay not connected")
-                            || e.contains("not published")
-                            || e.contains("status changed");
-                        if retryable && attempt < MAX_ATTEMPTS {
+                        if is_retryable(&e) && attempt < RETRY_MAX_ATTEMPTS {
                             tx.send(BridgeEvent::Log(format!(
                                 "[payments] relay not ready, retrying player={player_index} \
-                                 (attempt {attempt}/{MAX_ATTEMPTS}) in {RETRY_MS}ms…"
+                                 (attempt {attempt}/{RETRY_MAX_ATTEMPTS}) in {RETRY_DELAY_MS}ms…"
                             ))).ok();
-                            tokio::time::sleep(tokio::time::Duration::from_millis(RETRY_MS)).await;
+                            tokio::time::sleep(tokio::time::Duration::from_millis(RETRY_DELAY_MS)).await;
                         } else {
                             tx.send(BridgeEvent::Log(format!(
                                 "[payments] invoice error player={player_index} \
@@ -259,7 +299,7 @@ impl RustBridge {
             .unwrap_or_else(|e| Err(e.to_string()));
 
             let success = match bolt11_result {
-                Ok(bolt11) => match client.pay_invoice(&bolt11).await {
+                Ok(bolt11) => match pay_invoice_with_retry(&client, &bolt11, &tx, "pay_winner").await {
                     Ok(())  => { eprintln!("[payments] paid {amount_sats} sats → {address}"); true }
                     Err(e)  => { eprintln!("[payments] pay_invoice failed: {e}"); false }
                 },
@@ -295,7 +335,7 @@ impl RustBridge {
             .unwrap_or_else(|e| Err(e.to_string()));
 
             let success = match bolt11_result {
-                Ok(bolt11) => match client.pay_invoice(&bolt11).await {
+                Ok(bolt11) => match pay_invoice_with_retry(&client, &bolt11, &tx, "pay_pot_remainder").await {
                     Ok(())  => { eprintln!("[payments] pot remainder: {amount_sats} sats → {address}"); true }
                     Err(e)  => { eprintln!("[payments] pot remainder pay_invoice failed: {e}"); false }
                 },

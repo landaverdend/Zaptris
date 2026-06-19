@@ -24,7 +24,10 @@ func setup(num: int) -> void:
 	player_num        = num
 	player_label.text = "Player %d" % player_num
 	$CenterContainer/VBox/DeviceLabel.text = "Waiting to join..."
-	lightning.editable = false
+	# Always editable — only the keyboard can type text regardless of which
+	# device claims this slot, so gating it per-device just blocks the
+	# keyboard player from filling in addresses for controller players.
+	lightning.editable = true
 
 ## Lock the Ready button until the buy-in invoice is confirmed paid.
 func set_requires_payment() -> void:
@@ -61,7 +64,6 @@ func show_address_result(is_valid: bool, message: String) -> void:
 # Called by LocalMode when InputRouter assigns a device to this slot.
 func set_device(device_label: String) -> void:
 	$CenterContainer/VBox/DeviceLabel.text = device_label
-	lightning.editable = (device_label == "Keyboard")
 
 func set_qr(bytes: PackedByteArray) -> void:
 	if bytes.is_empty():
