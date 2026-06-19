@@ -5,6 +5,7 @@ const LOBBY_CARD_SCENE   := preload("res://scenes/modes/local/lobby_card.tscn")
 const ROUTER_SCRIPT      := preload("res://scenes/modes/local/input_router.gd")
 const LOCAL_RULES_SCRIPT := preload("res://scenes/modes/local/local_rules.gd")
 const COUNTDOWN_SCRIPT   := preload("res://scenes/game/logic/countdown_timer.gd")
+const SATS_STREAM_SCENE  := preload("res://scenes/game/effects/sats_stream.tscn")
 
 const MIN_PLAYERS := 2
 const MAX_PLAYERS := 4
@@ -70,6 +71,7 @@ var payment_service: PaymentService = null
 @onready var lobby_layer: Control       = $UILayer/LobbyLayer
 @onready var countdown_overlay: Control = $UILayer/CountdownOverlay
 @onready var countdown_label: Label     = $UILayer/CountdownOverlay/Label
+@onready var _pot: Node3D               = $Pot
 @onready var pot_amount_3d: Label3D     = $Pot/Amount
 @onready var _pot_zaps: Array[Node3D]   = [$Pot/LightningZap, $Pot/LightningZap2]
 @onready var debug_panel: Control       = $UILayer/DebugGarbage
@@ -110,6 +112,7 @@ func _ready() -> void:
 	$UILayer/DebugGarbage/VBox/AmountRow/IncButton.pressed.connect(_on_dbg_inc)
 	$UILayer/DebugGarbage/VBox/SendButton.pressed.connect(_on_dbg_send)
 	$UILayer/DebugGarbage/VBox/ZapButton.pressed.connect(_play_pot_zaps)
+	$UILayer/DebugGarbage/VBox/StreamButton.pressed.connect(_on_dbg_stream)
 	_dbg_lines_label.text = str(_dbg_lines)
 
 	router = ROUTER_SCRIPT.new()
@@ -194,6 +197,16 @@ func _on_payment_received(_player_index: int, _amount_sats: int) -> void:
 func _play_pot_zaps() -> void:
 	for zap in _pot_zaps:
 		zap.play()
+
+## A leader payout settled — animate sats traveling from the pot to that
+## player's SatsBox. SatsBox position varies with player count/layout, so
+## this reads its live global_position rather than assuming a fixed spot.
+func _play_pot_to_winner_stream(player_index: int) -> void:
+	if player_index < 0 or player_index >= players.size():
+		return
+	var stream := SATS_STREAM_SCENE.instantiate()
+	add_child(stream)
+	stream.play_between(_pot.global_position, players[player_index].arena.sats_box.global_position)
 
 func _on_check_pressed(index: int) -> void:
 	var address: String = players[index].card.get_lightning_address()
@@ -469,6 +482,7 @@ func _on_payment_tick() -> void:
 func _on_payment_settled(amount: int, success: bool) -> void:
 	if success and _last_tick_winner >= 0 and _last_tick_winner < players.size():
 		players[_last_tick_winner].arena.add_sats_won(amount)
+		_play_pot_to_winner_stream(_last_tick_winner)
 	_last_tick_winner = -1
 	if not success:
 		push_warning("[payment] failed for %d sats — pot already decremented" % amount)
@@ -512,3 +526,7 @@ func _on_dbg_inc() -> void:
 func _on_dbg_send() -> void:
 	if players.is_empty(): return
 	players[0].arena.get_node("GameLogic").receive_garbage(_dbg_lines)
+
+func _on_dbg_stream() -> void:
+	if players.is_empty(): return
+	_play_pot_to_winner_stream(0)

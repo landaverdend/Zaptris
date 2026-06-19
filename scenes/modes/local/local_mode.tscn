@@ -113,6 +113,11 @@ layout_mode = 2
 focus_mode = 0
 text = "⚡ Zap Pot"
 
+[node name="StreamButton" type="Button" parent="UILayer/DebugGarbage/VBox" unique_id=1686908142]
+layout_mode = 2
+focus_mode = 0
+text = "✨ Stream to P1"
+
 [node name="CountdownOverlay" type="Control" parent="UILayer" unique_id=410065409]
 visible = false
 layout_mode = 3
@@ -155,7 +160,7 @@ text = "NWC ○ OFFLINE"
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 4.962905, 27.967936, 24.032341)
 
 [node name="LightningZap2" parent="Pot" unique_id=415087735 instance=ExtResource("6_zap")]
-transform = Transform3D(0.59118295, 0.8065373, 0, -0.8065373, 0.59118295, 0, 0, 0, 1, 2.41, 0.5, 2.208)
+transform = Transform3D(0.59118295, 0.8065373, 0, -0.8065373, 0.59118295, 0, 0, 0, 1, 0.64987874, 0.3477583, 1.1040001)
 bolt_height = 10.0
 bolt_width = 3.0
 bolt_color = Color(0.972549, 0.7921569, 0, 1)
@@ -176,7 +181,7 @@ font_size = 100
 outline_size = 69
 
 [node name="LightningZap" parent="Pot" unique_id=2100000001 instance=ExtResource("6_zap")]
-transform = Transform3D(0.70710677, -0.70710677, 0, 0.70710677, 0.70710677, 0, 0, 0, 1, -0.912, 0.5, 1.104)
+transform = Transform3D(0.5881382, -0.8087604, 0, 0.8087604, 0.5881382, 0, 0, 0, 1, -0.27210188, 0.37478542, 1.1040001)
 bolt_height = 10.0
 bolt_width = 3.0
 bolt_color = Color(0.972549, 0.7921569, 0, 1)

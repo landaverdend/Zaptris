@@ -79,8 +79,8 @@ func _impact() -> void:
 
 	var ftw := get_tree().create_tween()
 	ftw.set_parallel(true)
-	ftw.tween_property(_flash, "scale", Vector3.ONE * (bolt_width * 2.2 + 0.5), 0.18) \
+	ftw.tween_property(_flash, "scale", Vector3.ONE * (bolt_width * 4.0 + 2.0), 0.26) \
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	ftw.tween_method(func(v: float) -> void: _flash_mat.set_shader_parameter("intensity", v),
-		1.0, 0.0, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		1.0, 0.0, 0.26).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	ftw.chain().tween_callback(func() -> void: _flash.visible = false)
