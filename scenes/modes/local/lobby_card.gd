@@ -4,12 +4,21 @@ var das_value: float = 12.0
 var arr_value: float = 2.0
 var player_num: int = 1
 var requires_payment: bool = false
+var _controller_device: bool = false
+var _keyboard_open: bool = false
+
+# The field's width as a fraction of the card's own size, so it scales with
+# however small the card gets at higher player counts instead of fighting
+# CenterContainer with a fixed pixel value.
+const FIELD_WIDTH_RATIO := 0.8
+const FIELD_MIN_WIDTH   := 140.0
 
 @onready var lightning: LineEdit    = $CenterContainer/VBox/LightningEdit
 @onready var address_status: Label  = $CenterContainer/VBox/AddressStatus
 @onready var qr_rect: TextureRect   = $CenterContainer/VBox/QRRect
 @onready var player_label: Label    = $CenterContainer/VBox/PlayerLabel
 @onready var ready_btn: Button      = $CenterContainer/VBox/ReadyButton
+@onready var keyboard: Control      = $OnscreenKeyboard
 
 signal ready_pressed
 signal check_pressed
@@ -19,6 +28,49 @@ func _ready() -> void:
 	$CenterContainer/VBox/CheckButton.pressed.connect(
 		func(): check_pressed.emit()
 	)
+	lightning.gui_input.connect(_on_lightning_gui_input)
+	keyboard.closed.connect(_on_keyboard_closed)
+	_update_lightning_width()
+
+# LocalMode resizes this card per-player based on arena scale (smaller at
+# higher player counts) — keep the field's width proportional to that.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED and is_node_ready() and not _keyboard_open:
+		_update_lightning_width()
+
+func _update_lightning_width() -> void:
+	lightning.custom_minimum_size.x = max(FIELD_MIN_WIDTH, size.x * FIELD_WIDTH_RATIO)
+
+# Controller players can't type directly — opening the on-screen keyboard
+# on the field they'd otherwise edit with a physical keyboard.
+func _on_lightning_gui_input(event: InputEvent) -> void:
+	if _controller_device and event.is_action_pressed("ui_accept"):
+		get_viewport().set_input_as_handled()
+		_open_keyboard()
+
+func _open_keyboard() -> void:
+	_set_card_focusable(false)
+	_keyboard_open = true
+	# Match the field's width to the keyboard so there's room to actually
+	# see what's typed — then wait a frame for the container to re-layout
+	# before the keyboard measures the field's (now wider) rect to dock under it.
+	lightning.custom_minimum_size.x = keyboard.size.x
+	await get_tree().process_frame
+	keyboard.open(lightning)
+
+func _on_keyboard_closed() -> void:
+	_set_card_focusable(true)
+	_keyboard_open = false
+	_update_lightning_width()
+	lightning.grab_focus()
+
+# While the keyboard is open, nothing else on the card should be reachable —
+# otherwise focus could wander out of the keyboard via d-pad navigation.
+func _set_card_focusable(enabled: bool) -> void:
+	var mode := Control.FOCUS_ALL if enabled else Control.FOCUS_NONE
+	lightning.focus_mode = mode
+	ready_btn.focus_mode = mode
+	$CenterContainer/VBox/CheckButton.focus_mode = mode
 
 func setup(num: int) -> void:
 	player_num        = num
@@ -57,13 +109,14 @@ func reset_ready_button() -> void:
 
 ## Called by LocalMode when the bridge emits address_checked.
 func show_address_result(is_valid: bool, message: String) -> void:
-	address_status.text = message
+	address_status.text = message if is_valid else "Unable to find address"
 	address_status.modulate = Color.GREEN if is_valid else Color.RED
 	address_status.show()
 
 # Called by LocalMode when InputRouter assigns a device to this slot.
 func set_device(device_label: String) -> void:
 	$CenterContainer/VBox/DeviceLabel.text = device_label
+	_controller_device = (device_label != "Keyboard")
 
 func set_qr(bytes: PackedByteArray) -> void:
 	if bytes.is_empty():

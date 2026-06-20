@@ -143,8 +143,16 @@ func _input(event: InputEvent) -> void:
 		return
 	var dev := (event as InputEventJoypadButton).device
 	if dev in _controller_slots:
+		var idx: int = _controller_slots[dev]
+		if idx >= players.size():
+			return
+		# Only take this shortcut while the Ready button itself has focus —
+		# otherwise the player navigated elsewhere (e.g. the Lightning
+		# address field / on-screen keyboard) and accept should go there.
+		if get_viewport().gui_get_focus_owner() != players[idx].card.ready_btn:
+			return
 		get_viewport().set_input_as_handled()
-		_on_player_ready(_controller_slots[dev])
+		_on_player_ready(idx)
 
 ## Attack invoice QR ready — show it on the arena so spectators can scan.
 func _on_invoice_qr_ready(player_index: int, qr_bytes: PackedByteArray) -> void:

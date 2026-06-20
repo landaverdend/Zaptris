@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://37tla8bk54ph" path="res://scenes/modes/local/lobby_card.gd" id="1_card"]
 [ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="2_vhqty"]
+[ext_resource type="PackedScene" path="res://scenes/game/ui/onscreen_keyboard.tscn" id="3_kbd"]
 
 [node name="LobbyCard" type="Control" unique_id=1705032705]
 layout_mode = 3
@@ -55,11 +56,11 @@ stretch_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("2_vhqty")
+alignment = 1
 placeholder_text = "Lightning address"
 
 [node name="CheckButton" type="Button" parent="CenterContainer/VBox" unique_id=1705032725]
 layout_mode = 2
-focus_mode = 0
 theme_override_fonts/font = ExtResource("2_vhqty")
 text = "Check"
 
@@ -73,3 +74,9 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_vhqty")
 text = "Ready?"
+
+[node name="OnscreenKeyboard" parent="." instance=ExtResource("3_kbd")]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 460.0
+offset_bottom = 260.0
