@@ -1,10 +1,17 @@
 use godot::builtin::PackedByteArray;
 use image::codecs::png::PngEncoder;
 use image::ImageEncoder;
-use qrcode::QrCode;
+use qrcode::{EcLevel, QrCode};
 
 pub fn generate_png(data: &str) -> Vec<u8> {
-    let code = match QrCode::new(data.as_bytes()) {
+    // Low error correction trades resilience to scan damage for fewer
+    // modules at a given display size — fine for a clean digital display,
+    // not a printed/worn code. (We previously also uppercased the invoice
+    // to force QR's Alphanumeric mode, which shrinks modules further — but
+    // bech32 spec-allows uppercase, plenty of real wallet scanners
+    // pattern-match the lowercase "lnbc" prefix before decoding and don't
+    // recognize the uppercase form, so that part's reverted.)
+    let code = match QrCode::with_error_correction_level(data.as_bytes(), EcLevel::L) {
         Ok(c)  => c,
         Err(e) => { eprintln!("[qr] encode error: {e}"); return Vec::new(); }
     };

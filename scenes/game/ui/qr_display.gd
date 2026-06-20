@@ -7,6 +7,14 @@ extends Node3D
 @onready var scan_label:    Label3D  = $ScanLabel
 @onready var loading_label: Label3D  = $LoadingLabel
 
+## The QR's native pixel size varies with invoice length (more bech32 data
+## = more modules = more texture pixels at a fixed module_dimensions), so a
+## fixed Sprite3D.pixel_size makes the on-screen size inconsistent between
+## invoices. Compute pixel_size per-image instead so it always renders at
+## this same world-space size — as large as fits between the action/scan
+## labels without overlapping either.
+const TARGET_QR_WORLD_SIZE := 6.0
+
 @export_group("Display Text")
 @export var action_text: String = "⚡ PAY TO ATTACK":
 	set(v):
@@ -59,6 +67,7 @@ func show_qr(bytes: PackedByteArray) -> void:
 	var img := Image.new()
 	img.load_png_from_buffer(bytes)
 	qr_sprite.texture     = ImageTexture.create_from_image(img)
+	qr_sprite.pixel_size  = TARGET_QR_WORLD_SIZE / img.get_width()
 	action_label.text     = action_text
 	action_label.modulate = action_color
 	scan_label.text       = scan_text

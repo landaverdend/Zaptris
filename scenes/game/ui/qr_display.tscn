@@ -19,13 +19,12 @@ mesh = SubResource("BoxMesh_panel")
 surface_material_override/0 = SubResource("Mat_panel")
 
 [node name="QRSprite" type="Sprite3D" parent="." unique_id=981750616]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 pixel_size = 0.0075
-shaded = false
 texture_filter = 0
 
 [node name="ActionLabel" type="Label3D" parent="." unique_id=1750104594]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4250813, 0)
 modulate = Color(1, 1, 0, 1)
 text = "⚡ PAY TO ATTACK"
 font = ExtResource("2_font")
@@ -33,7 +32,7 @@ font_size = 110
 outline_size = 50
 
 [node name="ScanLabel" type="Label3D" parent="." unique_id=475552020]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.480806, 0)
 text = "SCAN TO ATTACK"
 font = ExtResource("2_font")
 font_size = 100
@@ -41,10 +40,10 @@ outline_size = 50
 
 [node name="LoadingLabel" type="Label3D" parent="." unique_id=223344556]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+visible = false
 modulate = Color(1, 1, 0, 1)
-text = "FETCHING\nINVOICE..."
+text = "FETCHING
+INVOICE..."
 font = ExtResource("2_font")
 font_size = 100
 outline_size = 50
-horizontal_alignment = 1
-visible = false

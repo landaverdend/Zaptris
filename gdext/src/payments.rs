@@ -42,6 +42,22 @@ impl PaymentClient {
         Self::new(&nwc_string, rt)
     }
 
+    /// Fire a cheap throwaway request to trigger the NWC client's lazy
+    /// relay connect+subscribe as early as possible. The relay never
+    /// connects on construction (NWC::new is just config) — only the first
+    /// real request (make_invoice, pay_invoice, ...) opens it, which means
+    /// without this, the connection handshake cost lands inline on whatever
+    /// the game asks for first (usually attack invoices at lobby spawn,
+    /// hence the "relay not ready, retrying" storm every launch). Calling
+    /// this immediately on construction overlaps that handshake with the
+    /// rest of lobby setup instead.
+    pub async fn warm_up(&self) {
+        match self.nwc.get_info().await {
+            Ok(_)  => eprintln!("[payments] relay warmed up"),
+            Err(e) => eprintln!("[payments] relay warm-up failed (will retry on first real request): {e}"),
+        }
+    }
+
     /// Create a BOLT-11 invoice. Pass amount_sats=0 for an amountless invoice
     /// (payer chooses the amount — used for attack invoices).
     pub async fn create_invoice(&self, job_id: i64, amount_sats: u64, memo: &str) -> Result<String, String> {

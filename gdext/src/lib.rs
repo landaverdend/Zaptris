@@ -107,8 +107,16 @@ impl INode for RustBridge {
         match payments::PaymentClient::from_env(Arc::clone(&self.rt)) {
             Ok(client) => {
                 client.start_watching(self.tx.clone());
-                self.payment_client = Some(Arc::new(client));
+                let client = Arc::new(client);
+                self.payment_client = Some(Arc::clone(&client));
                 godot_print!("[payments] NWC client ready");
+
+                // Kick off the relay connection now, in the background,
+                // instead of letting the first real invoice request pay
+                // for it later.
+                self.rt.spawn(async move {
+                    client.warm_up().await;
+                });
             }
             Err(e) => godot_print!("[payments] no NWC client: {e}"),
         }
@@ -176,7 +184,9 @@ impl RustBridge {
     /// Emits `invoice_ready(player_index, qr_bytes)` on the next poll().
     #[func]
     fn create_player_invoice(&self, player_index: i64, amount_sats: i64) {
-        let memo = format!("Zapstris buy-in P{}", player_index + 1);
+        // Short memo — the invoice description is embedded directly in the
+        // BOLT11 string, so every character here adds to QR density.
+        let memo = format!("ZB{}", player_index + 1);
         self.spawn_invoice(player_index, amount_sats as u64, memo);
     }
 
@@ -185,7 +195,7 @@ impl RustBridge {
     /// Emits `invoice_ready(player_index, qr_bytes)` on the next poll().
     #[func]
     fn create_attack_invoice(&self, player_index: i64, amount_sats: i64) {
-        let memo = format!("Zapstris attack P{} ({} sats)", player_index + 1, amount_sats);
+        let memo = format!("ZA{}", player_index + 1);
         self.spawn_invoice(player_index, amount_sats as u64, memo);
     }
 
@@ -206,7 +216,7 @@ impl RustBridge {
                 match client.create_invoice(player_index, amount_sats, &memo).await {
                     Ok(invoice) => {
                         tx.send(BridgeEvent::Log(format!(
-                            "[payments] invoice ready player={player_index} len={}", invoice.len()
+                            "[payments] invoice ready player={player_index} len={} raw={invoice}", invoice.len()
                         ))).ok();
                         let png = tokio::task::spawn_blocking(move || qr::generate_png(&invoice))
                             .await
