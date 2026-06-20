@@ -10,6 +10,7 @@ extends Node3D
 @onready var score_box: Node3D      = $ScoreBox
 @onready var lines_box: Node3D      = $LinesBox
 @onready var level_box: Node3D      = $LevelBox
+@onready var wins_box: Node3D       = $WinsBox
 @onready var sats_box: Node3D       = $SatsBox
 @onready var combo_popup: Node3D    = $ComboPopup
 @onready var sfx: Node               = $Sfx
@@ -26,6 +27,7 @@ func _ready() -> void:
 	score_box.setup(logic)
 	lines_box.setup(logic)
 	level_box.setup(logic, cfg.show_level)
+	wins_box.setup(cfg.show_wins)
 	sats_box.setup(cfg.show_sats)
 	combo_popup.setup(logic)
 	logic.piece_rotated.connect(sfx.play.bind("rotate"))
@@ -43,6 +45,9 @@ func clear_qr_texture() -> void:
 
 func add_sats_won(amount: int) -> void:
 	sats_box.add_sats(amount)
+
+func set_wins(count: int) -> void:
+	wins_box.set_wins(count)
 
 func show_loading_qr() -> void:
 	qr_display.show_loading()

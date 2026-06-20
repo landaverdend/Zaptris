@@ -214,6 +214,7 @@ func _spawn_arenas() -> void:
 		var cfg := GameArenaConfig.new()
 		cfg.garbage_enabled = true
 		cfg.show_level      = false
+		cfg.show_wins       = true
 		cfg.show_qr         = arena_count > 1
 		cfg.show_sats       = arena_count > 1
 
@@ -352,11 +353,16 @@ func _on_round_over(winner_index: int) -> void:
 	match_pot.stop_payouts()
 	for slot: PlayerSlot in players:
 		slot.arena.process_mode = Node.PROCESS_MODE_DISABLED
-	var wins: Array = local_rules.get_wins()
-	var score: String = " | ".join(wins.map(func(w): return str(w)))
-	countdown_overlay.show_message("Player %d Wins!\n%s" % [winner_index + 1, score])
+	_update_win_boxes()
+	countdown_overlay.show_message("Player %d Wins!" % (winner_index + 1))
 	await get_tree().create_timer(3.0).timeout
 	_start_next_round()
+
+func _update_win_boxes() -> void:
+	var wins: Array = local_rules.get_wins()
+	for i in range(players.size()):
+		if i < wins.size():
+			players[i].arena.set_wins(wins[i])
 
 func _on_match_over(winner_index: int) -> void:
 	state = State.MATCH_END
@@ -367,6 +373,7 @@ func _on_match_over(winner_index: int) -> void:
 	payment_service.clear_invoices()
 	match_pot.pay_remainder(players[winner_index].lightning_address)
 
+	_update_win_boxes()
 	countdown_overlay.show_message("Player %d\nWins the Match!" % (winner_index + 1))
 	await get_tree().create_timer(5.0).timeout
 	_reset_match()
@@ -379,6 +386,7 @@ func _reset_match() -> void:
 		slot.arena.process_mode = Node.PROCESS_MODE_PAUSABLE
 		slot.arena.get_node("GameLogic").reset(new_seed)
 		slot.card.reset_ready_button()
+	_update_win_boxes()
 	_reset_payments()
 	_update_pot()
 	if arena_count > 1:
