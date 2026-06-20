@@ -9,6 +9,8 @@ size = Vector3(6.5, 8, 0.1)
 [sub_resource type="StandardMaterial3D" id="Mat_panel"]
 shading_mode = 0
 albedo_color = Color(0.02, 0.02, 0.05, 1)
+no_depth_test = true
+render_priority = 100
 
 [node name="QRDisplay" type="Node3D" unique_id=361450806]
 script = ExtResource("1_qrd")
@@ -22,6 +24,8 @@ surface_material_override/0 = SubResource("Mat_panel")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 pixel_size = 0.0075
 texture_filter = 0
+no_depth_test = true
+render_priority = 101
 
 [node name="ActionLabel" type="Label3D" parent="." unique_id=1750104594]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4250813, 0)
@@ -30,6 +34,8 @@ text = "⚡ PAY TO ATTACK"
 font = ExtResource("2_font")
 font_size = 110
 outline_size = 50
+no_depth_test = true
+render_priority = 101
 
 [node name="ScanLabel" type="Label3D" parent="." unique_id=475552020]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.480806, 0)
@@ -37,6 +43,8 @@ text = "SCAN TO ATTACK"
 font = ExtResource("2_font")
 font_size = 100
 outline_size = 50
+no_depth_test = true
+render_priority = 101
 
 [node name="LoadingLabel" type="Label3D" parent="." unique_id=223344556]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
@@ -47,3 +55,5 @@ INVOICE..."
 font = ExtResource("2_font")
 font_size = 100
 outline_size = 50
+no_depth_test = true
+render_priority = 101
