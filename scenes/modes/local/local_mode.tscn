@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://i164ym0m5xs3" path="res://scenes/game/ui/qr_display.tscn" id="5_q3mdj"]
 [ext_resource type="PackedScene" uid="uid://dh7m3kqavxw2n" path="res://scenes/game/effects/lightning_zap.tscn" id="6_zap"]
 [ext_resource type="Script" path="res://scenes/modes/local/match_pot.gd" id="7_matchpot"]
+[ext_resource type="PackedScene" uid="uid://cqxk6n2dujfgh" path="res://scenes/game/ui/countdown_display.tscn" id="8_countdown"]
 
 [node name="LocalMode" type="Node3D" unique_id=-294967295]
 process_mode = 3
@@ -119,33 +120,7 @@ layout_mode = 2
 focus_mode = 0
 text = "✨ Stream to P1"
 
-[node name="CountdownOverlay" type="Control" parent="UILayer" unique_id=410065409]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="Label" type="Label" parent="UILayer/CountdownOverlay" unique_id=410065410]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -50.0
-offset_right = 100.0
-offset_bottom = 50.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 72
-text = "3"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="CountdownOverlay" parent="UILayer" unique_id=410065409 instance=ExtResource("8_countdown")]
 
 [node name="NWCStatus" type="Label" parent="UILayer" unique_id=221983401]
 modulate = Color(0.4, 0.4, 0.4, 1)

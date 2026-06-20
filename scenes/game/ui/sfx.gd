@@ -7,8 +7,10 @@ extends Node
 ## — overall SFX loudness is the "SFX" audio bus's volume (one knob, see
 ## default_bus_layout.tres), which every player below routes through.
 const SOUNDS: Dictionary = {
-	"rotate": { "stream": preload("res://assets/audio/effects/rotation.wav"), "volume_db": 0.0 },
-	"move":   { "stream": preload("res://assets/audio/effects/rotation.wav"), "volume_db": 0.0 },
+	"rotate":    { "stream": preload("res://assets/audio/effects/rotation.wav"),  "volume_db": 0.0 },
+	"move":      { "stream": preload("res://assets/audio/effects/rotation.wav"),  "volume_db": 0.0 },
+	"hard_drop": { "stream": preload("res://assets/audio/effects/hard_drop.wav"), "volume_db": 0.0 },
+	"line_clear": { "stream": preload("res://assets/audio/effects/line_clear.wav"), "volume_db": 2.0 },
 }
 
 # How many overlapping one-shots can play at once before they start cutting

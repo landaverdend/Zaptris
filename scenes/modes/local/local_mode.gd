@@ -4,7 +4,6 @@ const ARENA_SCENE        := preload("res://scenes/game/arena/game_arena.tscn")
 const LOBBY_CARD_SCENE   := preload("res://scenes/modes/local/lobby_card.tscn")
 const ROUTER_SCRIPT      := preload("res://scenes/modes/local/input_router.gd")
 const LOCAL_RULES_SCRIPT := preload("res://scenes/modes/local/local_rules.gd")
-const COUNTDOWN_SCRIPT   := preload("res://scenes/game/logic/countdown_timer.gd")
 
 const MIN_PLAYERS := 2
 const MAX_PLAYERS := 4
@@ -49,7 +48,6 @@ var _qr_ready: Array[bool] = []
 
 var router: Node           = null
 var local_rules: Node      = null
-var countdown_timer: Node  = null
 var payment_service: PaymentService = null
 
 # ── Node refs ─────────────────────────────────────────────────────────────────
@@ -59,7 +57,6 @@ var payment_service: PaymentService = null
 @onready var count_label: Label         = $UILayer/PlayerControls/CountLabel
 @onready var lobby_layer: Control       = $UILayer/LobbyLayer
 @onready var countdown_overlay: Control = $UILayer/CountdownOverlay
-@onready var countdown_label: Label     = $UILayer/CountdownOverlay/Label
 @onready var match_pot: Node3D          = $Pot
 @onready var debug_panel: Control       = $UILayer/DebugGarbage
 @onready var _dbg_lines_label: Label    = $UILayer/DebugGarbage/VBox/AmountRow/LinesLabel
@@ -84,10 +81,7 @@ func _ready() -> void:
 
 	match_pot.setup(payment_service)
 
-	countdown_timer = COUNTDOWN_SCRIPT.new()
-	countdown_timer.name = "CountdownTimer"
-	add_child(countdown_timer)
-	countdown_timer.finished.connect(_on_countdown_finished)
+	countdown_overlay.finished.connect(_on_countdown_finished)
 
 	$UILayer/DebugGarbage/VBox/AmountRow/DecButton.pressed.connect(_on_dbg_dec)
 	$UILayer/DebugGarbage/VBox/AmountRow/IncButton.pressed.connect(_on_dbg_inc)
@@ -323,8 +317,7 @@ func _on_all_ready() -> void:
 	router.stop_listening()
 	lobby_layer.hide()
 	$UILayer/PlayerControls.hide()
-	countdown_overlay.show()
-	countdown_timer.start(countdown_label)
+	countdown_overlay.start()
 
 # ── Game start ────────────────────────────────────────────────────────────────
 
@@ -361,8 +354,7 @@ func _on_round_over(winner_index: int) -> void:
 		slot.arena.process_mode = Node.PROCESS_MODE_DISABLED
 	var wins: Array = local_rules.get_wins()
 	var score: String = " | ".join(wins.map(func(w): return str(w)))
-	countdown_label.text = "Player %d Wins!\n%s" % [winner_index + 1, score]
-	countdown_overlay.show()
+	countdown_overlay.show_message("Player %d Wins!\n%s" % [winner_index + 1, score])
 	await get_tree().create_timer(3.0).timeout
 	_start_next_round()
 
@@ -375,8 +367,7 @@ func _on_match_over(winner_index: int) -> void:
 	payment_service.clear_invoices()
 	match_pot.pay_remainder(players[winner_index].lightning_address)
 
-	countdown_label.text = "Player %d\nWins the Match!" % (winner_index + 1)
-	countdown_overlay.show()
+	countdown_overlay.show_message("Player %d\nWins the Match!" % (winner_index + 1))
 	await get_tree().create_timer(5.0).timeout
 	_reset_match()
 
@@ -412,9 +403,8 @@ func _start_next_round() -> void:
 		slot.arena.get_node("GameLogic").reset(randi())
 	local_rules.reset_ready()
 	lobby_layer.hide()
-	countdown_overlay.show()
 	state = State.COUNTDOWN
-	countdown_timer.start(countdown_label)
+	countdown_overlay.start()
 
 # ── Leader lookup (consumed by MatchPot's payout tick) ────────────────────────
 

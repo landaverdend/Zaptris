@@ -30,6 +30,8 @@ func _ready() -> void:
 	combo_popup.setup(logic)
 	logic.piece_rotated.connect(sfx.play.bind("rotate"))
 	logic.piece_moved.connect(sfx.play.bind("move"))
+	logic.hard_drop_performed.connect(func(_kind, _rotation, _col, _start_row, _end_row): sfx.play("hard_drop"))
+	logic.lines_cleared.connect(func(_n): sfx.play("line_clear"))
 	logic.danger_changed.connect(func(is_danger: bool): danger_overlay.activate(is_danger))
 	_apply_layers(self)
 

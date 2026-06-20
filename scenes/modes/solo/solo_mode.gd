@@ -1,7 +1,6 @@
 extends Node3D
 
 const PlayerInputScript  := preload("res://scenes/game/logic/player_input.gd")
-const CountdownScript    := preload("res://scenes/game/logic/countdown_timer.gd")
 
 # ── State machine ──────────────────────────────────────────────────────────────
 
@@ -11,27 +10,20 @@ var state := State.COUNTDOWN
 # ── Node refs ─────────────────────────────────────────────────────────────────
 
 @onready var logic: Node               = $GameArena/GameLogic
-@onready var countdown_node: Control   = $UILayer/Countdown
-@onready var countdown_label: Label    = $UILayer/Countdown/Label
+@onready var countdown: Control        = $UILayer/Countdown
 @onready var game_over_screen: Control = $UILayer/GameOverScreen
 @onready var final_score_label: Label  = $UILayer/GameOverScreen/CenterContainer/VBox/FinalScore
 @onready var pause_screen: Control     = $UILayer/PauseScreen
 @onready var _resume_btn: Button       = $UILayer/PauseScreen/CenterContainer/VBox/ResumeButton
 @onready var _game_over_restart_btn: Button = $UILayer/GameOverScreen/CenterContainer/VBox/RestartButton
 
-var countdown_timer: Node = null
-
 # ── Lifecycle ─────────────────────────────────────────────────────────────────
 
 func _ready() -> void:
-	countdown_timer = CountdownScript.new()
-	countdown_timer.name = "CountdownTimer"
-	add_child(countdown_timer)
-	countdown_timer.finished.connect(_on_countdown_finished)
+	countdown.finished.connect(_on_countdown_finished)
 
 	game_over_screen.hide()
 	pause_screen.hide()
-	countdown_node.show()
 
 	logic.game_over.connect(_on_game_over)
 
@@ -44,7 +36,7 @@ func _ready() -> void:
 	$UILayer/PauseScreen/CenterContainer/VBox/RestartButton.pressed.connect(_on_restart_pressed)
 	$UILayer/PauseScreen/CenterContainer/VBox/MenuButton.pressed.connect(_on_menu_pressed)
 
-	countdown_timer.start(countdown_label)
+	countdown.start()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
@@ -65,7 +57,7 @@ func _start_game() -> void:
 	$GameArena/PlayerInput.clear_held()
 	logic.start()
 	await get_tree().create_timer(0.6).timeout
-	countdown_node.hide()
+	countdown.hide()
 
 func _pause() -> void:
 	state = State.PAUSED
@@ -93,8 +85,7 @@ func _on_restart_pressed() -> void:
 	pause_screen.hide()
 	logic.reset(randi())
 	state = State.COUNTDOWN
-	countdown_node.show()
-	countdown_timer.start(countdown_label)
+	countdown.start()
 
 func _on_menu_pressed() -> void:
 	get_tree().paused = false

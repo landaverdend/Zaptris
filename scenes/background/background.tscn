@@ -13,6 +13,8 @@
 [ext_resource type="PackedScene" uid="uid://kyrtfkpuffh4" path="res://scenes/background/StreetLamp.tscn" id="10_iptv4"]
 [ext_resource type="PackedScene" uid="uid://bqmu3u86b2cba" path="res://assets/background/building4.glb" id="11_g8v60"]
 [ext_resource type="PackedScene" uid="uid://81oork46hv15" path="res://assets/background/siglo21_billboard.glb" id="12_o0ti4"]
+[ext_resource type="Script" uid="uid://8vjkjljb71hv" path="res://scenes/background/light_flicker.gd" id="13_flicker"]
+[ext_resource type="Script" uid="uid://bkydvrs4jorfn" path="res://scenes/background/neon_sign_light.gd" id="14_sign"]
 
 [sub_resource type="Curve" id="Curve_gco5v"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.11231101, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.75651467), 0.0, 0.0, 0, 0]
@@ -56,9 +58,9 @@ shader_parameter/sun_scatter = Color(0.2806805, 0.058539763, 0.06578804, 1)
 shader_parameter/astro_tint = Color(1, 1, 1, 1)
 shader_parameter/astro_scale = 10.0
 shader_parameter/astro_intensity = 1.10000000149012
-shader_parameter/stars_intensity = 0.60000000894072
+shader_parameter/stars_intensity = 1.30000001937156
 shader_parameter/shooting_stars_intensity = 0.0
-shader_parameter/shooting_star_tint = Color(0, 0, 0, 1)
+shader_parameter/shooting_star_tint = Color(1, 0.8787664, 0.88509774, 1)
 
 [sub_resource type="Sky" id="Sky_3mmpu"]
 sky_material = SubResource("ShaderMaterial_gco5v")
@@ -103,7 +105,7 @@ current = true
 size = 52.0
 
 [node name="lacrypta_tree" parent="." unique_id=1662908146 instance=ExtResource("7_tp5tj")]
-transform = Transform3D(1.4371512, 0, 1.3908978, 0, 2, 0, -1.3908978, 0, 1.4371512, -38.12795, -18.515718, -5.275631)
+transform = Transform3D(1.4371512, 0, 1.3908978, 0, 2, 0, -1.3908978, 0, 1.4371512, -57.03791, -18.515718, -5.275631)
 
 [node name="obelisco" parent="." unique_id=2064784272 instance=ExtResource("6_03sym")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6777954, 67.356125, -519.5753)
@@ -136,6 +138,9 @@ light_volumetric_fog_energy = 16.0
 spot_range = 120.0
 spot_attenuation = 0.78
 spot_angle = 10.16
+script = ExtResource("13_flicker")
+flicker_speed = 6.0
+flicker_amount = 0.05
 
 [node name="SpotLight3D" type="SpotLight3D" parent="." unique_id=1628665918]
 transform = Transform3D(0.90231025, -0.13900425, -0.4080614, 0.071054615, 0.9815959, -0.1772593, 0.4251912, 0.13094825, 0.89558095, -22.517982, 58.26271, -468.97668)
@@ -145,12 +150,20 @@ light_cull_mask = 3
 spot_range = 120.0
 spot_attenuation = 0.67
 spot_angle = 14.1
+script = ExtResource("13_flicker")
+flicker_speed = 6.5
+flicker_amount = 0.05
+phase_offset = 1.7
 
 [node name="RedBillboard" type="OmniLight3D" parent="." unique_id=1791383725]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.706718, 94.47973, -590.5758)
 light_color = Color(0.47058824, 0.1764706, 0.2, 1)
 light_energy = 16.0
 omni_range = 18.747
+script = ExtResource("13_flicker")
+flicker_speed = 11.0
+flicker_amount = 0.1
+phase_offset = 0.6
 
 [node name="StreetLamp2" parent="." unique_id=1992637962 instance=ExtResource("10_iptv4")]
 transform = Transform3D(-1.9136271, 0, 0.58140427, 0, 2, 0, -0.58140427, 0, -1.9136271, 29.754093, -5.317, -3.457)
@@ -194,3 +207,9 @@ spot_range = 70.082245
 spot_attenuation = 1.21
 spot_angle = 42.92
 spot_angle_attenuation = 1.1487037
+script = ExtResource("14_sign")
+base_color = Color(1, 0.627451, 0.98039216, 1)
+accent_color = Color(0.78, 0.55, 1, 1)
+color_drift_speed = 0.35
+blink_speed = 9.0
+blink_amount = 0.12

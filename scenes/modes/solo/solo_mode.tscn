@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bv3ho1p5a6m2o" path="res://scenes/modes/solo/solo_mode.gd" id="1_xs6rg"]
 [ext_resource type="Script" uid="uid://d2yhohqqmrwex" path="res://scenes/modes/solo/solo_rules.gd" id="3_buwap"]
 [ext_resource type="PackedScene" uid="uid://rpccclpijd2n" path="res://scenes/background/background.tscn" id="5_background"]
+[ext_resource type="PackedScene" uid="uid://cqxk6n2dujfgh" path="res://scenes/game/ui/countdown_display.tscn" id="6_countdown"]
 
 [node name="SoloMode" type="Node3D" unique_id=1777930997]
 process_mode = 3
@@ -140,28 +141,4 @@ focus_next = NodePath("../ResumeButton")
 focus_previous = NodePath("../RestartButton")
 text = "MAIN MENU"
 
-[node name="Countdown" type="Control" parent="UILayer" unique_id=1356403402]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Label" type="Label" parent="UILayer/Countdown" unique_id=1921996209]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -50.0
-offset_right = 100.0
-offset_bottom = 50.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 72
-text = "3"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Countdown" parent="UILayer" unique_id=1356403402 instance=ExtResource("6_countdown")]
