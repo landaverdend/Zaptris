@@ -1,0 +1,12 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bqjypcifbf5ay"]
+
+[ext_resource type="Shader" path="res://scenes/game/effects/frame_glow.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/glow_color = Color(0.1, 0.85, 1.0, 1)
+shader_parameter/rim_power = 3.0
+shader_parameter/rim_energy = 8.6
+shader_parameter/base_energy = 0.5
+shader_parameter/center_alpha = 0.05
+shader_parameter/edge_alpha = 0.9

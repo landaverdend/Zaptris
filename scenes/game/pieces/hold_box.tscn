@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://1gctjms6h00i"]
 
 [ext_resource type="Script" uid="uid://dx86e4aatjbu6" path="res://scenes/game/pieces/hold_box.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://bcn0a8jd4hs8" path="res://assets/game_arena/hold_frame.glb" id="2_drh82"]
+[ext_resource type="PackedScene" path="res://scenes/game/board/hold_frame.tscn" id="2_drh82"]
 [ext_resource type="FontFile" uid="uid://dap6iuirk0dla" path="res://assets/ui/fonts/Orbitron/static/Orbitron-ExtraBold.ttf" id="3_o2vke"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
@@ -28,8 +28,8 @@ transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09625536, 0.18539047, -0.5588879)
 
 [node name="Label3D" type="Label3D" parent="." unique_id=27554138]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1279875, 1.5477684, 0)
-modulate = Color(1, 0.40392157, 0, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1279875, 2.2274163, 0)
+modulate = Color(0.75, 0.95, 1, 1)
 text = "HODL"
 font = ExtResource("3_o2vke")
 font_size = 126
