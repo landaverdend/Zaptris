@@ -84,6 +84,10 @@ pub struct RustBridge {
     rx:             Mutex<mpsc::Receiver<BridgeEvent>>,
     /// True while a pay_winner call is in flight — prevents overlapping payouts.
     paying:         Arc<AtomicBool>,
+    /// Set via set_nwc_override() before this node enters the tree (e.g. from
+    /// the Options menu) to use this NWC URI instead of HOST_NWC from .env.
+    /// Empty means "no override — use .env as before".
+    nwc_override:   String,
 }
 
 #[godot_api]
@@ -100,11 +104,19 @@ impl INode for RustBridge {
             tx,
             rx:     Mutex::new(rx),
             paying: Arc::new(AtomicBool::new(false)),
+            nwc_override: String::new(),
         }
     }
 
     fn ready(&mut self) {
-        match payments::PaymentClient::from_env(Arc::clone(&self.rt)) {
+        // An override passed from GDScript takes priority; otherwise fall
+        // back to HOST_NWC from .env, same as before.
+        let result = if self.nwc_override.trim().is_empty() {
+            payments::PaymentClient::from_env(Arc::clone(&self.rt))
+        } else {
+            payments::PaymentClient::new(&self.nwc_override, Arc::clone(&self.rt))
+        };
+        match result {
             Ok(client) => {
                 client.start_watching(self.tx.clone());
                 let client = Arc::new(client);
@@ -132,6 +144,13 @@ impl RustBridge {
     #[func]
     fn is_nwc_configured(&self) -> bool {
         self.payment_client.is_some()
+    }
+
+    /// Call before add_child()-ing this node to use this NWC URI instead of
+    /// HOST_NWC from .env. Has no effect if called after ready() has already run.
+    #[func]
+    fn set_nwc_override(&mut self, nwc_string: GString) {
+        self.nwc_override = nwc_string.to_string();
     }
 
     // ── Queue drain (called by GDScript Timer every 1s) ───────────────────────

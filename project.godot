@@ -20,6 +20,7 @@ config/icon="res://assets/icon.svg"
 Nostr="*res://autoloads/Nostr.gd"
 Rules="*res://autoloads/Rules.gd"
 Ambience="*res://autoloads/Ambience.gd"
+Settings="*res://autoloads/Settings.gd"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]

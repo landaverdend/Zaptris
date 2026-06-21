@@ -71,6 +71,10 @@ var _controller_slots: Dictionary = {}
 # ── Lifecycle ─────────────────────────────────────────────────────────────────
 
 func _ready() -> void:
+	config.free_mode     = Settings.free_mode
+	config.buy_in_sats   = Settings.buy_in_sats
+	config.free_pot_sats = Settings.host_payout_sats
+
 	payment_service = PaymentService.new()
 	payment_service.name = "PaymentService"
 	payment_service.nwc_ready.connect(_on_nwc_ready)

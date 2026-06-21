@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dgupwq5hvagm2"]
 
 [ext_resource type="Script" uid="uid://kwtha68kgqc6" path="res://scenes/menus/main_menu.gd" id="1_yqorp"]
+[ext_resource type="PackedScene" uid="uid://dxqj8h3n4r2bp" path="res://scenes/menus/options_popup.tscn" id="2_opts"]
 
 [sub_resource type="Theme" id="Theme_wlpbi"]
 default_font_size = 34
@@ -64,5 +65,8 @@ offset_right = 220.0
 offset_bottom = 220.0
 stretch_mode = 5
 
+[node name="OptionsPopup" parent="." instance=ExtResource("2_opts")]
+
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Solo" to="." method="_on_solo_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Multiplayer" to="." method="_on_multiplayer_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Options" to="." method="_on_options_pressed"]

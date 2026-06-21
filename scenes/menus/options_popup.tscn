@@ -1,0 +1,166 @@
+[gd_scene format=3 uid="uid://dxqj8h3n4r2bp"]
+
+[ext_resource type="Script" path="res://scenes/menus/options_popup.gd" id="1_opts"]
+[ext_resource type="PackedScene" uid="uid://bqj3v7m8x2law" path="res://scenes/game/ui/onscreen_keyboard.tscn" id="2_kbd"]
+
+[node name="OptionsPopup" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_opts")
+
+[node name="BG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+custom_minimum_size = Vector2(420, 0)
+
+[node name="Title" type="Label" parent="CenterContainer/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Options"
+horizontal_alignment = 1
+
+[node name="NWCRow" type="HBoxContainer" parent="CenterContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="NWCLabel" type="Label" parent="CenterContainer/VBox/NWCRow"]
+layout_mode = 2
+text = "NWC:"
+
+[node name="NWCEdit" type="LineEdit" parent="CenterContainer/VBox/NWCRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "nostr+walletconnect://..."
+
+[node name="PasteButton" type="Button" parent="CenterContainer/VBox/NWCRow"]
+layout_mode = 2
+text = "Paste"
+
+[node name="FreeModeRow" type="HBoxContainer" parent="CenterContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FreeModeLabel" type="Label" parent="CenterContainer/VBox/FreeModeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Free Mode (Host pays out to players)"
+
+[node name="FreeModeCheck" type="CheckButton" parent="CenterContainer/VBox/FreeModeRow"]
+layout_mode = 2
+
+[node name="BuyInRow" type="HBoxContainer" parent="CenterContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BuyInLabel" type="Label" parent="CenterContainer/VBox/BuyInRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Buy-in (sats, when Free Mode is off)"
+
+[node name="BuyInDec" type="Button" parent="CenterContainer/VBox/BuyInRow"]
+layout_mode = 2
+focus_mode = 2
+text = "-"
+
+[node name="BuyInValue" type="Label" parent="CenterContainer/VBox/BuyInRow"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "25"
+
+[node name="BuyInInc" type="Button" parent="CenterContainer/VBox/BuyInRow"]
+layout_mode = 2
+focus_mode = 2
+text = "+"
+
+[node name="HostPayoutRow" type="HBoxContainer" parent="CenterContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HostPayoutLabel" type="Label" parent="CenterContainer/VBox/HostPayoutRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Host Payout (sats, when Free Mode is on)"
+
+[node name="HostPayoutDec" type="Button" parent="CenterContainer/VBox/HostPayoutRow"]
+layout_mode = 2
+focus_mode = 2
+text = "-"
+
+[node name="HostPayoutValue" type="Label" parent="CenterContainer/VBox/HostPayoutRow"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "100"
+
+[node name="HostPayoutInc" type="Button" parent="CenterContainer/VBox/HostPayoutRow"]
+layout_mode = 2
+focus_mode = 2
+text = "+"
+
+[node name="SFXRow" type="HBoxContainer" parent="CenterContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SFXLabel" type="Label" parent="CenterContainer/VBox/SFXRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Effects Volume"
+
+[node name="SFXSlider" type="HSlider" parent="CenterContainer/VBox/SFXRow"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="BGMRow" type="HBoxContainer" parent="CenterContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BGMLabel" type="Label" parent="CenterContainer/VBox/BGMRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Music Volume"
+
+[node name="BGMSlider" type="HSlider" parent="CenterContainer/VBox/BGMRow"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="CloseButton" type="Button" parent="CenterContainer/VBox"]
+layout_mode = 2
+text = "Close"
+
+[node name="OnscreenKeyboard" parent="." instance=ExtResource("2_kbd")]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 460.0
+offset_bottom = 260.0

@@ -20,6 +20,10 @@ var _attack_sats: int = 15
 func _ready() -> void:
 	_bridge = RustBridge.new()
 	_bridge.name = "RustBridge"
+	# Must be set before add_child() — RustBridge reads this in its own
+	# ready(), which fires synchronously once it enters the tree below.
+	if not Settings.nwc_string.is_empty():
+		_bridge.set_nwc_override(Settings.nwc_string)
 	add_child(_bridge)
 	_bridge.invoice_ready.connect(_on_invoice_ready)
 	_bridge.invoice_paid.connect(_on_invoice_paid)
