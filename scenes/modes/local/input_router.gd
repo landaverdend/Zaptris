@@ -28,7 +28,16 @@ func stop_listening() -> void:
 
 # ── Join detection ────────────────────────────────────────────────────────────
 
-func _unhandled_input(event: InputEvent) -> void:
+# Uses _input (fires before GUI dispatch) rather than _unhandled_input —
+# the lobby card's Lightning field is always editable (even for slots a
+# controller claimed, so one shared keyboard can fill in everyone's
+# address), so a focused field would otherwise swallow every game-action
+# letter key as text input before an _unhandled_input handler ever saw it,
+# making keyboard join silently fail whenever anything happened to have
+# focus. Only the event that actually results in a brand-new join gets
+# consumed here — once a device has already joined, later keypresses fall
+# through to GUI as normal so typing into fields still works.
+func _input(event: InputEvent) -> void:
 	if not _listening:
 		return
 
@@ -40,6 +49,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		# Keyboard: only join on a real game action so typing in the name
 		# field or navigating UI doesn't accidentally claim a slot.
+		if "keyboard" in _registry:
+			return  # already joined — let it through to GUI normally
 		var is_game_action := false
 		for action in GAME_ACTIONS:
 			if event.is_action_pressed(action):
@@ -60,12 +71,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		device_key = "controller_%d" % dev_id
 		var joy_name: String = Input.get_joy_name(dev_id)
 		device_label = ControllerProfiles.friendly_name(joy_name)
+		if device_key in _registry:
+			return  # already joined
 
 	else:
-		return
-
-	# Already claimed?
-	if device_key in _registry:
 		return
 
 	# Find the next open arena slot
@@ -85,6 +94,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	input_node.configure(source, dev_id)
 
 	emit_signal("device_joined", arena_index, device_label, source, dev_id)
+	get_viewport().set_input_as_handled()
 
 	if _registry.size() >= _arenas.size():
 		stop_listening()

@@ -98,6 +98,12 @@ func _update_caret_visual() -> void:
 	var font_size := _target.get_theme_font_size("font_size")
 	var full_text := _target.text
 	var before := full_text.substr(0, _target.caret_column)
+	if _target.secret:
+		# Masked fields render a repeated placeholder character, not the
+		# real text — measure that instead or the caret drifts out of sync.
+		var ch := _target.secret_character if not _target.secret_character.is_empty() else "*"
+		full_text = ch.repeat(full_text.length())
+		before    = ch.repeat(before.length())
 	var full_w   := font.get_string_size(full_text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
 	var before_w := font.get_string_size(before, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
 	var text_h   := font.get_height(font_size)

@@ -58,11 +58,23 @@ size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("2_vhqty")
 alignment = 1
 placeholder_text = "Lightning address"
+focus_neighbor_left = NodePath(".")
+focus_neighbor_top = NodePath("../ReadyButton")
+focus_neighbor_right = NodePath(".")
+focus_neighbor_bottom = NodePath("../CheckButton")
+focus_next = NodePath("../CheckButton")
+focus_previous = NodePath("../ReadyButton")
 
 [node name="CheckButton" type="Button" parent="CenterContainer/VBox" unique_id=1705032725]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_vhqty")
 text = "Check"
+focus_neighbor_left = NodePath(".")
+focus_neighbor_top = NodePath("../LightningEdit")
+focus_neighbor_right = NodePath(".")
+focus_neighbor_bottom = NodePath("../ReadyButton")
+focus_next = NodePath("../ReadyButton")
+focus_previous = NodePath("../LightningEdit")
 
 [node name="AddressStatus" type="Label" parent="CenterContainer/VBox" unique_id=1705032726]
 visible = false
@@ -74,6 +86,12 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_vhqty")
 text = "Ready?"
+focus_neighbor_left = NodePath(".")
+focus_neighbor_top = NodePath("../CheckButton")
+focus_neighbor_right = NodePath(".")
+focus_neighbor_bottom = NodePath("../LightningEdit")
+focus_next = NodePath("../LightningEdit")
+focus_previous = NodePath("../CheckButton")
 
 [node name="OnscreenKeyboard" parent="." instance=ExtResource("3_kbd")]
 layout_mode = 1

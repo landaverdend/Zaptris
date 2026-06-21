@@ -53,11 +53,22 @@ text = "NWC:"
 [node name="NWCEdit" type="LineEdit" parent="CenterContainer/VBox/NWCRow"]
 layout_mode = 2
 size_flags_horizontal = 3
+secret = true
 placeholder_text = "nostr+walletconnect://..."
 
 [node name="PasteButton" type="Button" parent="CenterContainer/VBox/NWCRow"]
 layout_mode = 2
 text = "Paste"
+
+[node name="CheckButton" type="Button" parent="CenterContainer/VBox/NWCRow"]
+layout_mode = 2
+text = "Check"
+
+[node name="NWCStatus" type="Label" parent="CenterContainer/VBox"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
 
 [node name="FreeModeRow" type="HBoxContainer" parent="CenterContainer/VBox"]
 layout_mode = 2

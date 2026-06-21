@@ -1,10 +1,9 @@
 extends Node
 
-## Game settings, edited via the Options popup. free_mode/volumes persist
-## across sessions via a ConfigFile in user://. nwc_string deliberately does
-## NOT persist — it's a wallet connection secret, and writing it to a plain
-## settings file on disk (especially on a shared/demo machine) trades
-## convenience for a real credential-exposure risk. Re-enter it each session.
+## Game settings, edited via the Options popup. Persists across sessions
+## via a ConfigFile in user://. Note nwc_string is a wallet connection
+## secret — fine for a personal/demo machine, but don't ship this as-is to
+## a shared or untrusted environment without encrypting it at rest.
 
 signal free_mode_changed(enabled: bool)
 signal sfx_volume_changed(linear: float)
@@ -19,7 +18,6 @@ const SAVE_PATH := "user://settings.cfg"
 ## NWC connection string. If set, payment_service.gd passes this to
 ## RustBridge.set_nwc_override() before it enters the tree, which takes
 ## priority over HOST_NWC from .env. Empty means "use .env as before".
-## Not persisted — see note above.
 var nwc_string: String = ""
 
 var free_mode: bool = true
@@ -50,6 +48,7 @@ func _ready() -> void:
 
 func set_nwc_string(value: String) -> void:
 	nwc_string = value
+	_save()
 
 func set_free_mode(enabled: bool) -> void:
 	free_mode = enabled
@@ -85,6 +84,7 @@ func _save() -> void:
 	cfg.set_value("match", "free_mode", free_mode)
 	cfg.set_value("match", "buy_in_sats", buy_in_sats)
 	cfg.set_value("match", "host_payout_sats", host_payout_sats)
+	cfg.set_value("payments", "nwc_string", nwc_string)
 	cfg.save(SAVE_PATH)
 
 func _load() -> void:
@@ -96,6 +96,7 @@ func _load() -> void:
 	free_mode        = cfg.get_value("match", "free_mode", free_mode)
 	buy_in_sats      = cfg.get_value("match", "buy_in_sats", buy_in_sats)
 	host_payout_sats = cfg.get_value("match", "host_payout_sats", host_payout_sats)
+	nwc_string       = cfg.get_value("payments", "nwc_string", nwc_string)
 
 func _apply_sfx_volume() -> void:
 	var idx := AudioServer.get_bus_index(SFX_BUS)

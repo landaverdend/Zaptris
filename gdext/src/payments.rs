@@ -52,10 +52,17 @@ impl PaymentClient {
     /// this immediately on construction overlaps that handshake with the
     /// rest of lobby setup instead.
     pub async fn warm_up(&self) {
-        match self.nwc.get_info().await {
-            Ok(_)  => eprintln!("[payments] relay warmed up"),
+        match self.ping().await {
+            Ok(())  => eprintln!("[payments] relay warmed up"),
             Err(e) => eprintln!("[payments] relay warm-up failed (will retry on first real request): {e}"),
         }
+    }
+
+    /// Ping the wallet for its info — confirms the connection actually works,
+    /// not just that the URI parsed. Used by both warm_up() and the Options
+    /// menu's "Check" button (via a throwaway client, see lib.rs).
+    pub async fn ping(&self) -> Result<(), String> {
+        self.nwc.get_info().await.map(|_| ()).map_err(|e| e.to_string())
     }
 
     /// Create a BOLT-11 invoice. Pass amount_sats=0 for an amountless invoice

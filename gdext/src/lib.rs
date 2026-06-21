@@ -22,6 +22,7 @@ pub(crate) enum BridgeEvent {
     InvoicePaid(i64, i64),             // player_index, amount_sats
     AddressChecked(i64, bool, String), // player_index, valid, message
     PaymentSettled(i64, bool),         // amount_sats, success
+    NwcChecked(bool, String),          // success, message
     Log(String),                       // diagnostic message → godot_print
 }
 
@@ -153,6 +154,31 @@ impl RustBridge {
         self.nwc_override = nwc_string.to_string();
     }
 
+    /// Test an NWC URI without touching the live connection — parses it and
+    /// pings the wallet for its info on a throwaway client. Emits
+    /// `nwc_checked(success, message)`. For use from a bridge instance that
+    /// isn't necessarily the one driving an active match (e.g. the Options
+    /// menu, which has no game session yet).
+    #[func]
+    fn check_nwc_string(&self, nwc_string: GString) {
+        let tx = self.tx.clone();
+        let rt = Arc::clone(&self.rt);
+        let nwc_string = nwc_string.to_string();
+        self.rt.spawn(async move {
+            let client = match payments::PaymentClient::new(&nwc_string, rt) {
+                Ok(c) => c,
+                Err(e) => {
+                    tx.send(BridgeEvent::NwcChecked(false, e)).ok();
+                    return;
+                }
+            };
+            match client.ping().await {
+                Ok(())  => { tx.send(BridgeEvent::NwcChecked(true, "Connected ✓".to_string())).ok(); }
+                Err(e)  => { tx.send(BridgeEvent::NwcChecked(false, e)).ok(); }
+            }
+        });
+    }
+
     // ── Queue drain (called by GDScript Timer every 1s) ───────────────────────
 
     #[func]
@@ -188,6 +214,11 @@ impl RustBridge {
                 BridgeEvent::PaymentSettled(amount, success) => {
                     self.base_mut().emit_signal("payment_settled", &[
                         amount.to_variant(), success.to_variant(),
+                    ]);
+                }
+                BridgeEvent::NwcChecked(success, msg) => {
+                    self.base_mut().emit_signal("nwc_checked", &[
+                        success.to_variant(), GString::from(msg).to_variant(),
                     ]);
                 }
                 BridgeEvent::Log(msg) => {
@@ -396,4 +427,7 @@ impl RustBridge {
 
     #[signal]
     fn payment_settled(amount_sats: i64, success: bool);
+
+    #[signal]
+    fn nwc_checked(success: bool, message: GString);
 }
