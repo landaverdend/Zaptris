@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" uid="uid://bcn0a8jd4hs8" path="res://assets/game_arena/hold_frame.glb" id="1_glb"]
-[ext_resource type="Material" uid="uid://8v1emxvr2r02" path="res://scenes/game/frame_glow_ice.tres" id="2_glow"]
+[ext_resource type="Material" uid="uid://8v1emxvr2r02" path="res://scenes/game/frame_glow_secondary.tres" id="2_glow"]
 
 [node name="hold_frame" instance=ExtResource("1_glb")]
 

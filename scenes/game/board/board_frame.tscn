@@ -2,8 +2,14 @@
 
 [ext_resource type="PackedScene" uid="uid://bk25p3ejnapj2" path="res://assets/game_arena/board_frame.glb" id="1_vjylo"]
 [ext_resource type="Material" uid="uid://bqjypcifbf5ay" path="res://scenes/game/frame_glow.tres" id="2_q8063"]
+[ext_resource type="ArrayMesh" path="res://assets/game_arena/board_frame.glb::ArrayMesh_cmd4g" id="3_mesh"]
+[ext_resource type="Material" path="res://scenes/game/effects/glow_outline.tres" id="4_outline"]
 
 [node name="board_frame" unique_id=1834329536 instance=ExtResource("1_vjylo")]
 
 [node name="BoardFrame" parent="." index="0" unique_id=1338527757]
 surface_material_override/0 = ExtResource("2_q8063")
+
+[node name="Outline" type="MeshInstance3D" parent="."]
+mesh = ExtResource("3_mesh")
+material_override = ExtResource("4_outline")

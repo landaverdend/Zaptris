@@ -6,7 +6,7 @@
 [ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="4_pwlng"]
 [ext_resource type="PackedScene" uid="uid://i164ym0m5xs3" path="res://scenes/game/ui/qr_display.tscn" id="5_q3mdj"]
 [ext_resource type="PackedScene" uid="uid://dh7m3kqavxw2n" path="res://scenes/game/effects/lightning_zap.tscn" id="6_zap"]
-[ext_resource type="Script" path="res://scenes/modes/local/match_pot.gd" id="7_matchpot"]
+[ext_resource type="Script" uid="uid://04n6xbmm2gu3" path="res://scenes/modes/local/match_pot.gd" id="7_matchpot"]
 [ext_resource type="PackedScene" uid="uid://cqxk6n2dujfgh" path="res://scenes/game/ui/countdown_display.tscn" id="8_countdown"]
 
 [node name="LocalMode" type="Node3D" unique_id=-294967295]
@@ -133,7 +133,7 @@ theme_override_font_sizes/font_size = 13
 text = "NWC ○ OFFLINE"
 
 [node name="Pot" parent="." unique_id=1006308564 instance=ExtResource("3_o06ul")]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 4.962905, 27.967936, 24.032341)
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 4.962905, 27.509348, 24.032341)
 script = ExtResource("7_matchpot")
 
 [node name="LightningZap2" parent="Pot" unique_id=415087735 instance=ExtResource("6_zap")]
@@ -151,7 +151,7 @@ font_size = 100
 outline_size = 69
 
 [node name="Label3D" type="Label3D" parent="Pot" unique_id=1827530260]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4678011, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1693716, 0)
 text = "POT"
 font = ExtResource("4_pwlng")
 font_size = 100
