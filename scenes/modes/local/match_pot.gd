@@ -11,6 +11,9 @@ extends Node3D
 signal pot_changed(new_sats: int)
 
 const SATS_STREAM_SCENE := preload("res://scenes/game/effects/sats_stream.tscn")
+## Nudges the bolt's start point up from the pot's exact origin — purely
+## cosmetic, so it doesn't track every future tweak to the pot's own transform.
+const STREAM_START_Y_OFFSET := 2.0
 
 @onready var _amount_label: Label3D  = $Amount
 @onready var _zaps: Array[Node3D]    = [$LightningZap, $LightningZap2]
@@ -109,10 +112,10 @@ func _on_payment_settled(amount: int, success: bool) -> void:
 
 func _set_sats(value: int) -> void:
 	sats = value
-	_amount_label.text = "⚡ %d" % sats
+	_amount_label.text = "%d" % sats
 	pot_changed.emit(sats)
 
 func _play_stream_to(target: Vector3) -> void:
 	var stream := SATS_STREAM_SCENE.instantiate()
 	add_child(stream)
-	stream.play_between(global_position, target)
+	stream.play_between(global_position + Vector3(0, STREAM_START_Y_OFFSET, 0), target)

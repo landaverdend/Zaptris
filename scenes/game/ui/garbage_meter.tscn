@@ -1,9 +1,7 @@
 [gd_scene format=3 uid="uid://dmsqmcnk2k2o0"]
 
 [ext_resource type="Script" uid="uid://brocvg2tya3p4" path="res://scenes/game/ui/garbage_meter.gd" id="1"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
-albedo_color = Color(0.07058824, 0.07058824, 0.101960786, 1.0)
+[ext_resource type="Material" uid="uid://bqjypcifbf5ay" path="res://scenes/game/frame_glow.tres" id="2_glow"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_1"]
 size = Vector3(0.75, 20, 0.2)
@@ -13,7 +11,7 @@ script = ExtResource("1")
 
 [node name="Backdrop" type="MeshInstance3D" parent="." unique_id=437810841]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, -0.6)
-material_override = SubResource("StandardMaterial3D_1")
+material_override = ExtResource("2_glow")
 mesh = SubResource("BoxMesh_1")
 
 [node name="Blocks" type="Node3D" parent="." unique_id=2132938584]

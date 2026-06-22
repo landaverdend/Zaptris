@@ -2,12 +2,25 @@
 
 [ext_resource type="Script" uid="uid://bq24101nmxb7g" path="res://scenes/modes/local/local_mode.gd" id="1_local"]
 [ext_resource type="PackedScene" uid="uid://rpccclpijd2n" path="res://scenes/background/background.tscn" id="2_background"]
-[ext_resource type="PackedScene" uid="uid://dfypdd71oyis6" path="res://scenes/game/board/Frame.tscn" id="3_o06ul"]
 [ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="4_pwlng"]
 [ext_resource type="PackedScene" uid="uid://i164ym0m5xs3" path="res://scenes/game/ui/qr_display.tscn" id="5_q3mdj"]
 [ext_resource type="PackedScene" uid="uid://dh7m3kqavxw2n" path="res://scenes/game/effects/lightning_zap.tscn" id="6_zap"]
 [ext_resource type="Script" uid="uid://04n6xbmm2gu3" path="res://scenes/modes/local/match_pot.gd" id="7_matchpot"]
 [ext_resource type="PackedScene" uid="uid://cqxk6n2dujfgh" path="res://scenes/game/ui/countdown_display.tscn" id="8_countdown"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_pot_border"]
+size = Vector2(4.7, 3.5)
+
+[sub_resource type="StandardMaterial3D" id="Mat_pot_border"]
+shading_mode = 0
+albedo_color = Color(0.1, 0.85, 1.0, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_pot_fill"]
+size = Vector2(4.4, 3.2)
+
+[sub_resource type="StandardMaterial3D" id="Mat_pot_fill"]
+shading_mode = 0
+albedo_color = Color(0.02, 0.02, 0.05, 1)
 
 [node name="LocalMode" type="Node3D" unique_id=-294967295]
 process_mode = 3
@@ -132,33 +145,43 @@ theme_override_fonts/font = ExtResource("4_pwlng")
 theme_override_font_sizes/font_size = 13
 text = "NWC ○ OFFLINE"
 
-[node name="Pot" parent="." unique_id=1006308564 instance=ExtResource("3_o06ul")]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 4.962905, 27.509348, 24.032341)
+[node name="Pot" type="Node3D" parent="." unique_id=1006308564]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 4.962905, 25.921202, 24.032341)
 script = ExtResource("7_matchpot")
 
+[node name="CardBorder" type="MeshInstance3D" parent="Pot" unique_id=112393660]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -0.25)
+mesh = SubResource("QuadMesh_pot_border")
+surface_material_override/0 = SubResource("Mat_pot_border")
+
+[node name="CardFill" type="MeshInstance3D" parent="Pot" unique_id=1234766330]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -0.2)
+mesh = SubResource("QuadMesh_pot_fill")
+surface_material_override/0 = SubResource("Mat_pot_fill")
+
 [node name="LightningZap2" parent="Pot" unique_id=415087735 instance=ExtResource("6_zap")]
-transform = Transform3D(0.59118295, 0.8065373, 0, -0.8065373, 0.59118295, 0, 0, 0, 1, 0.64987874, 0.3477583, 1.1040001)
+transform = Transform3D(0.59118295, 0.8065373, 0, -0.8065373, 0.59118295, 0, 0, 0, 1, 0.64987874, 1.0082197, 1.1040001)
 bolt_height = 10.0
 bolt_width = 3.0
 bolt_color = Color(0.972549, 0.7921569, 0, 1)
 
 [node name="Amount" type="Label3D" parent="Pot" unique_id=94246111]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15830421, 0.23751831, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15830421, 1.3726349, -0.047771454)
 modulate = Color(1, 1, 0.003921569, 1)
 text = "AMOUNT"
 font = ExtResource("4_pwlng")
-font_size = 100
-outline_size = 69
+font_size = 160
+outline_size = 100
 
 [node name="Label3D" type="Label3D" parent="Pot" unique_id=1827530260]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1693716, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.33994, 0)
 text = "POT"
 font = ExtResource("4_pwlng")
 font_size = 100
 outline_size = 69
 
 [node name="LightningZap" parent="Pot" unique_id=2100000001 instance=ExtResource("6_zap")]
-transform = Transform3D(0.5881382, -0.8087604, 0, 0.8087604, 0.5881382, 0, 0, 0, 1, -0.27210188, 0.37478542, 1.1040001)
+transform = Transform3D(0.5881382, -0.8087604, 0, 0.8087604, 0.5881382, 0, 0, 0, 1, -0.27210188, 1.0601568, 1.1040001)
 bolt_height = 10.0
 bolt_width = 3.0
 bolt_color = Color(0.972549, 0.7921569, 0, 1)

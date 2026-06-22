@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://81oork46hv15" path="res://assets/background/siglo21_billboard.glb" id="12_o0ti4"]
 [ext_resource type="Script" uid="uid://8vjkjljb71hv" path="res://scenes/background/light_flicker.gd" id="13_flicker"]
 [ext_resource type="Script" uid="uid://bkydvrs4jorfn" path="res://scenes/background/neon_sign_light.gd" id="14_sign"]
+[ext_resource type="Script" uid="uid://bxds0josc186i" path="res://scenes/background/sky_color_drift.gd" id="15_drift"]
 
 [sub_resource type="Curve" id="Curve_gco5v"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.11231101, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.75651467), 0.0, 0.0, 0, 0]
@@ -70,6 +71,19 @@ background_mode = 2
 sky = SubResource("Sky_3mmpu")
 sky_custom_fov = 90.0
 ambient_light_source = 3
+fog_enabled = true
+fog_light_color = Color(0.35, 0.28, 0.3, 1)
+fog_light_energy = 1.0
+fog_density = 0.001
+fog_sky_affect = 0.15
+fog_aerial_perspective = 0.5
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.005
+volumetric_fog_albedo = Color(0.35, 0.28, 0.3, 1)
+volumetric_fog_anisotropy = 0.2
+volumetric_fog_length = 60.0
+volumetric_fog_detail_spread = 2.0
+volumetric_fog_sky_affect = 0.0
 glow_enabled = true
 glow_intensity = 0.6
 glow_strength = 1.2
@@ -179,6 +193,7 @@ transform = Transform3D(-0.19413157, 0, 0.9809756, 0, 1, 0, -0.9809756, 0, -0.19
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2058137208]
 environment = SubResource("Environment_aga1r")
+script = ExtResource("15_drift")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=436258489]
 transform = Transform3D(0.75735563, -0.52643824, 0.38636166, 0.51240754, 0.845873, 0.14811298, -0.40478522, 0.08580042, 0.91037756, 5.5631256, -4.872877, 102.8716)
@@ -204,6 +219,24 @@ light_indirect_energy = 2.969
 light_volumetric_fog_energy = 0.745
 light_specular = 5.355
 spot_range = 70.082245
+spot_attenuation = 1.21
+spot_angle = 42.92
+spot_angle_attenuation = 1.1487037
+script = ExtResource("14_sign")
+base_color = Color(1, 0.627451, 0.98039216, 1)
+accent_color = Color(0.78, 0.55, 1, 1)
+color_drift_speed = 0.35
+blink_speed = 15.0
+blink_amount = 0.12
+
+[node name="building_light3" type="SpotLight3D" parent="building_light" unique_id=1992936420]
+transform = Transform3D(0.45532495, 0.87166077, -0.18134639, -0.8902215, 0.44883773, -0.07778374, 0.013593942, 0.19685534, 0.9803383, 17.08374, -14.166622, 41.069946)
+light_color = Color(1, 0.627451, 0.98039216, 1)
+light_energy = 17.145
+light_indirect_energy = 2.969
+light_volumetric_fog_energy = 0.745
+light_specular = 5.355
+spot_range = 55.892628
 spot_attenuation = 1.21
 spot_angle = 42.92
 spot_angle_attenuation = 1.1487037

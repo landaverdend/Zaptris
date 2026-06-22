@@ -17,6 +17,11 @@ const _CLEAR_INFO: Dictionary = {
 	"mini_tspin_single": { "text": "MINI T-SPIN SINGLE", "piece": "T" },
 }
 
+## Which clears count as a "combo" worth a B2B label on the popup — narrower
+## than ScoreTracker's own B2B_QUALIFYING (which also awards the bonus to
+## tspin_single/mini_tspin_single, but those don't get the "B2B" suffix here).
+const _B2B_DISPLAY_TYPES: Array = ["tetris", "tspin_double", "tspin_triple"]
+
 @onready var label: Label3D = $Label
 
 var _tween: Tween
@@ -37,7 +42,7 @@ func _peak_scale(text: String) -> float:
 		return 0.8
 	return 1.0
 
-func _on_clear_scored(clear_type: String, _points: int) -> void:
+func _on_clear_scored(clear_type: String, _points: int, was_b2b: bool) -> void:
 	var info: Dictionary = _CLEAR_INFO.get(clear_type, {})
 	if info.is_empty():
 		return
@@ -46,9 +51,12 @@ func _on_clear_scored(clear_type: String, _points: int) -> void:
 		_tween.kill()
 
 	var color: Color = info.color if info.has("color") else Pieces.COLORS[info.piece]
-	var peak: float = _peak_scale(info.text)
+	var display_text: String = info.text
+	if was_b2b and clear_type in _B2B_DISPLAY_TYPES:
+		display_text += " B2B"
+	var peak: float = _peak_scale(display_text)
 
-	label.text = info.text
+	label.text = display_text
 	label.modulate = Color(color, 1.0)
 	label.outline_modulate.a = 1.0
 	scale = Vector3.ONE * peak * 0.3

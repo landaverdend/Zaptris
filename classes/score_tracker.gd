@@ -7,7 +7,7 @@ var score: int = 0
 var b2b: bool = false  # true once a qualifying clear has started a B2B chain
 
 signal score_changed(new_score: int)
-signal clear_scored(clear_type: String, points: int)
+signal clear_scored(clear_type: String, points: int, was_b2b: bool)
 
 # ── Scoring table (Official Tetris Guideline) ─────────────────────────────────
 
@@ -59,8 +59,13 @@ func on_clear(clear_type: String, level: int) -> void:
 
 	# B2B bonus — 0.5x the action total when chaining back-to-back difficult clears.
 	# The FIRST clear in a B2B sequence does not receive the bonus;
-	# only consecutive qualifying clears after it do.
-	if B2B_QUALIFYING.has(clear_type) and b2b:
+	# only consecutive qualifying clears after it do. Capture this BEFORE
+	# mutating b2b below — checking it after would always be true for any
+	# qualifying clear_type, since the mutation unconditionally sets it,
+	# making every qualifying clear look like a continuation even when it's
+	# actually the first one after the chain broke.
+	var continues_b2b := B2B_QUALIFYING.has(clear_type) and b2b
+	if continues_b2b:
 		total += int(base * level * 0.5)
 
 	# Update B2B chain state AFTER calculating the bonus
@@ -71,13 +76,12 @@ func on_clear(clear_type: String, level: int) -> void:
 	# tspin / mini_tspin (no lines) do nothing to B2B state
 
 	score += total
-	var b2b_bonus := B2B_QUALIFYING.has(clear_type) and b2b
 	print("score +%d (%s%s) → total: %d" % [
 		total, clear_type,
-		" B2B" if b2b_bonus else "", score
+		" B2B" if continues_b2b else "", score
 	])
 	score_changed.emit(score)
-	clear_scored.emit(clear_type, total)
+	clear_scored.emit(clear_type, total, continues_b2b)
 
 func reset() -> void:
 	score = 0
