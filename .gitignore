@@ -8,6 +8,7 @@
 
 # Rust build output
 /gdext/target/
+/dist/
 addons/
 # Secrets — never commit wallet access keys
 .env

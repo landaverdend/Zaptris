@@ -1,0 +1,216 @@
+name: Build Releases
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  GODOT_VERSION: 4.6.3-stable
+  GODOT_TEMPLATE_VERSION: 4.6.3.stable
+
+jobs:
+  build-linux-extension:
+    name: Build Rust library for Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-gnu
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: gdext
+
+      - name: Build GDExtension
+        working-directory: gdext
+        run: cargo build --locked --release --target x86_64-unknown-linux-gnu
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gdextension-linux
+          path: gdext/target/x86_64-unknown-linux-gnu/release/libstacktris.so
+          if-no-files-found: error
+
+  build-windows-extension:
+    name: Build Rust library for Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: gdext
+
+      - name: Build GDExtension
+        working-directory: gdext
+        run: cargo build --locked --release --target x86_64-pc-windows-msvc
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gdextension-windows
+          path: gdext/target/x86_64-pc-windows-msvc/release/stacktris.dll
+          if-no-files-found: error
+
+  build-macos-extension:
+    name: Build universal Rust library for macOS
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: gdext
+
+      - name: Build Apple Silicon library
+        working-directory: gdext
+        run: cargo build --locked --release --target aarch64-apple-darwin
+
+      - name: Build Intel library
+        working-directory: gdext
+        run: cargo build --locked --release --target x86_64-apple-darwin
+
+      - name: Create universal library
+        working-directory: gdext
+        run: |
+          mkdir -p target/universal-apple-darwin/release
+          lipo -create \
+            target/aarch64-apple-darwin/release/libstacktris.dylib \
+            target/x86_64-apple-darwin/release/libstacktris.dylib \
+            -output target/universal-apple-darwin/release/libstacktris.dylib
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gdextension-macos
+          path: gdext/target/universal-apple-darwin/release/libstacktris.dylib
+          if-no-files-found: error
+
+  export-games:
+    name: Export Godot games
+    runs-on: ubuntu-latest
+    needs:
+      - build-linux-extension
+      - build-windows-extension
+      - build-macos-extension
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Linux GDExtension
+        uses: actions/download-artifact@v4
+        with:
+          name: gdextension-linux
+          path: gdext/target/x86_64-unknown-linux-gnu/release
+
+      - name: Download Windows GDExtension
+        uses: actions/download-artifact@v4
+        with:
+          name: gdextension-windows
+          path: gdext/target/x86_64-pc-windows-msvc/release
+
+      - name: Download macOS GDExtension
+        uses: actions/download-artifact@v4
+        with:
+          name: gdextension-macos
+          path: gdext/target/release
+
+      - name: Install Godot and export templates
+        run: |
+          curl --fail --location --retry 3 \
+            --output /tmp/godot.zip \
+            "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          curl --fail --location --retry 3 \
+            --output /tmp/godot-templates.tpz \
+            "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz"
+
+          mkdir -p /tmp/godot /tmp/godot-templates
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          unzip -q /tmp/godot-templates.tpz -d /tmp/godot-templates
+          chmod +x "/tmp/godot/Godot_v${GODOT_VERSION}_linux.x86_64"
+
+          mkdir -p "${HOME}/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          cp -R /tmp/godot-templates/templates/. \
+            "${HOME}/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}/"
+
+      - name: Import project
+        run: |
+          "/tmp/godot/Godot_v${GODOT_VERSION}_linux.x86_64" \
+            --headless --path . --editor --quit
+
+      - name: Export Linux
+        run: |
+          mkdir -p dist/linux
+          "/tmp/godot/Godot_v${GODOT_VERSION}_linux.x86_64" \
+            --headless --path . --export-release "Linux" \
+            dist/linux/Zaptris.x86_64
+
+      - name: Export Windows
+        run: |
+          mkdir -p dist/windows
+          "/tmp/godot/Godot_v${GODOT_VERSION}_linux.x86_64" \
+            --headless --path . --export-release "Windows" \
+            dist/windows/Zaptris.exe
+
+      - name: Export macOS
+        run: |
+          mkdir -p dist/macos
+          "/tmp/godot/Godot_v${GODOT_VERSION}_linux.x86_64" \
+            --headless --path . --export-release "macOS" \
+            dist/macos/Zaptris-macos-universal.zip
+
+      - name: Package builds
+        run: |
+          cd dist/linux
+          zip -q -r ../Zaptris-linux-x86_64.zip .
+          cd ../windows
+          zip -q -r ../Zaptris-windows-x86_64.zip .
+
+      - name: Upload Linux build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zaptris-linux-x86_64
+          path: dist/Zaptris-linux-x86_64.zip
+          if-no-files-found: error
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zaptris-windows-x86_64
+          path: dist/Zaptris-windows-x86_64.zip
+          if-no-files-found: error
+
+      - name: Upload macOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zaptris-macos-universal
+          path: dist/macos/Zaptris-macos-universal.zip
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            dist/Zaptris-linux-x86_64.zip \
+            dist/Zaptris-windows-x86_64.zip \
+            dist/macos/Zaptris-macos-universal.zip \
+            --generate-notes \
+            --title "Zaptris ${GITHUB_REF_NAME}"
