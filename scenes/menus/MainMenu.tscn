@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://kwtha68kgqc6" path="res://scenes/menus/main_menu.gd" id="1_yqorp"]
 [ext_resource type="PackedScene" uid="uid://dxqj8h3n4r2bp" path="res://scenes/menus/options_popup.tscn" id="2_opts"]
+[ext_resource type="PackedScene" uid="uid://rpccclpijd2n" path="res://scenes/background/background.tscn" id="3_ldf1p"]
 
 [sub_resource type="Theme" id="Theme_wlpbi"]
 default_font_size = 34
@@ -16,6 +17,19 @@ grow_vertical = 2
 theme = SubResource("Theme_wlpbi")
 script = ExtResource("1_yqorp")
 
+[node name="Label" type="Label" parent="." unique_id=1650869022]
+layout_mode = 0
+offset_left = 694.0
+offset_top = 246.0
+offset_right = 1260.0
+offset_bottom = 368.0
+theme_override_colors/font_color = Color(0.1, 0.85, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 96
+text = "ZAPSTRIS"
+horizontal_alignment = 1
+
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=100773719]
 layout_mode = 1
 anchors_preset = 15
@@ -26,11 +40,6 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1607858223]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1650869022]
-layout_mode = 2
-text = "Zapstris"
-horizontal_alignment = 1
 
 [node name="Solo" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1109589247]
 layout_mode = 2
@@ -65,7 +74,10 @@ offset_right = 220.0
 offset_bottom = 220.0
 stretch_mode = 5
 
-[node name="OptionsPopup" parent="." instance=ExtResource("2_opts")]
+[node name="OptionsPopup" parent="." unique_id=940380150 instance=ExtResource("2_opts")]
+layout_mode = 1
+
+[node name="Background" parent="." unique_id=1086334821 instance=ExtResource("3_ldf1p")]
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Solo" to="." method="_on_solo_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Multiplayer" to="." method="_on_multiplayer_pressed"]
