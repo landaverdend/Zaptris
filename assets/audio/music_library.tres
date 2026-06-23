@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MusicLibrary" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://assets/audio/music_library.gd" id="1_script"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambient/Double Joint_Trey Smith.mp3" id="2_double_joint"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambient/Kin City Disco.mp3" id="3_kin_city"]
+
+[resource]
+script = ExtResource("1_script")
+tracks = Array[AudioStream]([ExtResource("2_double_joint"), ExtResource("3_kin_city")])
+display_paths = PackedStringArray("res://assets/audio/ambient/Double Joint_Trey Smith.mp3", "res://assets/audio/ambient/Kin City Disco.mp3")

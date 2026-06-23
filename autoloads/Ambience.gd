@@ -1,23 +1,15 @@
 extends Node
 
 ## Shuffled, crossfading background-music jukebox.
-## Tracks are preloaded so exported builds include the imported streams reliably.
+## Uses an explicit Godot resource catalog so exported builds include music
+## through normal dependency tracing instead of runtime folder scanning.
 
 signal track_changed(track_path: String)
 
 const CROSSFADE_TIME := 3.0
 const SILENT_DB := -80.0
 const NOW_PLAYING_SCENE := preload("res://scenes/game/ui/now_playing_display.tscn")
-const TRACKS := [
-	{
-		"path": "res://assets/audio/ambient/Double Joint_Trey Smith.mp3",
-		"stream": preload("res://assets/audio/ambient/Double Joint_Trey Smith.mp3"),
-	},
-	{
-		"path": "res://assets/audio/ambient/Kin City Disco.mp3",
-		"stream": preload("res://assets/audio/ambient/Kin City Disco.mp3"),
-	},
-]
+const MUSIC_LIBRARY: MusicLibrary = preload("res://assets/audio/music_library.tres")
 
 var _tracks: Array[Dictionary] = []
 var _last_track_path: String = ""
@@ -25,7 +17,7 @@ var _players: Array[AudioStreamPlayer] = []
 var _current_player: AudioStreamPlayer
 
 func _ready() -> void:
-	_tracks.assign(TRACKS)
+	_tracks = _load_library_tracks()
 	if _tracks.is_empty():
 		push_warning("Ambience: no tracks configured")
 		return
@@ -80,3 +72,18 @@ func _play_next() -> void:
 func _on_track_finished(player: AudioStreamPlayer) -> void:
 	if player == _current_player:
 		_play_next()
+
+func _load_library_tracks() -> Array[Dictionary]:
+	var loaded: Array[Dictionary] = []
+	for i in MUSIC_LIBRARY.tracks.size():
+		var stream := MUSIC_LIBRARY.tracks[i]
+		if stream == null:
+			continue
+		var display_path := stream.resource_path
+		if i < MUSIC_LIBRARY.display_paths.size():
+			display_path = MUSIC_LIBRARY.display_paths[i]
+		loaded.append({
+			"path": display_path,
+			"stream": stream,
+		})
+	return loaded
