@@ -247,7 +247,7 @@ jobs:
               --title "Zaptris master-latest" \
               --notes "Automated build from ${GITHUB_SHA}." \
               --prerelease \
-              --latest
+              --latest=false
           else
             gh release create master-latest \
               dist/Zaptris-linux-x86_64.zip \
@@ -256,6 +256,6 @@ jobs:
               --title "Zaptris master-latest" \
               --notes "Automated build from ${GITHUB_SHA}." \
               --prerelease \
-              --latest \
+              --latest=false \
               --target "${GITHUB_SHA}"
           fi
