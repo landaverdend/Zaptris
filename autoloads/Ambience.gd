@@ -4,9 +4,12 @@ extends Node
 ## Drop any .mp3/.ogg files into AMBIENT_DIR and they're picked up automatically
 ## at startup — no per-track wiring needed.
 
+signal track_changed(track_path: String)
+
 const AMBIENT_DIR := "res://assets/audio/ambient/"
 const CROSSFADE_TIME := 3.0
 const SILENT_DB := -80.0
+const NOW_PLAYING_SCENE := preload("res://scenes/game/ui/now_playing_display.tscn")
 
 var _tracks: Array[String] = []
 var _last_track: String = ""
@@ -18,6 +21,12 @@ func _ready() -> void:
 	if _tracks.is_empty():
 		push_warning("Ambience: no tracks found in %s" % AMBIENT_DIR)
 		return
+
+	# Owned here (not by any game mode) so it persists across scene changes
+	# the same way the music itself does.
+	var now_playing := NOW_PLAYING_SCENE.instantiate()
+	add_child(now_playing)
+	track_changed.connect(now_playing.show_track)
 
 	for i in range(2):
 		var p := AudioStreamPlayer.new()
@@ -54,6 +63,7 @@ func _pick_next_track() -> String:
 func _play_next() -> void:
 	var track := _pick_next_track()
 	_last_track = track
+	track_changed.emit(track)
 
 	var outgoing := _current_player
 	var incoming: AudioStreamPlayer = _players[1] if outgoing == _players[0] else _players[0]

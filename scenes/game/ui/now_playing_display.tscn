@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/game/ui/now_playing_display.gd" id="1_script"]
+[ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="2_font"]
+
+[node name="NowPlayingDisplay" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_script")
+
+[node name="Header" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 420.0
+offset_bottom = 46.0
+theme_override_colors/font_color = Color(0.6, 0.85, 0.9, 0.85)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+text = "NOW PLAYING"
+
+[node name="Title" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 44.0
+offset_right = 520.0
+offset_bottom = 84.0
+theme_override_colors/font_color = Color(0.1, 0.85, 1.0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 28
+text = ""

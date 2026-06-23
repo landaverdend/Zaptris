@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bsn23t6h56asd"
+path="res://.godot/imported/Double Joint_Trey Smith.mp3-f6d55092ff09920d939632d7412f87a3.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/ambient/Double Joint_Trey Smith.mp3"
+dest_files=["res://.godot/imported/Double Joint_Trey Smith.mp3-f6d55092ff09920d939632d7412f87a3.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
