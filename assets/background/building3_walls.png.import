@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b3vsa27ks368i"
 path.s3tc="res://.godot/imported/building3_walls.png-edcf04859ce295cf79aa315087992cc0.s3tc.ctex"
+path.etc2="res://.godot/imported/building3_walls.png-edcf04859ce295cf79aa315087992cc0.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/background/building3_walls.png"
-dest_files=["res://.godot/imported/building3_walls.png-edcf04859ce295cf79aa315087992cc0.s3tc.ctex"]
+dest_files=["res://.godot/imported/building3_walls.png-edcf04859ce295cf79aa315087992cc0.s3tc.ctex", "res://.godot/imported/building3_walls.png-edcf04859ce295cf79aa315087992cc0.etc2.ctex"]
 
 [params]
 

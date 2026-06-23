@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://d3vr3qbh3vwxt"
 path.s3tc="res://.godot/imported/siglo21_billboard_billboards2_export.png-f766cbed022c1ea709e502ac7758e9d5.s3tc.ctex"
+path.etc2="res://.godot/imported/siglo21_billboard_billboards2_export.png-f766cbed022c1ea709e502ac7758e9d5.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/background/siglo21_billboard_billboards2_export.png"
-dest_files=["res://.godot/imported/siglo21_billboard_billboards2_export.png-f766cbed022c1ea709e502ac7758e9d5.s3tc.ctex"]
+dest_files=["res://.godot/imported/siglo21_billboard_billboards2_export.png-f766cbed022c1ea709e502ac7758e9d5.s3tc.ctex", "res://.godot/imported/siglo21_billboard_billboards2_export.png-f766cbed022c1ea709e502ac7758e9d5.etc2.ctex"]
 
 [params]
 

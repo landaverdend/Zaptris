@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dtmle0yhbha1s"
 path.s3tc="res://.godot/imported/grass_darkgrass.jpg-f0c6b32b319f36c42204ffd8f90b2867.s3tc.ctex"
+path.etc2="res://.godot/imported/grass_darkgrass.jpg-f0c6b32b319f36c42204ffd8f90b2867.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/background/grass_darkgrass.jpg"
-dest_files=["res://.godot/imported/grass_darkgrass.jpg-f0c6b32b319f36c42204ffd8f90b2867.s3tc.ctex"]
+dest_files=["res://.godot/imported/grass_darkgrass.jpg-f0c6b32b319f36c42204ffd8f90b2867.s3tc.ctex", "res://.godot/imported/grass_darkgrass.jpg-f0c6b32b319f36c42204ffd8f90b2867.etc2.ctex"]
 
 [params]
 

@@ -24,6 +24,7 @@ const FONT := preload("res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf")
 @onready var _done_btn:      Button        = $VBox/Actions/Done
 
 var _target: LineEdit = null
+var _device_id: int = -1
 
 # The target LineEdit never has real Godot focus while we're open (focus has
 # to stay on the key grid for d-pad nav), so its native caret never draws.
@@ -56,6 +57,8 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if not visible:
 		return
+	if _is_other_controller(event):
+		return
 	if event.is_action_pressed("ui_cancel"):
 		close()
 		get_viewport().set_input_as_handled()
@@ -71,6 +74,13 @@ func _input(event: InputEvent) -> void:
 		elif event.button_index == JOY_BUTTON_RIGHT_SHOULDER:
 			_move_caret(1)
 			get_viewport().set_input_as_handled()
+
+func _is_other_controller(event: InputEvent) -> bool:
+	if _device_id < 0:
+		return false
+	if (event is InputEventJoypadButton) or (event is InputEventJoypadMotion):
+		return event.device != _device_id
+	return false
 
 # The natural "B"/decline face button — physical position differs by
 # controller (Switch's printed B is Godot's JOY_BUTTON_A; everyone else's
@@ -113,8 +123,9 @@ func _update_caret_visual() -> void:
 	_caret.visible = true
 	_blink_timer.start()  # reset phase so it's always visible right after an edit
 
-func open(target: LineEdit) -> void:
+func open(target: LineEdit, device_id: int = -1) -> void:
 	_target = target
+	_device_id = device_id
 	# Drop in below the field rather than covering it — sized independently
 	# of whatever container holds us, so it can spill past a narrow parent
 	# (e.g. the lobby card) into the surrounding arena area if it needs to.
@@ -136,6 +147,7 @@ func close() -> void:
 	if _caret.get_parent():
 		_caret.get_parent().remove_child(_caret)
 	_target = null
+	_device_id = -1
 	closed.emit()
 
 func _on_key_pressed(ch: String) -> void:

@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dxemvdaohmyje"
 path.s3tc="res://.godot/imported/lacrypta_wall_lacrypta_wall_texture.png-d46a0e06a5148e4243d499c83faf3d4c.s3tc.ctex"
+path.etc2="res://.godot/imported/lacrypta_wall_lacrypta_wall_texture.png-d46a0e06a5148e4243d499c83faf3d4c.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/background/lacrypta_wall_lacrypta_wall_texture.png"
-dest_files=["res://.godot/imported/lacrypta_wall_lacrypta_wall_texture.png-d46a0e06a5148e4243d499c83faf3d4c.s3tc.ctex"]
+dest_files=["res://.godot/imported/lacrypta_wall_lacrypta_wall_texture.png-d46a0e06a5148e4243d499c83faf3d4c.s3tc.ctex", "res://.godot/imported/lacrypta_wall_lacrypta_wall_texture.png-d46a0e06a5148e4243d499c83faf3d4c.etc2.ctex"]
 
 [params]
 

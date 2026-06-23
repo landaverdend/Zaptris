@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cg5e8p2cbc1mm"
 path.s3tc="res://.godot/imported/building2_TexturesCom_BuildingsNeoclassical0246_2_S.jpg-167bab38aa48ea1361067df1e72e5438.s3tc.ctex"
+path.etc2="res://.godot/imported/building2_TexturesCom_BuildingsNeoclassical0246_2_S.jpg-167bab38aa48ea1361067df1e72e5438.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/background/building2_TexturesCom_BuildingsNeoclassical0246_2_S.jpg"
-dest_files=["res://.godot/imported/building2_TexturesCom_BuildingsNeoclassical0246_2_S.jpg-167bab38aa48ea1361067df1e72e5438.s3tc.ctex"]
+dest_files=["res://.godot/imported/building2_TexturesCom_BuildingsNeoclassical0246_2_S.jpg-167bab38aa48ea1361067df1e72e5438.s3tc.ctex", "res://.godot/imported/building2_TexturesCom_BuildingsNeoclassical0246_2_S.jpg-167bab38aa48ea1361067df1e72e5438.etc2.ctex"]
 
 [params]
 

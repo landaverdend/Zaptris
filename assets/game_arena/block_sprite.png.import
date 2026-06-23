@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://m2qcrwjkouco"
 path.s3tc="res://.godot/imported/block_sprite.png-af555190d44dd5d15048a1180c4e7d12.s3tc.ctex"
+path.etc2="res://.godot/imported/block_sprite.png-af555190d44dd5d15048a1180c4e7d12.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/game_arena/block_sprite.png"
-dest_files=["res://.godot/imported/block_sprite.png-af555190d44dd5d15048a1180c4e7d12.s3tc.ctex"]
+dest_files=["res://.godot/imported/block_sprite.png-af555190d44dd5d15048a1180c4e7d12.s3tc.ctex", "res://.godot/imported/block_sprite.png-af555190d44dd5d15048a1180c4e7d12.etc2.ctex"]
 
 [params]
 

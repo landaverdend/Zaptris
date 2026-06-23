@@ -173,10 +173,12 @@ func _try_controller_lobby_input(event: InputEvent) -> bool:
 	var idx: int = _controller_slots[dev]
 	if idx >= players.size():
 		return false
-	if players[idx].card.handle_controller_lobby_input(event):
-		get_viewport().set_input_as_handled()
-		return true
-	return false
+	var card = players[idx].card
+	if card.is_keyboard_open():
+		return false
+	card.handle_controller_lobby_input(event)
+	get_viewport().set_input_as_handled()
+	return true
 
 ## Attack invoice QR ready — show it on the arena so spectators can scan.
 func _on_invoice_qr_ready(player_index: int, qr_bytes: PackedByteArray) -> void:

@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cdb02tf7ijp8r"
 path.s3tc="res://.godot/imported/lacrypta_ball_LogoBall_Baked.png-ab4b90f3c62d777bc40dc48c0924c931.s3tc.ctex"
+path.etc2="res://.godot/imported/lacrypta_ball_LogoBall_Baked.png-ab4b90f3c62d777bc40dc48c0924c931.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/background/lacrypta_ball_LogoBall_Baked.png"
-dest_files=["res://.godot/imported/lacrypta_ball_LogoBall_Baked.png-ab4b90f3c62d777bc40dc48c0924c931.s3tc.ctex"]
+dest_files=["res://.godot/imported/lacrypta_ball_LogoBall_Baked.png-ab4b90f3c62d777bc40dc48c0924c931.s3tc.ctex", "res://.godot/imported/lacrypta_ball_LogoBall_Baked.png-ab4b90f3c62d777bc40dc48c0924c931.etc2.ctex"]
 
 [params]
 

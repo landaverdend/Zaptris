@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b2g7xo2y80dyf"
 path.s3tc="res://.godot/imported/building3_wall1roughness.png-103b247aad2bf429ca561a183d69803a.s3tc.ctex"
+path.etc2="res://.godot/imported/building3_wall1roughness.png-103b247aad2bf429ca561a183d69803a.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://assets/background/building3_wall1roughness.png"
-dest_files=["res://.godot/imported/building3_wall1roughness.png-103b247aad2bf429ca561a183d69803a.s3tc.ctex"]
+dest_files=["res://.godot/imported/building3_wall1roughness.png-103b247aad2bf429ca561a183d69803a.s3tc.ctex", "res://.godot/imported/building3_wall1roughness.png-103b247aad2bf429ca561a183d69803a.etc2.ctex"]
 
 [params]
 
