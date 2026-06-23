@@ -131,6 +131,15 @@ jobs:
           name: gdextension-macos
           path: gdext/target/release
 
+      - name: Prepare project for headless export
+        run: |
+          mkdir -p gdext/target/x86_64-unknown-linux-gnu/debug
+          cp \
+            gdext/target/x86_64-unknown-linux-gnu/release/libstacktris.so \
+            gdext/target/x86_64-unknown-linux-gnu/debug/libstacktris.so
+          sed -i '/_mcp_game_helper=/d' project.godot
+          sed -i '\|res://addons/godot_ai/plugin.cfg|d' project.godot
+
       - name: Install Godot and export templates
         run: |
           curl --fail --location --retry 3 \
