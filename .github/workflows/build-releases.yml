@@ -228,3 +228,32 @@ jobs:
             dist/macos/Zaptris-macos-universal.zip \
             --generate-notes \
             --title "Zaptris ${GITHUB_REF_NAME}"
+
+      - name: Update latest dev release
+        if: github.ref == 'refs/heads/master'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git tag --force latest-dev "${GITHUB_SHA}"
+          git push --force origin refs/tags/latest-dev
+
+          if gh release view latest-dev >/dev/null 2>&1; then
+            gh release upload latest-dev \
+              dist/Zaptris-linux-x86_64.zip \
+              dist/Zaptris-windows-x86_64.zip \
+              dist/macos/Zaptris-macos-universal.zip \
+              --clobber
+            gh release edit latest-dev \
+              --title "Zaptris latest dev build" \
+              --notes "Automated build from master commit ${GITHUB_SHA}." \
+              --prerelease
+          else
+            gh release create latest-dev \
+              dist/Zaptris-linux-x86_64.zip \
+              dist/Zaptris-windows-x86_64.zip \
+              dist/macos/Zaptris-macos-universal.zip \
+              --title "Zaptris latest dev build" \
+              --notes "Automated build from master commit ${GITHUB_SHA}." \
+              --prerelease \
+              --target "${GITHUB_SHA}"
+          fi
