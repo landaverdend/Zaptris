@@ -36,10 +36,15 @@ class PlayerSlot:
 
 # ── State ──────────────────────────────────────────────────────────────────────
 
-enum State { LOBBY, COUNTDOWN, PLAYING, ROUND_END, MATCH_END }
+enum State { LOBBY, COUNTDOWN, PLAYING, ROUND_END, MATCH_END, PAUSED }
 var state   := State.LOBBY
 var players: Array[PlayerSlot] = []
 var arena_count: int = 2
+
+## Device that claimed player 0's slot — only that device may pause, since
+## player 0 is treated as the "host". -1/-1 until a device actually joins.
+var _player_zero_source: int = -1
+var _player_zero_dev_id: int = -1
 
 ## Which player indices have received their QR code (lobby pre-creation).
 var _qr_ready: Array[bool] = []
@@ -58,6 +63,7 @@ var payment_service: PaymentService = null
 @onready var lobby_layer: Control       = $UILayer/LobbyLayer
 @onready var countdown_overlay: Control = $UILayer/CountdownOverlay
 @onready var match_pot: Node3D          = $Pot
+@onready var pause_overlay: Control     = $UILayer/PauseOverlay
 @onready var debug_panel: Control       = $UILayer/DebugGarbage
 @onready var _dbg_lines_label: Label    = $UILayer/DebugGarbage/VBox/AmountRow/LinesLabel
 @onready var _nwc_label: Label          = $UILayer/NWCStatus
@@ -123,6 +129,9 @@ func _on_remove_pressed() -> void:
 	_respawn()
 
 func _on_device_joined(arena_index: int, device_label: String, source: int, dev_id: int) -> void:
+	if arena_index == 0:
+		_player_zero_source = source
+		_player_zero_dev_id = dev_id
 	if arena_index < players.size():
 		players[arena_index].card.set_device(device_label)
 		if source == PlayerInput.InputSource.CONTROLLER:
@@ -136,9 +145,25 @@ func _focus_controller_ready(arena_index: int) -> void:
 	if arena_index < players.size():
 		players[arena_index].card.focus_ready_btn()
 
+func _input(event: InputEvent) -> void:
+	if _try_toggle_pause(event):
+		return
+	_try_controller_ready_shortcut(event)
+
+func _try_toggle_pause(event: InputEvent) -> bool:
+	if state != State.PLAYING and state != State.PAUSED:
+		return false
+	if not event.is_action_pressed("ui_cancel"):
+		return false
+	if not _is_player_zero_device(event):
+		return false
+	get_viewport().set_input_as_handled()
+	_toggle_pause()
+	return true
+
 # Use _input (fires before GUI) so we consume the event before Godot's
 # native button focus system also processes it — prevents double-fire.
-func _input(event: InputEvent) -> void:
+func _try_controller_ready_shortcut(event: InputEvent) -> void:
 	if state != State.LOBBY:
 		return
 	if not (event is InputEventJoypadButton) or not (event as InputEventJoypadButton).pressed:
@@ -316,6 +341,31 @@ func _update_camera() -> void:
 	var ball_body := bg.get_node_or_null("BallBody") as Node3D
 	if ball_body:
 		ball_body.visible = true
+
+# ── Pause ─────────────────────────────────────────────────────────────────────
+
+## Only player 0's own device (the "host") may pause — matches it by device
+## identity rather than just any keyboard/controller input, so other
+## players' inputs don't accidentally toggle pause for everyone.
+func _is_player_zero_device(event: InputEvent) -> bool:
+	if _player_zero_source == PlayerInput.InputSource.KEYBOARD:
+		return event is InputEventKey
+	if _player_zero_source == PlayerInput.InputSource.CONTROLLER:
+		return (
+			event is InputEventJoypadButton
+			and (event as InputEventJoypadButton).device == _player_zero_dev_id
+		)
+	return false
+
+func _toggle_pause() -> void:
+	if state == State.PAUSED:
+		state = State.PLAYING
+		get_tree().paused = false
+		pause_overlay.hide()
+	else:
+		state = State.PAUSED
+		get_tree().paused = true
+		pause_overlay.show()
 
 # ── Countdown ─────────────────────────────────────────────────────────────────
 

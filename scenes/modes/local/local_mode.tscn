@@ -13,7 +13,7 @@ size = Vector2(4.7, 3.5)
 
 [sub_resource type="StandardMaterial3D" id="Mat_pot_border"]
 shading_mode = 0
-albedo_color = Color(0.1, 0.85, 1.0, 1)
+albedo_color = Color(0.1, 0.85, 1, 1)
 
 [sub_resource type="QuadMesh" id="QuadMesh_pot_fill"]
 size = Vector2(4.4, 3.2)
@@ -144,6 +144,43 @@ offset_bottom = 30.0
 theme_override_fonts/font = ExtResource("4_pwlng")
 theme_override_font_sizes/font_size = 13
 text = "NWC ○ OFFLINE"
+
+[node name="PauseOverlay" type="Control" parent="UILayer" unique_id=1347375333]
+process_mode = 3
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Backdrop" type="ColorRect" parent="UILayer/PauseOverlay" unique_id=1779820886]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Label" type="Label" parent="UILayer/PauseOverlay" unique_id=226897843]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -40.0
+offset_right = 150.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.1, 0.85, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 48
+text = "PAUSED"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Pot" type="Node3D" parent="." unique_id=1006308564]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 4.962905, 25.921202, 24.032341)

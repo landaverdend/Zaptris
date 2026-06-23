@@ -40,6 +40,11 @@ func setup(service: PaymentService) -> void:
 
 	_payment_timer = Timer.new()
 	_payment_timer.one_shot = false
+	# LocalMode's root is process_mode=ALWAYS (so its own _input() can still
+	# un-pause), which by default leaks down to every descendant. Opt this
+	# timer back into being pausable so leader payouts actually stop ticking
+	# while the game is paused instead of inheriting ALWAYS.
+	_payment_timer.process_mode = Node.PROCESS_MODE_PAUSABLE
 	_payment_timer.timeout.connect(_on_payment_tick)
 	add_child(_payment_timer)
 
