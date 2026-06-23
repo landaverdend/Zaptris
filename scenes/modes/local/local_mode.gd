@@ -148,7 +148,8 @@ func _focus_controller_ready(arena_index: int) -> void:
 func _input(event: InputEvent) -> void:
 	if _try_toggle_pause(event):
 		return
-	_try_controller_ready_shortcut(event)
+	if _try_controller_lobby_input(event):
+		return
 
 func _try_toggle_pause(event: InputEvent) -> bool:
 	if state != State.PLAYING and state != State.PAUSED:
@@ -161,27 +162,21 @@ func _try_toggle_pause(event: InputEvent) -> bool:
 	_toggle_pause()
 	return true
 
-# Use _input (fires before GUI) so we consume the event before Godot's
-# native button focus system also processes it — prevents double-fire.
-func _try_controller_ready_shortcut(event: InputEvent) -> void:
+func _try_controller_lobby_input(event: InputEvent) -> bool:
 	if state != State.LOBBY:
-		return
+		return false
 	if not (event is InputEventJoypadButton) or not (event as InputEventJoypadButton).pressed:
-		return
-	if not event.is_action_pressed("ui_accept"):
-		return
+		return false
 	var dev := (event as InputEventJoypadButton).device
-	if dev in _controller_slots:
-		var idx: int = _controller_slots[dev]
-		if idx >= players.size():
-			return
-		# Only take this shortcut while the Ready button itself has focus —
-		# otherwise the player navigated elsewhere (e.g. the Lightning
-		# address field / on-screen keyboard) and accept should go there.
-		if get_viewport().gui_get_focus_owner() != players[idx].card.ready_btn:
-			return
+	if not dev in _controller_slots:
+		return false
+	var idx: int = _controller_slots[dev]
+	if idx >= players.size():
+		return false
+	if players[idx].card.handle_controller_lobby_input(event):
 		get_viewport().set_input_as_handled()
-		_on_player_ready(idx)
+		return true
+	return false
 
 ## Attack invoice QR ready — show it on the arena so spectators can scan.
 func _on_invoice_qr_ready(player_index: int, qr_bytes: PackedByteArray) -> void:

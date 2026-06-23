@@ -11,7 +11,6 @@ extends CanvasLayer
 @export var fade_out_time: float = 0.8
 
 @onready var _toast: Control = $Toast
-@onready var _header: Label = $Toast/Panel/Margin/Row/Text/Header
 @onready var _title: Label  = $Toast/Panel/Margin/Row/Text/Title
 
 var _tween: Tween

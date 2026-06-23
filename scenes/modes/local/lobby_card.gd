@@ -6,6 +6,7 @@ var player_num: int = 1
 var requires_payment: bool = false
 var _controller_device: bool = false
 var _keyboard_open: bool = false
+var _controller_focus_index: int = 2
 
 # The field's width as a fraction of the card's own size, so it scales with
 # however small the card gets at higher player counts instead of fighting
@@ -155,7 +156,48 @@ func set_qr(bytes: PackedByteArray) -> void:
 	qr_rect.show()
 
 func focus_ready_btn() -> void:
+	_controller_focus_index = 2
 	ready_btn.grab_focus()
+
+func handle_controller_lobby_input(event: InputEvent) -> bool:
+	if _keyboard_open:
+		return false
+	if not (event is InputEventJoypadButton) or not event.pressed:
+		return false
+
+	match event.button_index:
+		JOY_BUTTON_DPAD_UP:
+			_controller_focus_index = wrapi(_controller_focus_index - 1, 0, 3)
+			_focus_controller_target()
+			return true
+		JOY_BUTTON_DPAD_DOWN:
+			_controller_focus_index = wrapi(_controller_focus_index + 1, 0, 3)
+			_focus_controller_target()
+			return true
+		JOY_BUTTON_A:
+			_activate_controller_target()
+			return true
+
+	return false
+
+func _focus_controller_target() -> void:
+	match _controller_focus_index:
+		0:
+			lightning.grab_focus()
+		1:
+			check_btn.grab_focus()
+		2:
+			ready_btn.grab_focus()
+
+func _activate_controller_target() -> void:
+	match _controller_focus_index:
+		0:
+			_open_keyboard()
+		1:
+			check_pressed.emit()
+		2:
+			if not ready_btn.disabled:
+				ready_pressed.emit()
 
 # ── Accessor for LocalMode ────────────────────────────────────────────────────
 
