@@ -1,32 +1,125 @@
-[gd_scene format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/game/ui/now_playing_display.gd" id="1_script"]
 [ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="2_font"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.012, 0.018, 0.032, 0.84)
+border_width_left = 2
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.1, 0.85, 1, 0.5)
+corner_radius_top_left = 3
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 3
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+shadow_color = Color(0.1, 0.85, 1, 0.25)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_accent"]
+bg_color = Color(0.1, 0.85, 1, 0.95)
+corner_radius_top_left = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar"]
+bg_color = Color(0.1, 0.85, 1, 0.6)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 
 [node name="NowPlayingDisplay" type="CanvasLayer"]
 layer = 100
 script = ExtResource("1_script")
 
-[node name="Header" type="Label" parent="."]
-offset_left = 24.0
-offset_top = 20.0
-offset_right = 420.0
-offset_bottom = 46.0
-theme_override_colors/font_color = Color(0.6, 0.85, 0.9, 0.85)
+[node name="Toast" type="Control" parent="."]
+anchors_preset = 0
+offset_left = 28.0
+offset_top = 24.0
+offset_right = 560.0
+offset_bottom = 124.0
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Toast"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Margin" type="MarginContainer" parent="Toast/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 12
+
+[node name="Row" type="HBoxContainer" parent="Toast/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Accent" type="Panel" parent="Toast/Panel/Margin/Row"]
+custom_minimum_size = Vector2(5, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_accent")
+
+[node name="Text" type="VBoxContainer" parent="Toast/Panel/Margin/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="Header" type="Label" parent="Toast/Panel/Margin/Row/Text"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.97, 1, 0.74)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 6
+theme_override_constants/outline_size = 4
 theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 13
 text = "NOW PLAYING"
 
-[node name="Title" type="Label" parent="."]
-offset_left = 24.0
-offset_top = 44.0
-offset_right = 520.0
-offset_bottom = 84.0
-theme_override_colors/font_color = Color(0.1, 0.85, 1.0, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 8
+[node name="Title" type="Label" parent="Toast/Panel/Margin/Row/Text"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.9, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0.015, 0.025, 1)
+theme_override_constants/outline_size = 7
 theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 28
-text = ""
+theme_override_font_sizes/font_size = 24
+text = "Kin City Disco"
+clip_text = true
+
+[node name="Bars" type="HBoxContainer" parent="Toast/Panel/Margin/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+
+[node name="Bar1" type="Panel" parent="Toast/Panel/Margin/Row/Bars"]
+custom_minimum_size = Vector2(5, 20)
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_bar")
+
+[node name="Bar2" type="Panel" parent="Toast/Panel/Margin/Row/Bars"]
+custom_minimum_size = Vector2(5, 34)
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_bar")
+
+[node name="Bar3" type="Panel" parent="Toast/Panel/Margin/Row/Bars"]
+custom_minimum_size = Vector2(5, 26)
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_bar")
+
+[node name="Bar4" type="Panel" parent="Toast/Panel/Margin/Row/Bars"]
+custom_minimum_size = Vector2(5, 42)
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_styles/panel = SubResource("StyleBoxFlat_bar")

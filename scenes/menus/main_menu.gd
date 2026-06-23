@@ -1,8 +1,8 @@
 extends Control
 
-@onready var _solo_btn: Button        = $CenterContainer/VBoxContainer/Solo
-@onready var _multiplayer_btn: Button = $CenterContainer/VBoxContainer/Multiplayer
-@onready var _options_btn: Button     = $CenterContainer/VBoxContainer/Options
+@onready var _solo_btn: Button        = $SafeArea/MenuGrid/ActionsPanel/Actions/Solo
+@onready var _multiplayer_btn: Button = $SafeArea/MenuGrid/ActionsPanel/Actions/Multiplayer
+@onready var _options_btn: Button     = $SafeArea/MenuGrid/ActionsPanel/Actions/Options
 @onready var _options_popup: Control  = $OptionsPopup
 
 func _ready() -> void:

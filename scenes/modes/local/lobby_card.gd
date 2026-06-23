@@ -17,6 +17,7 @@ const FIELD_MIN_WIDTH   := 140.0
 @onready var address_status: Label  = $CenterContainer/VBox/AddressStatus
 @onready var qr_rect: TextureRect   = $CenterContainer/VBox/QRRect
 @onready var player_label: Label    = $CenterContainer/VBox/PlayerLabel
+@onready var check_btn: Button      = $CenterContainer/VBox/CheckButton
 @onready var ready_btn: Button      = $CenterContainer/VBox/ReadyButton
 @onready var keyboard: Control      = $OnscreenKeyboard
 
@@ -25,11 +26,10 @@ signal check_pressed
 
 func _ready() -> void:
 	ready_btn.pressed.connect(func(): ready_pressed.emit())
-	$CenterContainer/VBox/CheckButton.pressed.connect(
-		func(): check_pressed.emit()
-	)
+	check_btn.pressed.connect(func(): check_pressed.emit())
 	lightning.gui_input.connect(_on_lightning_gui_input)
 	keyboard.closed.connect(_on_keyboard_closed)
+	_configure_focus()
 	_update_lightning_width()
 
 # LocalMode resizes this card per-player based on arena scale (smaller at
@@ -70,7 +70,35 @@ func _set_card_focusable(enabled: bool) -> void:
 	var mode := Control.FOCUS_ALL if enabled else Control.FOCUS_NONE
 	lightning.focus_mode = mode
 	ready_btn.focus_mode = mode
-	$CenterContainer/VBox/CheckButton.focus_mode = mode
+	check_btn.focus_mode = mode
+	if enabled:
+		_configure_focus()
+
+func _configure_focus() -> void:
+	lightning.focus_mode = Control.FOCUS_ALL
+	check_btn.focus_mode = Control.FOCUS_ALL
+	ready_btn.focus_mode = Control.FOCUS_ALL
+
+	lightning.focus_neighbor_left = NodePath(".")
+	lightning.focus_neighbor_right = NodePath(".")
+	lightning.focus_neighbor_top = lightning.get_path_to(ready_btn)
+	lightning.focus_neighbor_bottom = lightning.get_path_to(check_btn)
+	lightning.focus_previous = lightning.get_path_to(ready_btn)
+	lightning.focus_next = lightning.get_path_to(check_btn)
+
+	check_btn.focus_neighbor_left = NodePath(".")
+	check_btn.focus_neighbor_right = NodePath(".")
+	check_btn.focus_neighbor_top = check_btn.get_path_to(lightning)
+	check_btn.focus_neighbor_bottom = check_btn.get_path_to(ready_btn)
+	check_btn.focus_previous = check_btn.get_path_to(lightning)
+	check_btn.focus_next = check_btn.get_path_to(ready_btn)
+
+	ready_btn.focus_neighbor_left = NodePath(".")
+	ready_btn.focus_neighbor_right = NodePath(".")
+	ready_btn.focus_neighbor_top = ready_btn.get_path_to(check_btn)
+	ready_btn.focus_neighbor_bottom = ready_btn.get_path_to(lightning)
+	ready_btn.focus_previous = ready_btn.get_path_to(check_btn)
+	ready_btn.focus_next = ready_btn.get_path_to(lightning)
 
 func setup(num: int) -> void:
 	player_num        = num

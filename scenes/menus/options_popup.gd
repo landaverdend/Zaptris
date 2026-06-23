@@ -7,8 +7,12 @@ signal closed
 @onready var check_btn: Button         = $CenterContainer/VBox/NWCRow/CheckButton
 @onready var nwc_status: Label         = $CenterContainer/VBox/NWCStatus
 @onready var free_mode_check: CheckButton = $CenterContainer/VBox/FreeModeRow/FreeModeCheck
+@onready var buy_in_dec: Button        = $CenterContainer/VBox/BuyInRow/BuyInDec
 @onready var buy_in_value: Label       = $CenterContainer/VBox/BuyInRow/BuyInValue
+@onready var buy_in_inc: Button        = $CenterContainer/VBox/BuyInRow/BuyInInc
+@onready var host_payout_dec: Button   = $CenterContainer/VBox/HostPayoutRow/HostPayoutDec
 @onready var host_payout_value: Label  = $CenterContainer/VBox/HostPayoutRow/HostPayoutValue
+@onready var host_payout_inc: Button   = $CenterContainer/VBox/HostPayoutRow/HostPayoutInc
 @onready var sfx_slider: HSlider       = $CenterContainer/VBox/SFXRow/SFXSlider
 @onready var bgm_slider: HSlider       = $CenterContainer/VBox/BGMRow/BGMSlider
 @onready var close_btn: Button         = $CenterContainer/VBox/CloseButton
@@ -36,14 +40,15 @@ func _ready() -> void:
 	paste_btn.pressed.connect(_on_paste_pressed)
 	check_btn.pressed.connect(_on_check_pressed)
 	free_mode_check.toggled.connect(Settings.set_free_mode)
-	$CenterContainer/VBox/BuyInRow/BuyInDec.pressed.connect(func(): _step_buy_in(-SATS_STEP))
-	$CenterContainer/VBox/BuyInRow/BuyInInc.pressed.connect(func(): _step_buy_in(SATS_STEP))
-	$CenterContainer/VBox/HostPayoutRow/HostPayoutDec.pressed.connect(func(): _step_host_payout(-SATS_STEP))
-	$CenterContainer/VBox/HostPayoutRow/HostPayoutInc.pressed.connect(func(): _step_host_payout(SATS_STEP))
+	buy_in_dec.pressed.connect(func(): _step_buy_in(-SATS_STEP))
+	buy_in_inc.pressed.connect(func(): _step_buy_in(SATS_STEP))
+	host_payout_dec.pressed.connect(func(): _step_host_payout(-SATS_STEP))
+	host_payout_inc.pressed.connect(func(): _step_host_payout(SATS_STEP))
 	sfx_slider.value_changed.connect(Settings.set_sfx_volume)
 	bgm_slider.value_changed.connect(Settings.set_bgm_volume)
 	close_btn.pressed.connect(close)
 	keyboard.closed.connect(func(): Settings.set_nwc_string(nwc_edit.text))
+	_configure_focus()
 
 func _step_buy_in(delta: int) -> void:
 	Settings.set_buy_in_sats(Settings.buy_in_sats + delta)
@@ -55,11 +60,55 @@ func _step_host_payout(delta: int) -> void:
 
 func open() -> void:
 	show()
-	close_btn.grab_focus()
+	nwc_edit.grab_focus()
 
 func close() -> void:
 	hide()
 	closed.emit()
+
+func _configure_focus() -> void:
+	var controls: Array[Control] = [
+		nwc_edit,
+		paste_btn,
+		check_btn,
+		free_mode_check,
+		buy_in_dec,
+		buy_in_inc,
+		host_payout_dec,
+		host_payout_inc,
+		sfx_slider,
+		bgm_slider,
+		close_btn,
+	]
+
+	for i in controls.size():
+		var current := controls[i]
+		current.focus_mode = Control.FOCUS_ALL
+		current.focus_previous = current.get_path_to(controls[(i - 1 + controls.size()) % controls.size()])
+		current.focus_next = current.get_path_to(controls[(i + 1) % controls.size()])
+
+	_configure_vertical_group([nwc_edit, paste_btn, check_btn], close_btn, free_mode_check)
+	_configure_vertical_group([free_mode_check], nwc_edit, buy_in_dec)
+	_configure_vertical_group([buy_in_dec, buy_in_inc], free_mode_check, host_payout_dec)
+	_configure_vertical_group([host_payout_dec, host_payout_inc], buy_in_dec, sfx_slider)
+	_configure_vertical_group([sfx_slider], host_payout_dec, bgm_slider)
+	_configure_vertical_group([bgm_slider], sfx_slider, close_btn)
+	_configure_vertical_group([close_btn], bgm_slider, nwc_edit)
+
+	_configure_horizontal_row([nwc_edit, paste_btn, check_btn])
+	_configure_horizontal_row([buy_in_dec, buy_in_inc])
+	_configure_horizontal_row([host_payout_dec, host_payout_inc])
+
+func _configure_vertical_group(row: Array[Control], up: Control, down: Control) -> void:
+	for control in row:
+		control.focus_neighbor_top = control.get_path_to(up)
+		control.focus_neighbor_bottom = control.get_path_to(down)
+
+func _configure_horizontal_row(row: Array[Control]) -> void:
+	for i in row.size():
+		var current := row[i]
+		current.focus_neighbor_left = current.get_path_to(row[maxi(i - 1, 0)])
+		current.focus_neighbor_right = current.get_path_to(row[mini(i + 1, row.size() - 1)])
 
 # Controller path into the on-screen keyboard, same pattern as the lobby
 # card's Lightning-address field — mouse/keyboard users can still click and

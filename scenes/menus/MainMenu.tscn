@@ -1,11 +1,92 @@
-[gd_scene format=3 uid="uid://dgupwq5hvagm2"]
+[gd_scene load_steps=10 format=3 uid="uid://dgupwq5hvagm2"]
 
 [ext_resource type="Script" uid="uid://kwtha68kgqc6" path="res://scenes/menus/main_menu.gd" id="1_yqorp"]
 [ext_resource type="PackedScene" uid="uid://dxqj8h3n4r2bp" path="res://scenes/menus/options_popup.tscn" id="2_opts"]
 [ext_resource type="PackedScene" uid="uid://rpccclpijd2n" path="res://scenes/background/background.tscn" id="3_ldf1p"]
+[ext_resource type="FontFile" uid="uid://di4m7axrougyw" path="res://assets/ui/fonts/Orbitron/static/Orbitron-Bold.ttf" id="4_font"]
 
 [sub_resource type="Theme" id="Theme_wlpbi"]
-default_font_size = 34
+default_font = ExtResource("4_font")
+default_font_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_title"]
+bg_color = Color(0.015, 0.025, 0.045, 0.52)
+border_width_left = 3
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.1, 0.85, 1, 0.38)
+corner_radius_top_left = 4
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 4
+content_margin_left = 28.0
+content_margin_top = 24.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_actions"]
+bg_color = Color(0.015, 0.02, 0.035, 0.72)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.1, 0.85, 1, 0.55)
+corner_radius_top_left = 4
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 4
+content_margin_left = 28.0
+content_margin_top = 28.0
+content_margin_right = 28.0
+content_margin_bottom = 28.0
+shadow_color = Color(0.1, 0.85, 1, 0.2)
+shadow_size = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rule"]
+bg_color = Color(0.1, 0.85, 1, 0.8)
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_focus"]
+bg_color = Color(0.04, 0.16, 0.22, 0.94)
+border_width_left = 10
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.65, 0.98, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 2
+content_margin_left = 34.0
+content_margin_top = 14.0
+content_margin_right = 28.0
+content_margin_bottom = 14.0
+shadow_color = Color(0.1, 0.85, 1, 0.65)
+shadow_size = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_normal"]
+bg_color = Color(0.025, 0.035, 0.06, 0.92)
+border_width_left = 7
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.1, 0.85, 1, 0.62)
+corner_radius_top_left = 2
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 2
+content_margin_left = 34.0
+content_margin_top = 14.0
+content_margin_right = 28.0
+content_margin_bottom = 14.0
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 8
 
 [node name="Control" type="Control" unique_id=948607908]
 layout_mode = 3
@@ -17,68 +98,166 @@ grow_vertical = 2
 theme = SubResource("Theme_wlpbi")
 script = ExtResource("1_yqorp")
 
-[node name="Label" type="Label" parent="." unique_id=1650869022]
-layout_mode = 0
-offset_left = 694.0
-offset_top = 246.0
-offset_right = 1260.0
-offset_bottom = 368.0
-theme_override_colors/font_color = Color(0.1, 0.85, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 14
-theme_override_font_sizes/font_size = 96
-text = "ZAPSTRIS"
-horizontal_alignment = 1
+[node name="Background" parent="." unique_id=1086334821 instance=ExtResource("3_ldf1p")]
 
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=100773719]
+[node name="ScreenShade" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+color = Color(0.005, 0.007, 0.014, 0.45)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=1607858223]
+[node name="TopGlow" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 6.0
+grow_horizontal = 2
+mouse_filter = 2
+color = Color(0.1, 0.85, 1, 0.75)
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 96.0
+offset_top = 84.0
+offset_right = -96.0
+offset_bottom = -84.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MenuGrid" type="HBoxContainer" parent="SafeArea"]
 layout_mode = 2
+theme_override_constants/separation = 64
+alignment = 1
 
-[node name="Solo" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1109589247]
+[node name="TitlePanel" type="PanelContainer" parent="SafeArea/MenuGrid"]
+custom_minimum_size = Vector2(680, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_title")
+
+[node name="TitleStack" type="VBoxContainer" parent="SafeArea/MenuGrid/TitlePanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Eyebrow" type="Label" parent="SafeArea/MenuGrid/TitlePanel/TitleStack"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93, 0.98, 1, 0.78)
+theme_override_font_sizes/font_size = 18
+text = ""
+
+[node name="Title" type="Label" parent="SafeArea/MenuGrid/TitlePanel/TitleStack"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.12, 0.9, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0.02, 0.04, 1)
+theme_override_constants/outline_size = 16
+theme_override_font_sizes/font_size = 112
+text = "ZAPTRIS"
+
+[node name="Rule" type="Panel" parent="SafeArea/MenuGrid/TitlePanel/TitleStack"]
+custom_minimum_size = Vector2(220, 4)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_rule")
+
+[node name="Tagline" type="Label" parent="SafeArea/MenuGrid/TitlePanel/TitleStack"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.96, 1, 0.82)
+theme_override_font_sizes/font_size = 26
+text = "STACK. CLEAR. ZAP."
+
+[node name="ActionsPanel" type="PanelContainer" parent="SafeArea/MenuGrid"]
+custom_minimum_size = Vector2(430, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_actions")
+
+[node name="Actions" type="VBoxContainer" parent="SafeArea/MenuGrid/ActionsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="Header" type="Label" parent="SafeArea/MenuGrid/ActionsPanel/Actions"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93, 0.98, 1, 0.7)
+theme_override_font_sizes/font_size = 16
+text = "SELECT MODE"
+horizontal_alignment = 1
+
+[node name="Solo" type="Button" parent="SafeArea/MenuGrid/ActionsPanel/Actions" unique_id=1109589247]
+custom_minimum_size = Vector2(360, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath("../Options")
 focus_neighbor_bottom = NodePath("../Multiplayer")
 focus_next = NodePath("../Multiplayer")
 focus_previous = NodePath("../Options")
-text = "Solo"
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_normal")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_focus")
+text = "SOLO"
+alignment = 0
 
-[node name="Multiplayer" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1489044475]
+[node name="Multiplayer" type="Button" parent="SafeArea/MenuGrid/ActionsPanel/Actions" unique_id=1489044475]
+custom_minimum_size = Vector2(360, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath("../Solo")
 focus_neighbor_bottom = NodePath("../Options")
 focus_next = NodePath("../Options")
 focus_previous = NodePath("../Solo")
-text = "Local Multiplayer"
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_normal")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_focus")
+text = "LOCAL MULTIPLAYER"
+alignment = 0
 
-[node name="Options" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1612943812]
+[node name="Options" type="Button" parent="SafeArea/MenuGrid/ActionsPanel/Actions" unique_id=1612943812]
+custom_minimum_size = Vector2(360, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath("../Multiplayer")
 focus_neighbor_bottom = NodePath("../Solo")
 focus_next = NodePath("../Solo")
 focus_previous = NodePath("../Multiplayer")
-text = "Options
-"
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_normal")
+theme_override_styles/focus = SubResource("StyleBoxFlat_button_focus")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_focus")
+text = "OPTIONS"
+alignment = 0
+
+[node name="Footer" type="Label" parent="SafeArea/MenuGrid/ActionsPanel/Actions"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.58, 0.95, 1, 0.55)
+theme_override_font_sizes/font_size = 14
+text = "ENTER / A TO CONFIRM"
+horizontal_alignment = 1
 
 [node name="QRRect" type="TextureRect" parent="." unique_id=510065409]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 220.0
-offset_bottom = 220.0
+visible = false
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -224.0
+offset_right = 224.0
+offset_bottom = -24.0
+grow_vertical = 0
 stretch_mode = 5
 
 [node name="OptionsPopup" parent="." unique_id=940380150 instance=ExtResource("2_opts")]
 layout_mode = 1
 
-[node name="Background" parent="." unique_id=1086334821 instance=ExtResource("3_ldf1p")]
-
-[connection signal="pressed" from="CenterContainer/VBoxContainer/Solo" to="." method="_on_solo_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/Multiplayer" to="." method="_on_multiplayer_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/Options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="SafeArea/MenuGrid/ActionsPanel/Actions/Solo" to="." method="_on_solo_pressed"]
+[connection signal="pressed" from="SafeArea/MenuGrid/ActionsPanel/Actions/Multiplayer" to="." method="_on_multiplayer_pressed"]
+[connection signal="pressed" from="SafeArea/MenuGrid/ActionsPanel/Actions/Options" to="." method="_on_options_pressed"]

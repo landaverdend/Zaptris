@@ -10,14 +10,15 @@ extends CanvasLayer
 @export var hold_time: float = 3.0
 @export var fade_out_time: float = 0.8
 
-@onready var _header: Label = $Header
-@onready var _title: Label  = $Title
+@onready var _toast: Control = $Toast
+@onready var _header: Label = $Toast/Panel/Margin/Row/Text/Header
+@onready var _title: Label  = $Toast/Panel/Margin/Row/Text/Title
 
 var _tween: Tween
 
 func _ready() -> void:
-	_header.modulate.a = 0.0
-	_title.modulate.a = 0.0
+	_toast.modulate.a = 0.0
+	_toast.position.x = -18.0
 
 func show_track(track_path: String) -> void:
 	_title.text = _display_name(track_path)
@@ -25,17 +26,17 @@ func show_track(track_path: String) -> void:
 	if _tween:
 		_tween.kill()
 
-	_header.modulate.a = 0.0
-	_title.modulate.a = 0.0
+	_toast.modulate.a = 0.0
+	_toast.position.x = -18.0
 
 	var fade_out_delay := fade_in_time + hold_time
 
 	_tween = create_tween()
 	_tween.set_parallel(true)
-	_tween.tween_property(_header, "modulate:a", 1.0, fade_in_time)
-	_tween.tween_property(_title, "modulate:a", 1.0, fade_in_time)
-	_tween.tween_property(_header, "modulate:a", 0.0, fade_out_time).set_delay(fade_out_delay)
-	_tween.tween_property(_title, "modulate:a", 0.0, fade_out_time).set_delay(fade_out_delay)
+	_tween.tween_property(_toast, "modulate:a", 1.0, fade_in_time)
+	_tween.tween_property(_toast, "position:x", 0.0, fade_in_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_tween.tween_property(_toast, "modulate:a", 0.0, fade_out_time).set_delay(fade_out_delay)
+	_tween.tween_property(_toast, "position:x", -18.0, fade_out_time).set_delay(fade_out_delay).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
 ## Filenames follow "Song Name_Artist.mp3" -> rendered as "Song Name - Artist".
 ## No casing/spacing changes here — the filename's casing is taken as-is,
