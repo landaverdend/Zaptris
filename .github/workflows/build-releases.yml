@@ -154,9 +154,14 @@ jobs:
           unzip -q /tmp/godot-templates.tpz -d /tmp/godot-templates
           chmod +x "/tmp/godot/Godot_v${GODOT_VERSION}_linux.x86_64"
 
+          rm -rf "${HOME}/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
           mkdir -p "${HOME}/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
           cp -R /tmp/godot-templates/templates/. \
             "${HOME}/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}/"
+
+          unzip -l \
+            "${HOME}/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}/macos.zip" \
+            | grep "godot_macos_release.universal"
 
       - name: Import project
         run: |
