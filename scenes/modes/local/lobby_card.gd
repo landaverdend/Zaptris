@@ -178,6 +178,7 @@ func set_qr(bytes: PackedByteArray) -> void:
 		return
 	var img := Image.new()
 	img.load_png_from_buffer(bytes)
+	img.resize(200, 200, Image.INTERPOLATE_NEAREST)
 	qr_rect.texture = ImageTexture.create_from_image(img)
 	qr_rect.show()
 

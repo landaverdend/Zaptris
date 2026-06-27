@@ -15,8 +15,9 @@ const SATS_STREAM_SCENE := preload("res://scenes/game/effects/sats_stream.tscn")
 ## cosmetic, so it doesn't track every future tweak to the pot's own transform.
 const STREAM_START_Y_OFFSET := 2.0
 
-@onready var _amount_label: Label3D  = $Amount
-@onready var _zaps: Array[Node3D]    = [$LightningZap, $LightningZap2]
+@onready var _amount_label: Label3D    = $Amount
+@onready var _countdown_label: Label3D = $Countdown
+@onready var _zaps: Array[Node3D]      = [$LightningZap, $LightningZap2]
 
 var sats: int = 0
 
@@ -73,6 +74,16 @@ func start_payouts(payout_percent: float, payout_interval: float, leader_lookup:
 
 func stop_payouts() -> void:
 	_payment_timer.stop()
+	_countdown_label.visible = false
+
+func _process(_delta: float) -> void:
+	if _payment_timer == null or _payment_timer.is_stopped():
+		return
+	_countdown_label.visible = true
+	if _pending_leader_arena != null:
+		_countdown_label.text = "Payment Routing"
+	else:
+		_countdown_label.text = "%.1fs" % _payment_timer.time_left
 
 ## Pay whatever's left to the match winner — bypasses the tick/settle cycle
 ## above entirely (mirrors RustBridge.pay_pot_remainder not checking the

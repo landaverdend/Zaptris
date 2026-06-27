@@ -70,6 +70,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="DebugGarbage" type="Control" parent="UILayer" unique_id=-89934591]
+visible = false
 layout_mode = 3
 anchors_preset = 3
 anchor_left = 1.0
@@ -216,6 +217,15 @@ text = "POT"
 font = ExtResource("4_pwlng")
 font_size = 100
 outline_size = 69
+
+[node name="Countdown" type="Label3D" parent="Pot" unique_id=777000001]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+visible = false
+modulate = Color(0.6, 0.6, 0.6, 1)
+text = ""
+font = ExtResource("4_pwlng")
+font_size = 70
+outline_size = 45
 
 [node name="LightningZap" parent="Pot" unique_id=2100000001 instance=ExtResource("6_zap")]
 transform = Transform3D(0.5881382, -0.8087604, 0, 0.8087604, 0.5881382, 0, 0, 0, 1, -0.27210188, 1.0601568, 1.1040001)

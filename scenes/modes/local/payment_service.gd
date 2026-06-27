@@ -1,8 +1,12 @@
 class_name PaymentService
 extends Node
 
-## QR bytes ready to display on a player's arena.
+## QR bytes ready to display on a player's arena (attack invoice).
 signal invoice_qr_ready(player_index: int, qr_bytes: PackedByteArray)
+## QR bytes ready to display on a player's lobby card (buy-in invoice).
+signal buy_in_qr_ready(player_index: int, qr_bytes: PackedByteArray)
+## Buy-in invoice confirmed paid — player may now ready up.
+signal buy_in_paid(player_index: int, amount_sats: int)
 ## Spectator paid an attack invoice — apply garbage to that player.
 signal garbage_attack(player_index: int, amount_sats: int)
 ## A payment was confirmed received, regardless of what it's used for.
@@ -16,6 +20,10 @@ signal nwc_ready(online: bool)
 
 var _bridge: Node = null
 var _attack_sats: int = 15
+
+## Buy-in invoices use player_index + BUY_IN_OFFSET as the bridge job id so
+## the single invoice_ready/invoice_paid signal can route correctly.
+const BUY_IN_OFFSET := 100
 
 func _ready() -> void:
 	_bridge = RustBridge.new()
@@ -39,6 +47,12 @@ func _ready() -> void:
 	nwc_ready.emit(_bridge.is_nwc_configured())
 
 # ── Public API ────────────────────────────────────────────────────────────────
+
+## Generate buy-in invoices for all players. Fires buy_in_qr_ready per player,
+## then buy_in_paid once each is settled. Does not auto-cycle.
+func start_buy_in_invoices(player_count: int, sats_per_buy_in: int) -> void:
+	for i in range(player_count):
+		_bridge.create_player_invoice(i + BUY_IN_OFFSET, sats_per_buy_in)
 
 ## Generate fixed-amount attack invoices for all players. Call at game start.
 ## Each settled payment fires garbage_attack (lines = sats) and auto-cycles.
@@ -70,9 +84,15 @@ func pay_pot_remainder(address: String, amount_sats: int) -> void:
 
 func _on_invoice_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
 	print("[PaymentService] invoice_ready player=%d bytes=%d" % [player_index, qr_bytes.size()])
-	invoice_qr_ready.emit(player_index, qr_bytes)
+	if player_index >= BUY_IN_OFFSET:
+		buy_in_qr_ready.emit(player_index - BUY_IN_OFFSET, qr_bytes)
+	else:
+		invoice_qr_ready.emit(player_index, qr_bytes)
 
 func _on_invoice_paid(player_index: int, amount_sats: int) -> void:
+	if player_index >= BUY_IN_OFFSET:
+		buy_in_paid.emit(player_index - BUY_IN_OFFSET, amount_sats)
+		return
 	payment_received.emit(player_index, amount_sats)
 	garbage_attack.emit(player_index, amount_sats)
 	_bridge.create_attack_invoice(player_index, _attack_sats)

@@ -86,6 +86,8 @@ func _ready() -> void:
 	payment_service.nwc_ready.connect(_on_nwc_ready)
 	add_child(payment_service)
 	payment_service.invoice_qr_ready.connect(_on_invoice_qr_ready)
+	payment_service.buy_in_qr_ready.connect(_on_buy_in_qr_ready)
+	payment_service.buy_in_paid.connect(_on_buy_in_paid)
 	payment_service.garbage_attack.connect(_on_garbage_attack)
 	payment_service.address_checked.connect(_on_address_checked)
 
@@ -179,6 +181,18 @@ func _try_controller_lobby_input(event: InputEvent) -> bool:
 	card.handle_controller_lobby_input(event)
 	get_viewport().set_input_as_handled()
 	return true
+
+## Buy-in QR ready — show it on the lobby card so the player can pay.
+func _on_buy_in_qr_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
+	print("[LocalMode] buy-in QR ready player=%d bytes=%d — raw invoice logged by bridge as 'raw=lnbc...' (bridge index=%d)" % [player_index, qr_bytes.size(), player_index + payment_service.BUY_IN_OFFSET])
+	if player_index >= players.size(): return
+	players[player_index].card.set_qr(qr_bytes)
+
+## Buy-in invoice paid — unlock ready button and mark the slot paid.
+func _on_buy_in_paid(player_index: int, _amount_sats: int) -> void:
+	if player_index >= players.size(): return
+	players[player_index].paid = true
+	players[player_index].card.show_paid()
 
 ## Attack invoice QR ready — show it on the arena so spectators can scan.
 func _on_invoice_qr_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
@@ -286,11 +300,13 @@ func _spawn_arenas() -> void:
 
 	router.start_listening(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
 
-	# Pre-create attack invoices so the relay has time to connect before game start.
+	# Pre-create invoices so the relay has time to connect before game start.
 	_qr_ready.resize(arena_count)
 	_qr_ready.fill(false)
 	if arena_count > 1:
 		payment_service.start_attack_invoices(arena_count, config.attack_sats)
+	if not config.free_mode:
+		payment_service.start_buy_in_invoices(arena_count, config.buy_in_sats)
 
 	_update_camera()
 	_position_lobby_cards.call_deferred()
@@ -451,6 +467,8 @@ func _reset_match() -> void:
 	if arena_count > 1:
 		_qr_ready.fill(false)
 		payment_service.start_attack_invoices(arena_count, config.attack_sats)
+	if not config.free_mode:
+		payment_service.start_buy_in_invoices(arena_count, config.buy_in_sats)
 	countdown_overlay.hide()
 	lobby_layer.show()
 	$UILayer/PlayerControls.show()
