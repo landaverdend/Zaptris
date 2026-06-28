@@ -54,8 +54,17 @@ func start_buy_in_invoices(player_count: int, sats_per_buy_in: int) -> void:
 	for i in range(player_count):
 		_bridge.create_player_invoice(i + BUY_IN_OFFSET, sats_per_buy_in)
 
-## Generate fixed-amount attack invoices for all players. Call at game start.
-## Each settled payment fires garbage_attack (lines = sats) and auto-cycles.
+## Add a single attack invoice without clearing existing ones (for new player slots).
+func add_attack_invoice(player_index: int, sats: int) -> void:
+	_attack_sats = sats
+	_bridge.create_attack_invoice(player_index, sats)
+
+## Add a single buy-in invoice without clearing existing ones (for new player slots).
+func add_buy_in_invoice(player_index: int, sats: int) -> void:
+	_bridge.create_player_invoice(player_index + BUY_IN_OFFSET, sats)
+
+## Generate fixed-amount attack invoices for all players. Clears existing first.
+## Use only on match reset; use add_attack_invoice for incremental lobby changes.
 func start_attack_invoices(player_count: int, sats_per_attack: int) -> void:
 	print("[PaymentService] start_attack_invoices count=%d sats=%d" % [player_count, sats_per_attack])
 	_attack_sats = sats_per_attack

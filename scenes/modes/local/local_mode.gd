@@ -48,6 +48,10 @@ var _player_zero_dev_id: int = -1
 
 ## Which player indices have received their QR code (lobby pre-creation).
 var _qr_ready: Array[bool] = []
+## QR bytes cached per player index — reused across lobby respawns so existing
+## players don't trigger a new invoice just because the count changed.
+var _attack_qr_cache: Array[PackedByteArray] = []
+var _buy_in_qr_cache:  Array[PackedByteArray] = []
 
 # ── Logic nodes ────────────────────────────────────────────────────────────────
 
@@ -64,6 +68,7 @@ var payment_service: PaymentService = null
 @onready var countdown_overlay: Control = $UILayer/CountdownOverlay
 @onready var match_pot: Node3D          = $Pot
 @onready var pause_overlay: Control     = $UILayer/PauseOverlay
+@onready var _resume_btn: Button        = $UILayer/PauseOverlay/CenterContainer/VBox/ResumeButton
 @onready var debug_panel: Control       = $UILayer/DebugGarbage
 @onready var _dbg_lines_label: Label    = $UILayer/DebugGarbage/VBox/AmountRow/LinesLabel
 @onready var _nwc_label: Label          = $UILayer/NWCStatus
@@ -116,6 +121,10 @@ func _ready() -> void:
 
 	add_button.pressed.connect(_on_add_pressed)
 	remove_button.pressed.connect(_on_remove_pressed)
+	_resume_btn.pressed.connect(_toggle_pause)
+	$UILayer/PauseOverlay/CenterContainer/VBox/MenuButton.pressed.connect(func():
+		get_tree().paused = false
+		get_tree().change_scene_to_file("res://scenes/menus/MainMenu.tscn"))
 	_respawn()
 
 # ── Lobby controls ────────────────────────────────────────────────────────────
@@ -154,15 +163,15 @@ func _input(event: InputEvent) -> void:
 		return
 
 func _try_toggle_pause(event: InputEvent) -> bool:
-	if state != State.PLAYING and state != State.PAUSED:
-		return false
 	if not event.is_action_pressed("ui_cancel"):
 		return false
-	if not _is_player_zero_device(event):
-		return false
-	get_viewport().set_input_as_handled()
-	_toggle_pause()
-	return true
+	if state == State.LOBBY or state == State.PLAYING or state == State.PAUSED:
+		if state != State.LOBBY and not _is_player_zero_device(event):
+			return false
+		get_viewport().set_input_as_handled()
+		_toggle_pause()
+		return true
+	return false
 
 func _try_controller_lobby_input(event: InputEvent) -> bool:
 	if state != State.LOBBY:
@@ -185,6 +194,8 @@ func _try_controller_lobby_input(event: InputEvent) -> bool:
 ## Buy-in QR ready — show it on the lobby card so the player can pay.
 func _on_buy_in_qr_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
 	print("[LocalMode] buy-in QR ready player=%d bytes=%d — raw invoice logged by bridge as 'raw=lnbc...' (bridge index=%d)" % [player_index, qr_bytes.size(), player_index + payment_service.BUY_IN_OFFSET])
+	if player_index < _buy_in_qr_cache.size():
+		_buy_in_qr_cache[player_index] = qr_bytes
 	if player_index >= players.size(): return
 	players[player_index].card.set_qr(qr_bytes)
 
@@ -199,6 +210,8 @@ func _on_invoice_qr_ready(player_index: int, qr_bytes: PackedByteArray) -> void:
 	print("[LocalMode] invoice_qr_ready player=%d bytes=%d" % [player_index, qr_bytes.size()])
 	if player_index < _qr_ready.size():
 		_qr_ready[player_index] = true
+	if player_index < _attack_qr_cache.size():
+		_attack_qr_cache[player_index] = qr_bytes
 	_nwc_label.text     = "NWC ⚡ ONLINE"
 	_nwc_label.modulate = Color(0.3, 1.0, 0.4, 1)
 	if player_index >= players.size(): return
@@ -240,8 +253,6 @@ func _clear_arenas() -> void:
 	_controller_slots.clear()
 	router.stop_listening()
 	local_rules.reset_ready()
-	if payment_service:
-		payment_service.clear_invoices()
 	for slot in players:
 		slot.arena.queue_free()
 		slot.card.queue_free()
@@ -300,13 +311,27 @@ func _spawn_arenas() -> void:
 
 	router.start_listening(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
 
-	# Pre-create invoices so the relay has time to connect before game start.
+	# Grow caches to cover any new slots; existing entries are preserved.
+	while _attack_qr_cache.size() < arena_count:
+		_attack_qr_cache.append(PackedByteArray())
+	while _buy_in_qr_cache.size() < arena_count:
+		_buy_in_qr_cache.append(PackedByteArray())
+
 	_qr_ready.resize(arena_count)
 	_qr_ready.fill(false)
-	if arena_count > 1:
-		payment_service.start_attack_invoices(arena_count, config.attack_sats)
-	if not config.free_mode:
-		payment_service.start_buy_in_invoices(arena_count, config.buy_in_sats)
+
+	# For each slot: restore cached QR if we have one, otherwise create a new invoice.
+	for i in range(arena_count):
+		if arena_count > 1:
+			if not _attack_qr_cache[i].is_empty():
+				_qr_ready[i] = true
+				players[i].arena.set_zap_qr_texture(_attack_qr_cache[i])
+			else:
+				payment_service.add_attack_invoice(i, config.attack_sats)
+		if not config.free_mode:
+			if _buy_in_qr_cache[i].is_empty():
+				payment_service.add_buy_in_invoice(i, config.buy_in_sats)
+			# Cached QRs are applied in _position_lobby_cards once the card is sized.
 
 	_update_camera()
 	_position_lobby_cards.call_deferred()
@@ -341,6 +366,8 @@ func _position_lobby_cards() -> void:
 			s_max = s_max.max(p)
 		players[i].card.position = s_min
 		players[i].card.size     = s_max - s_min
+		if i < _buy_in_qr_cache.size() and not _buy_in_qr_cache[i].is_empty():
+			players[i].card.set_qr(_buy_in_qr_cache[i])
 
 func _compute_arena_scale() -> float:
 	# 4 players = baseline (1.0). Each player fewer adds a small bump.
@@ -371,14 +398,17 @@ func _is_player_zero_device(event: InputEvent) -> bool:
 	return false
 
 func _toggle_pause() -> void:
-	if state == State.PAUSED:
-		state = State.PLAYING
+	if pause_overlay.visible:
+		if state == State.PAUSED:
+			state = State.PLAYING
 		get_tree().paused = false
 		pause_overlay.hide()
 	else:
-		state = State.PAUSED
+		if state == State.PLAYING:
+			state = State.PAUSED
 		get_tree().paused = true
 		pause_overlay.show()
+		_resume_btn.grab_focus()
 
 # ── Countdown ─────────────────────────────────────────────────────────────────
 
@@ -462,6 +492,8 @@ func _reset_match() -> void:
 		slot.arena.get_node("GameLogic").reset(new_seed)
 		slot.card.reset_ready_button()
 	_update_win_boxes()
+	_attack_qr_cache.clear()
+	_buy_in_qr_cache.clear()
 	_reset_payments()
 	_update_pot()
 	if arena_count > 1:

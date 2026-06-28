@@ -48,7 +48,6 @@ horizontal_alignment = 1
 
 [node name="QRRect" type="TextureRect" parent="CenterContainer/VBox" unique_id=1705032723]
 visible = false
-custom_minimum_size = Vector2(200, 200)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4

@@ -178,7 +178,10 @@ func set_qr(bytes: PackedByteArray) -> void:
 		return
 	var img := Image.new()
 	img.load_png_from_buffer(bytes)
-	img.resize(200, 200, Image.INTERPOLATE_NEAREST)
+	print("[LobbyCard] set_qr size=%s" % size)
+	var qr_px: int = int(max(size.x * 0.6, 80)) if size.x > 0 else 120
+	img.resize(qr_px, qr_px, Image.INTERPOLATE_NEAREST)
+	qr_rect.custom_minimum_size = Vector2(qr_px, qr_px)
 	qr_rect.texture = ImageTexture.create_from_image(img)
 	qr_rect.show()
 
