@@ -17,6 +17,7 @@ const ARENA_SPACING := 22.0
 
 class MatchConfig:
 	var free_mode:          bool  = true
+	var no_payment:         bool  = false
 	var buy_in_sats:        int   = 25
 	var free_pot_sats:      int   = 100
 	var payout_percent:     float = 0.05   # fraction of starting pot paid out per tick
@@ -83,6 +84,7 @@ var _controller_slots: Dictionary = {}
 
 func _ready() -> void:
 	config.free_mode     = Settings.free_mode
+	config.no_payment    = Settings.no_payment
 	config.buy_in_sats   = Settings.buy_in_sats
 	config.free_pot_sats = Settings.host_payout_sats
 
@@ -97,6 +99,7 @@ func _ready() -> void:
 	payment_service.address_checked.connect(_on_address_checked)
 
 	match_pot.setup(payment_service)
+	match_pot.visible = not config.no_payment
 
 	countdown_overlay.finished.connect(_on_countdown_finished)
 
@@ -274,8 +277,8 @@ func _spawn_arenas() -> void:
 		cfg.garbage_enabled = true
 		cfg.show_level      = false
 		cfg.show_wins       = true
-		cfg.show_qr         = arena_count > 1
-		cfg.show_sats       = arena_count > 1
+		cfg.show_qr         = arena_count > 1 and not config.no_payment
+		cfg.show_sats       = arena_count > 1 and not config.no_payment
 
 		slot.arena = ARENA_SCENE.instantiate()
 		slot.arena.config       = cfg
@@ -287,12 +290,13 @@ func _spawn_arenas() -> void:
 		slot.card = LOBBY_CARD_SCENE.instantiate()
 		lobby_layer.add_child(slot.card)
 		slot.card.setup(i + 1)
+		slot.card.set_payment_hidden(config.no_payment)
 
 		# Restore payment state carried over from the previous spawn.
 		if i < players.size():
 			slot.paid = players[i].paid
 
-		if not config.free_mode:
+		if not config.free_mode and not config.no_payment:
 			slot.card.set_requires_payment()
 			if slot.paid:
 				slot.card.show_paid()
@@ -321,14 +325,16 @@ func _spawn_arenas() -> void:
 	_qr_ready.fill(false)
 
 	# For each slot: restore cached QR if we have one, otherwise create a new invoice.
+	if config.no_payment:
+		_qr_ready.fill(true)
 	for i in range(arena_count):
-		if arena_count > 1:
+		if arena_count > 1 and not config.no_payment:
 			if not _attack_qr_cache[i].is_empty():
 				_qr_ready[i] = true
 				players[i].arena.set_zap_qr_texture(_attack_qr_cache[i])
 			else:
 				payment_service.add_attack_invoice(i, config.attack_sats)
-		if not config.free_mode:
+		if not config.free_mode and not config.no_payment:
 			if _buy_in_qr_cache[i].is_empty():
 				payment_service.add_buy_in_invoice(i, config.buy_in_sats)
 			# Cached QRs are applied in _position_lobby_cards once the card is sized.
@@ -417,7 +423,7 @@ func _on_countdown_finished() -> void:
 
 func _on_all_ready() -> void:
 	print("[LocalMode] _on_all_ready")
-	if not config.free_mode and not players.all(func(s: PlayerSlot) -> bool: return s.paid):
+	if not config.free_mode and not config.no_payment and not players.all(func(s: PlayerSlot) -> bool: return s.paid):
 		return
 	state = State.COUNTDOWN
 	router.stop_listening()
@@ -441,7 +447,7 @@ func _begin_play() -> void:
 		slot.arena.get_node("GameLogic").start()
 	local_rules.start_round(players.map(func(s: PlayerSlot) -> Node3D: return s.arena))
 
-	if arena_count > 1:
+	if arena_count > 1 and not config.no_payment:
 		for i in range(players.size()):
 			if i >= _qr_ready.size() or not _qr_ready[i]:
 				players[i].arena.show_loading_qr()
@@ -496,10 +502,10 @@ func _reset_match() -> void:
 	_buy_in_qr_cache.clear()
 	_reset_payments()
 	_update_pot()
-	if arena_count > 1:
+	if arena_count > 1 and not config.no_payment:
 		_qr_ready.fill(false)
 		payment_service.start_attack_invoices(arena_count, config.attack_sats)
-	if not config.free_mode:
+	if not config.free_mode and not config.no_payment:
 		payment_service.start_buy_in_invoices(arena_count, config.buy_in_sats)
 	countdown_overlay.hide()
 	lobby_layer.show()
@@ -510,7 +516,7 @@ func _reset_match() -> void:
 func _reset_payments() -> void:
 	payment_service.clear_invoices()
 	for slot: PlayerSlot in players:
-		slot.paid = config.free_mode
+		slot.paid = config.free_mode or config.no_payment
 		slot.card.reset_payment()
 		slot.arena.clear_qr_texture()
 

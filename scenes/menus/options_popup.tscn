@@ -82,6 +82,18 @@ text = "Free Mode (Host pays out to players)"
 [node name="FreeModeCheck" type="CheckButton" parent="CenterContainer/VBox/FreeModeRow"]
 layout_mode = 2
 
+[node name="NoPaymentRow" type="HBoxContainer" parent="CenterContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="NoPaymentLabel" type="Label" parent="CenterContainer/VBox/NoPaymentRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "No Payment Mode (play without Lightning)"
+
+[node name="NoPaymentCheck" type="CheckButton" parent="CenterContainer/VBox/NoPaymentRow"]
+layout_mode = 2
+
 [node name="BuyInRow" type="HBoxContainer" parent="CenterContainer/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 8

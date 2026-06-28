@@ -173,6 +173,11 @@ func set_device(device_label: String) -> void:
 	_set_card_focusable(true)
 	_update_controller_selection_visual()
 
+func set_payment_hidden(hidden: bool) -> void:
+	lightning.visible = not hidden
+	check_btn.visible = not hidden
+	address_status.visible = false
+
 func set_qr(bytes: PackedByteArray) -> void:
 	if bytes.is_empty():
 		return

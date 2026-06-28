@@ -6,6 +6,7 @@ extends Node
 ## a shared or untrusted environment without encrypting it at rest.
 
 signal free_mode_changed(enabled: bool)
+signal no_payment_changed(enabled: bool)
 signal sfx_volume_changed(linear: float)
 signal bgm_volume_changed(linear: float)
 signal buy_in_sats_changed(amount: int)
@@ -21,6 +22,8 @@ const SAVE_PATH := "user://settings.cfg"
 var nwc_string: String = ""
 
 var free_mode: bool = true
+## When true, skips all Lightning/NWC calls — no attack invoices, no buy-in. Play offline.
+var no_payment: bool = false
 
 ## Per-player buy-in, charged when free_mode is OFF.
 var buy_in_sats: int = 25
@@ -55,6 +58,11 @@ func set_free_mode(enabled: bool) -> void:
 	free_mode_changed.emit(enabled)
 	_save()
 
+func set_no_payment(enabled: bool) -> void:
+	no_payment = enabled
+	no_payment_changed.emit(enabled)
+	_save()
+
 func set_buy_in_sats(amount: int) -> void:
 	buy_in_sats = maxi(1, amount)
 	buy_in_sats_changed.emit(buy_in_sats)
@@ -82,6 +90,7 @@ func _save() -> void:
 	cfg.set_value("audio", "sfx_volume", sfx_volume)
 	cfg.set_value("audio", "bgm_volume", bgm_volume)
 	cfg.set_value("match", "free_mode", free_mode)
+	cfg.set_value("match", "no_payment", no_payment)
 	cfg.set_value("match", "buy_in_sats", buy_in_sats)
 	cfg.set_value("match", "host_payout_sats", host_payout_sats)
 	cfg.set_value("payments", "nwc_string", nwc_string)
@@ -94,6 +103,7 @@ func _load() -> void:
 	sfx_volume       = cfg.get_value("audio", "sfx_volume", sfx_volume)
 	bgm_volume       = cfg.get_value("audio", "bgm_volume", bgm_volume)
 	free_mode        = cfg.get_value("match", "free_mode", free_mode)
+	no_payment       = cfg.get_value("match", "no_payment", no_payment)
 	buy_in_sats      = cfg.get_value("match", "buy_in_sats", buy_in_sats)
 	host_payout_sats = cfg.get_value("match", "host_payout_sats", host_payout_sats)
 	nwc_string       = cfg.get_value("payments", "nwc_string", nwc_string)

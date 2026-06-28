@@ -7,6 +7,7 @@ signal closed
 @onready var check_btn: Button         = $CenterContainer/VBox/NWCRow/CheckButton
 @onready var nwc_status: Label         = $CenterContainer/VBox/NWCStatus
 @onready var free_mode_check: CheckButton = $CenterContainer/VBox/FreeModeRow/FreeModeCheck
+@onready var no_payment_check: CheckButton = $CenterContainer/VBox/NoPaymentRow/NoPaymentCheck
 @onready var buy_in_dec: Button        = $CenterContainer/VBox/BuyInRow/BuyInDec
 @onready var buy_in_value: Label       = $CenterContainer/VBox/BuyInRow/BuyInValue
 @onready var buy_in_inc: Button        = $CenterContainer/VBox/BuyInRow/BuyInInc
@@ -30,6 +31,7 @@ func _ready() -> void:
 	# create an override; only actually editing the field does (below).
 	nwc_edit.text = Settings.nwc_string if not Settings.nwc_string.is_empty() else _read_env_nwc()
 	free_mode_check.button_pressed = Settings.free_mode
+	no_payment_check.button_pressed = Settings.no_payment
 	buy_in_value.text = str(Settings.buy_in_sats)
 	host_payout_value.text = str(Settings.host_payout_sats)
 	sfx_slider.value = Settings.sfx_volume
@@ -40,6 +42,7 @@ func _ready() -> void:
 	paste_btn.pressed.connect(_on_paste_pressed)
 	check_btn.pressed.connect(_on_check_pressed)
 	free_mode_check.toggled.connect(Settings.set_free_mode)
+	no_payment_check.toggled.connect(Settings.set_no_payment)
 	buy_in_dec.pressed.connect(func(): _step_buy_in(-SATS_STEP))
 	buy_in_inc.pressed.connect(func(): _step_buy_in(SATS_STEP))
 	host_payout_dec.pressed.connect(func(): _step_host_payout(-SATS_STEP))
@@ -72,6 +75,7 @@ func _configure_focus() -> void:
 		paste_btn,
 		check_btn,
 		free_mode_check,
+		no_payment_check,
 		buy_in_dec,
 		buy_in_inc,
 		host_payout_dec,
@@ -88,8 +92,9 @@ func _configure_focus() -> void:
 		current.focus_next = current.get_path_to(controls[(i + 1) % controls.size()])
 
 	_configure_vertical_group([nwc_edit, paste_btn, check_btn], close_btn, free_mode_check)
-	_configure_vertical_group([free_mode_check], nwc_edit, buy_in_dec)
-	_configure_vertical_group([buy_in_dec, buy_in_inc], free_mode_check, host_payout_dec)
+	_configure_vertical_group([free_mode_check], nwc_edit, no_payment_check)
+	_configure_vertical_group([no_payment_check], free_mode_check, buy_in_dec)
+	_configure_vertical_group([buy_in_dec, buy_in_inc], no_payment_check, host_payout_dec)
 	_configure_vertical_group([host_payout_dec, host_payout_inc], buy_in_dec, sfx_slider)
 	_configure_vertical_group([sfx_slider], host_payout_dec, bgm_slider)
 	_configure_vertical_group([bgm_slider], sfx_slider, close_btn)
