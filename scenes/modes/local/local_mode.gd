@@ -76,6 +76,10 @@ var payment_service: PaymentService = null
 
 var _dbg_lines: int = 4
 
+const GRAVITY_INTERVAL := 30.0
+var _gravity_level: int = 1
+var _gravity_timer: Timer = null
+
 # dev_id → arena_index, populated one frame after join so the join press
 # itself doesn't immediately trigger Ready.
 var _controller_slots: Dictionary = {}
@@ -100,6 +104,7 @@ func _ready() -> void:
 
 	match_pot.setup(payment_service)
 	match_pot.visible = not config.no_payment
+	_nwc_label.visible = not config.free_mode and not config.no_payment
 
 	countdown_overlay.finished.connect(_on_countdown_finished)
 
@@ -121,6 +126,13 @@ func _ready() -> void:
 	local_rules.all_ready.connect(_on_all_ready)
 	local_rules.round_over.connect(_on_round_over)
 	local_rules.match_over.connect(_on_match_over)
+
+	_gravity_timer = Timer.new()
+	_gravity_timer.wait_time = GRAVITY_INTERVAL
+	_gravity_timer.one_shot = false
+	_gravity_timer.process_mode = Node.PROCESS_MODE_PAUSABLE
+	_gravity_timer.timeout.connect(_on_gravity_tick)
+	add_child(_gravity_timer)
 
 	add_button.pressed.connect(_on_add_pressed)
 	remove_button.pressed.connect(_on_remove_pressed)
@@ -454,13 +466,22 @@ func _begin_play() -> void:
 
 	match_pot.start_payouts(config.payout_percent, config.payout_interval, _current_leader)
 
+	_gravity_level = 1
+	_gravity_timer.start()
+
 	await get_tree().create_timer(0.6).timeout
 	countdown_overlay.hide()
 
 # ── Round end ─────────────────────────────────────────────────────────────────
 
+func _on_gravity_tick() -> void:
+	_gravity_level += 1
+	for slot: PlayerSlot in players:
+		slot.arena.get_node("GameLogic").set_gravity_level(_gravity_level)
+
 func _on_round_over(winner_index: int) -> void:
 	state = State.ROUND_END
+	_gravity_timer.stop()
 	match_pot.stop_payouts()
 	for slot: PlayerSlot in players:
 		slot.arena.process_mode = Node.PROCESS_MODE_DISABLED
@@ -477,6 +498,7 @@ func _update_win_boxes() -> void:
 
 func _on_match_over(winner_index: int) -> void:
 	state = State.MATCH_END
+	_gravity_timer.stop()
 	match_pot.stop_payouts()
 	for slot: PlayerSlot in players:
 		slot.arena.process_mode = Node.PROCESS_MODE_DISABLED

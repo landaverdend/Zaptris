@@ -2,7 +2,8 @@ extends Control
 
 signal closed
 
-@onready var nwc_edit: LineEdit         = $CenterContainer/VBox/NWCRow/NWCEdit
+@onready var nwc_row: HBoxContainer    = $CenterContainer/VBox/NWCRow
+@onready var nwc_edit: LineEdit        = $CenterContainer/VBox/NWCRow/NWCEdit
 @onready var paste_btn: Button         = $CenterContainer/VBox/NWCRow/PasteButton
 @onready var check_btn: Button         = $CenterContainer/VBox/NWCRow/CheckButton
 @onready var nwc_status: Label         = $CenterContainer/VBox/NWCStatus
@@ -41,8 +42,9 @@ func _ready() -> void:
 	nwc_edit.gui_input.connect(_on_nwc_gui_input)
 	paste_btn.pressed.connect(_on_paste_pressed)
 	check_btn.pressed.connect(_on_check_pressed)
-	free_mode_check.toggled.connect(Settings.set_free_mode)
-	no_payment_check.toggled.connect(Settings.set_no_payment)
+	free_mode_check.toggled.connect(func(on: bool): Settings.set_free_mode(on); _update_nwc_visibility())
+	no_payment_check.toggled.connect(func(on: bool): Settings.set_no_payment(on); _update_nwc_visibility())
+	_update_nwc_visibility()
 	buy_in_dec.pressed.connect(func(): _step_buy_in(-SATS_STEP))
 	buy_in_inc.pressed.connect(func(): _step_buy_in(SATS_STEP))
 	host_payout_dec.pressed.connect(func(): _step_host_payout(-SATS_STEP))
@@ -52,6 +54,11 @@ func _ready() -> void:
 	close_btn.pressed.connect(close)
 	keyboard.closed.connect(func(): Settings.set_nwc_string(nwc_edit.text))
 	_configure_focus()
+
+func _update_nwc_visibility() -> void:
+	var show_nwc := not Settings.free_mode and not Settings.no_payment
+	nwc_row.visible = show_nwc
+	nwc_status.visible = show_nwc and nwc_status.visible
 
 func _step_buy_in(delta: int) -> void:
 	Settings.set_buy_in_sats(Settings.buy_in_sats + delta)

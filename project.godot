@@ -13,7 +13,7 @@ config_version=5
 config/name="zapstris"
 run/main_scene="uid://dgupwq5hvagm2"
 config/features=PackedStringArray("4.6", "GL Compatibility")
-config/icon="res://assets/ui/icon.svg"
+config/icon="res://assets/ui/icon.png"
 
 [autoload]
 
