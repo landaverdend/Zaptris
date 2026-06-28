@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://xghe8b31upay"
+path="res://.godot/imported/Aqua Sition_Aural Imbalance.mp3-1c694a47cd2254fb1f67d109d1426430.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/ambient/Aqua Sition_Aural Imbalance.mp3"
+dest_files=["res://.godot/imported/Aqua Sition_Aural Imbalance.mp3-1c694a47cd2254fb1f67d109d1426430.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

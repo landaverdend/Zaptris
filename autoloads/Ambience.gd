@@ -21,6 +21,7 @@ func _ready() -> void:
 	if _tracks.is_empty():
 		push_warning("Ambience: no tracks configured")
 		return
+	_tracks.shuffle()
 
 	# Owned here (not by any game mode) so it persists across scene changes
 	# the same way the music itself does.
@@ -82,8 +83,5 @@ func _load_library_tracks() -> Array[Dictionary]:
 		var display_path := stream.resource_path
 		if i < MUSIC_LIBRARY.display_paths.size():
 			display_path = MUSIC_LIBRARY.display_paths[i]
-		loaded.append({
-			"path": display_path,
-			"stream": stream,
-		})
+		loaded.append({"path": display_path, "stream": stream})
 	return loaded

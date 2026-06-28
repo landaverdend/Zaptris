@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cvwrib4wgn2mc"
+path="res://.godot/imported/Astral Forest_Aural Imbalance.mp3-ae9c7c91acd3082eaf20afc1a5f5f549.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/ambient/Astral Forest_Aural Imbalance.mp3"
+dest_files=["res://.godot/imported/Astral Forest_Aural Imbalance.mp3-ae9c7c91acd3082eaf20afc1a5f5f549.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
